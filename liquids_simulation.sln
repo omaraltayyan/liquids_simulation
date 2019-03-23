@@ -5,6 +5,8 @@ VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "liquids_simulation", "liquids_simulation\liquids_simulation.vcxproj", "{E8F47BAA-0718-4EC9-99A1-6E4E2CB9B674}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "cuda_particles_interaction_lib", "cuda_particles_interaction_lib\cuda_particles_interaction_lib.vcxproj", "{4AF77FD9-E442-45DD-8526-D5D445DBB38A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -15,6 +17,10 @@ Global
 		{E8F47BAA-0718-4EC9-99A1-6E4E2CB9B674}.Debug|x64.Build.0 = Debug|x64
 		{E8F47BAA-0718-4EC9-99A1-6E4E2CB9B674}.Release|x64.ActiveCfg = Release|x64
 		{E8F47BAA-0718-4EC9-99A1-6E4E2CB9B674}.Release|x64.Build.0 = Release|x64
+		{4AF77FD9-E442-45DD-8526-D5D445DBB38A}.Debug|x64.ActiveCfg = Debug|x64
+		{4AF77FD9-E442-45DD-8526-D5D445DBB38A}.Debug|x64.Build.0 = Debug|x64
+		{4AF77FD9-E442-45DD-8526-D5D445DBB38A}.Release|x64.ActiveCfg = Release|x64
+		{4AF77FD9-E442-45DD-8526-D5D445DBB38A}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
