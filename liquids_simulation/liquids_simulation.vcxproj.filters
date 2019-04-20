@@ -27,10 +27,16 @@
     <ClCompile Include="Classes\MovingBody.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Classes\WaterParticle.cpp">
+    <ClCompile Include="Grid.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\FluidParticle.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Classes\LiquidParticle.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GasParticle.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -44,10 +50,16 @@
     <ClInclude Include="Classes\MovingBody.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Classes\WaterParticle.h">
+    <ClInclude Include="Grid.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\FluidParticle.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Classes\LiquidParticle.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GasParticle.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -47,7 +47,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(SolutionDir)opengl_lib\glfw\include;$(SolutionDir)opengl_lib\glew\include;$(SolutionDir)GTEngine\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)opengl_lib\glfw\include;$(SolutionDir)opengl_lib\glew\include;$(SolutionDir)GTEngine\Include;$(SolutionDir)boost_include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <AdditionalLibraryDirectories>$(SolutionDir)opengl_lib\glfw\lib-vc2015;$(SolutionDir)opengl_lib\glew\lib\Release\x64;$(SolutionDir)GTEngine\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
@@ -61,7 +61,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(SolutionDir)opengl_lib\glfw\include;$(SolutionDir)opengl_lib\glew\include;$(SolutionDir)GTEngine\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)opengl_lib\glfw\include;$(SolutionDir)opengl_lib\glew\include;$(SolutionDir)GTEngine\Include;$(SolutionDir)boost_include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
@@ -73,17 +73,21 @@
   <ItemGroup>
     <ClCompile Include="Classes\Body.cpp" />
     <ClCompile Include="Classes\MovingBody.cpp" />
-    <ClCompile Include="Classes\LiquidParticle.cpp" />
+    <ClCompile Include="Classes\FluidParticle.cpp" />
+    <ClCompile Include="GasParticle.cpp" />
+    <ClCompile Include="Grid.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Classes\Particle.cpp" />
-    <ClCompile Include="Classes\WaterParticle.cpp" />
+    <ClCompile Include="Classes\LiquidParticle.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Classes\Body.h" />
     <ClInclude Include="Classes\MovingBody.h" />
     <ClInclude Include="Classes\Particle.h" />
-    <ClInclude Include="Classes\WaterParticle.h" />
     <ClInclude Include="Classes\LiquidParticle.h" />
+    <ClInclude Include="Classes\FluidParticle.h" />
+    <ClInclude Include="GasParticle.h" />
+    <ClInclude Include="Grid.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Classes\ClassDiagram.cd" />

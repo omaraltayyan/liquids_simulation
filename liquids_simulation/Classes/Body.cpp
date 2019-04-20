@@ -3,6 +3,7 @@
 
 Body::Body()
 {
+	auto s = this->boundingRect.max_corner();
 }
 
 

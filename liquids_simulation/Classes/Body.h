@@ -1,15 +1,17 @@
 #pragma once
-#include "Mathematics\GteAlignedBox.h"
-using namespace gte;
+#include <iostream>
+#include <boost/geometry.hpp>
 
+namespace bg = boost::geometry;
 class Body
 {
 public:
 
 	virtual void draw() = 0;
 
-	AlignedBox2<double> boundingRect;
-
+	typedef bg::model::point<double, 2, bg::cs::cartesian> Point;
+	typedef bg::model::box<Point> Rectangle;
+	Rectangle boundingRect;
 
 
 	Body();

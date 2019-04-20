@@ -1,38 +1,45 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <ClassDiagram MajorVersion="1" MinorVersion="1" MembersFormat="NameAndType">
+  <Class Name="Particle" Collapsed="true">
+    <Position X="1.75" Y="3.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAgAAAAAAAAACAAAAAAAAAAAAAABAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Classes\Particle.h</FileName>
+    </TypeIdentifier>
+  </Class>
   <Class Name="Body" Collapsed="true">
-    <Position X="0.5" Y="0.75" Width="1.5" />
+    <Position X="1.75" Y="1" Width="1.5" />
     <TypeIdentifier>
       <HashCode>ABAAAAAAAAAAACAAAAIBAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Classes\Body.h</FileName>
     </TypeIdentifier>
   </Class>
+  <Class Name="FluidParticle" Collapsed="true">
+    <Position X="1.75" Y="5.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAIAAAAAAAAAAAAAACAAAAAAAA=</HashCode>
+      <FileName>Classes\FluidParticle.h</FileName>
+    </TypeIdentifier>
+  </Class>
   <Class Name="LiquidParticle" Collapsed="true">
-    <Position X="0.5" Y="5" Width="1.5" />
+    <Position X="0.5" Y="6.75" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACAAAEAAAAAA=</HashCode>
       <FileName>Classes\LiquidParticle.h</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="MovingBody" Collapsed="true">
-    <Position X="0.5" Y="2" Width="1.5" />
+    <Position X="1.75" Y="2.25" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAACAAAAAAAAAAAAAAABAAAAAAAAAAAAAgAAAAAAAAA=</HashCode>
       <FileName>Classes\MovingBody.h</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="Particle" Collapsed="true">
-    <Position X="0.5" Y="3.5" Width="1.5" />
+  <Class Name="GasParticle" Collapsed="true">
+    <Position X="2.75" Y="6.75" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAgAAAAAAAAACAAAAAAAAAAAAAABAAAAAAAAAAAAAAA=</HashCode>
-      <FileName>Classes\Particle.h</FileName>
-    </TypeIdentifier>
-  </Class>
-  <Class Name="WaterParticle" Collapsed="true">
-    <Position X="0.5" Y="6.5" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>AAAAAAAAgAAAAAAAAAAAAAAAAAAAAAAAAAAAIAAAAAA=</HashCode>
-      <FileName>Classes\WaterParticle.h</FileName>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAIAAAAIAAAAAAAAAAAAA=</HashCode>
+      <FileName>GasParticle.h</FileName>
     </TypeIdentifier>
   </Class>
   <Font Name="Segoe UI" Size="9" />

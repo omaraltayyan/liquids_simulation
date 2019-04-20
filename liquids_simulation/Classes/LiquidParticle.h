@@ -1,8 +1,8 @@
 #pragma once
 
-#include "Particle.h"
+#include "FluidParticle.h"
 
-class LiquidParticle: public Particle
+class LiquidParticle: public FluidParticle
 {
 public:
 	LiquidParticle();
