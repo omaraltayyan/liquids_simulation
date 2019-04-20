@@ -3,7 +3,12 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
 VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "liquids_simulation", "liquids_simulation\liquids_simulation.vcxproj", "{E8F47BAA-0718-4EC9-99A1-6E4E2CB9B674}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "FluidsSimulationGUI", "FluidsSimulationGUI\FluidsSimulationGUI.vcxproj", "{B12702AD-ABFB-343A-A199-8E24837244A3}"
+	ProjectSection(ProjectDependencies) = postProject
+		{4D7A3AAB-0315-4311-BBC2-1FEF5DDE29E8} = {4D7A3AAB-0315-4311-BBC2-1FEF5DDE29E8}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "FluidsSimulationPhysicsEngine", "FluidsSimulationPhysicsEngine\FluidsSimulationPhysicsEngine.vcxproj", "{4D7A3AAB-0315-4311-BBC2-1FEF5DDE29E8}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "cuda_particles_interaction_lib", "cuda_particles_interaction_lib\cuda_particles_interaction_lib.vcxproj", "{4AF77FD9-E442-45DD-8526-D5D445DBB38A}"
 EndProject
@@ -13,10 +18,14 @@ Global
 		Release|x64 = Release|x64
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{E8F47BAA-0718-4EC9-99A1-6E4E2CB9B674}.Debug|x64.ActiveCfg = Debug|x64
-		{E8F47BAA-0718-4EC9-99A1-6E4E2CB9B674}.Debug|x64.Build.0 = Debug|x64
-		{E8F47BAA-0718-4EC9-99A1-6E4E2CB9B674}.Release|x64.ActiveCfg = Release|x64
-		{E8F47BAA-0718-4EC9-99A1-6E4E2CB9B674}.Release|x64.Build.0 = Release|x64
+		{B12702AD-ABFB-343A-A199-8E24837244A3}.Debug|x64.ActiveCfg = Debug|x64
+		{B12702AD-ABFB-343A-A199-8E24837244A3}.Debug|x64.Build.0 = Debug|x64
+		{B12702AD-ABFB-343A-A199-8E24837244A3}.Release|x64.ActiveCfg = Release|x64
+		{B12702AD-ABFB-343A-A199-8E24837244A3}.Release|x64.Build.0 = Release|x64
+		{4D7A3AAB-0315-4311-BBC2-1FEF5DDE29E8}.Debug|x64.ActiveCfg = Debug|x64
+		{4D7A3AAB-0315-4311-BBC2-1FEF5DDE29E8}.Debug|x64.Build.0 = Debug|x64
+		{4D7A3AAB-0315-4311-BBC2-1FEF5DDE29E8}.Release|x64.ActiveCfg = Release|x64
+		{4D7A3AAB-0315-4311-BBC2-1FEF5DDE29E8}.Release|x64.Build.0 = Release|x64
 		{4AF77FD9-E442-45DD-8526-D5D445DBB38A}.Debug|x64.ActiveCfg = Debug|x64
 		{4AF77FD9-E442-45DD-8526-D5D445DBB38A}.Debug|x64.Build.0 = Debug|x64
 		{4AF77FD9-E442-45DD-8526-D5D445DBB38A}.Release|x64.ActiveCfg = Release|x64
