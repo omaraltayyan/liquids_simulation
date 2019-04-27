@@ -44,13 +44,14 @@ public:
 	// coordinate system, if the body is out of bounds,
 	// then we return a NULL QRect
 	QRect getBodySquareDimensions(Body const & body);
-
+	QRect getBodySquareDimentionsWithSurroundingSquares(Body const & body);
 
 	/*
 	*
 	*/
-	void addBodiesToGrid(const QVector<Body*>& bodies);
+	void addBodiesToGrid(const BodiesVector& bodies);
 
+	void updateBodiesInGrid();
 
 	/*
 		takes in a Rectangle with the dimensions in squares,
@@ -60,7 +61,9 @@ public:
 	*/
 	QVector<int> Grid::squareDimensionsSquareNumbers(QRect const & squareDimensions);
 	QVector<int> Grid::metersDimensionsSquareNumbers(QRect const & metersDimensions);
-	
+	QVector<int> getBodySquareNumbers(Body const & body);
+	QVector<int> getBodySquareNumbersWithSurroundingSquares(Body const & body);
+
 	Grid();
 	~Grid();
 
@@ -71,8 +74,10 @@ private:
 	QSize _sizeInMeters;
 	QSize _sizeInSquares;
 	QRect _rectInSquares;
-	int _squareSideInMeters;
+	int _squareSideInMeters = 0;
+	int _numSquares = 0;
 
-	BodiesVector* squaresBodies;
+	QVector<BodiesVector*> squaresBodies;
+	BodiesVector allBodies;
 };
 
