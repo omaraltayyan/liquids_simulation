@@ -7,7 +7,7 @@ public:
 
 	virtual void draw() = 0;
 
-	QRect boundingRect;
+	QRectF boundingRect;
 
 	Body();
 	~Body();

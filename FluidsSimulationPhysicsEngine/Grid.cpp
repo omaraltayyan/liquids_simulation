@@ -1,8 +1,14 @@
 #include "Grid.h"
 #include "Utilities\Memory.h"
 using namespace std;
-Grid::Grid()
+#include <cmath>
+#include "Utilities\MathUtilities.h"
+#include <assert.h>     /* assert */
+
+Grid::Grid(const QSizeF& sizeInMeters, qreal squareSideInMeters)
 {
+	this->sizeInMeters(sizeInMeters);
+	this->squareSideInMeters(squareSideInMeters);
 }
 Grid::~Grid()
 {
@@ -22,14 +28,14 @@ void Grid::addBodiesToGrid(const BodiesVector& bodies) {
 
 	auto squaresBodiesCounts = new int[this->numSquares()]();
 
-	auto bodiesSquareNumbers = new QVector<int>[bodies.length()];
+	auto bodiesSquareIndexs = new QVector<int>[bodies.length()];
 
 	for(int i = 0; i < bodies.length(); i++)
 	{
 		auto body = bodies[i];
-		bodiesSquareNumbers[i] = this->metersDimensionsSquareNumbers(body->boundingRect);
-		for each(int squareNumber in bodiesSquareNumbers[i]) {
-			squaresBodiesCounts[squareNumber]++;
+		bodiesSquareIndexs[i] = this->metersDimensionsSquareIndexs(body->boundingRect);
+		for each(int squareIndex in bodiesSquareIndexs[i]) {
+			squaresBodiesCounts[squareIndex]++;
 		}
 	}
 
@@ -50,28 +56,28 @@ void Grid::addBodiesToGrid(const BodiesVector& bodies) {
 	for (int i = 0; i < bodies.length(); i++)
 	{
 		auto body = bodies[i];
-		for each(int squareNumber in bodiesSquareNumbers[i]) {
-			int oldBodiesOffset = squaresBodies[squareNumber]->length() - squaresBodiesCounts[i];
-			squaresBodies[squareNumber]->push_back(body);
+		for each(int squareIndex in bodiesSquareIndexs[i]) {
+			int oldBodiesOffset = squaresBodies[squareIndex]->length() - squaresBodiesCounts[i];
+			squaresBodies[squareIndex]->push_back(body);
 		}
 	}
 
 	delete squaresBodiesCounts;
-	delete bodiesSquareNumbers;
+	delete bodiesSquareIndexs;
 }
 
 void Grid::updateBodiesInGrid() {
 
 	auto squaresBodiesCounts = new int[this->numSquares()]();
 
-	auto bodiesSquareNumbers = new QVector<int>[allBodies.length()];
+	auto bodiesSquareIndexs = new QVector<int>[allBodies.length()];
 
 	for (int i = 0; i < allBodies.length(); i++)
 	{
 		auto body = allBodies[i];
-		bodiesSquareNumbers[i] = this->metersDimensionsSquareNumbers(body->boundingRect);
-		for each(int squareNumber in bodiesSquareNumbers[i]) {
-			squaresBodiesCounts[squareNumber]++;
+		bodiesSquareIndexs[i] = this->metersDimensionsSquareIndexs(body->boundingRect);
+		for each(int squareIndex in bodiesSquareIndexs[i]) {
+			squaresBodiesCounts[squareIndex]++;
 		}
 	}
 
@@ -93,31 +99,31 @@ void Grid::updateBodiesInGrid() {
 	for (int i = 0; i < allBodies.length(); i++)
 	{
 		auto body = allBodies[i];
-		for each(int squareNumber in bodiesSquareNumbers[i]) {
-			int oldBodiesOffset = squaresBodies[squareNumber]->length() - squaresBodiesCounts[i];
-			squaresBodies[squareNumber]->push_back(body);
+		for each(int squareIndex in bodiesSquareIndexs[i]) {
+			int oldBodiesOffset = squaresBodies[squareIndex]->length() - squaresBodiesCounts[i];
+			squaresBodies[squareIndex]->push_back(body);
 		}
 	}
 
 	delete squaresBodiesCounts;
-	delete bodiesSquareNumbers;
+	delete bodiesSquareIndexs;
 }
 
-const QRect& Grid::rectInSquares() {
+const QRectF& Grid::rectInSquares() {
 	if (_rectInSquares.isNull()) {
-		_rectInSquares = QRect(0, 0, this->sizeInSquares().width(), this->sizeInSquares().height());
+		_rectInSquares = QRectF(0, 0, this->sizeInSquares().width(), this->sizeInSquares().height());
 	}
 
 	return _rectInSquares;
 }
 
-const QSize& Grid::sizeInSquares() {
+const QSizeF& Grid::sizeInSquares() {
 	if (_sizeInSquares.isNull()) {
 		// both grid dimensions must be a multiple
 		// of the side of the squares we divide this
 		// grid into
-		_ASSERT(this->sizeInMeters().width() % this->squareSideInMeters() == 0);
-		_ASSERT(this->sizeInMeters().height() % this->squareSideInMeters() == 0);
+		assert (MathUtilities::isEqual(fmod(this->sizeInMeters().width(), this->squareSideInMeters()), 0));
+		assert (MathUtilities::isEqual(fmod(this->sizeInMeters().height(), this->squareSideInMeters()), 0));
 
 		_sizeInSquares = this->transformFromMetersToSquares(this->sizeInMeters());
 	}
@@ -126,34 +132,28 @@ const QSize& Grid::sizeInSquares() {
 
 int Grid::numSquares() {
 	if (_numSquares <= 0) {
-		// both grid dimensions must be a multiple
-		// of the side of the squares we divide this
-		// grid into
-		_ASSERT(this->sizeInMeters().width() % this->squareSideInMeters() == 0);
-		_ASSERT(this->sizeInMeters().height() % this->squareSideInMeters() == 0);
-
 		_numSquares = this->sizeInSquares().height() * this->sizeInSquares().width();
 	}
 	return _numSquares;
 }
 
 // the grid window size
-const QSize& Grid::sizeInMeters() const {
+const QSizeF& Grid::sizeInMeters() const {
 	return _sizeInMeters;
 }
 
-void Grid::sizeInMeters(const QSize& sizeInMeters) {
+void Grid::sizeInMeters(const QSizeF& sizeInMeters) {
 	_sizeInMeters = sizeInMeters;
 	resetSquareCoordinates();
 }
 
 // the side of the square this grid gets
 // divided into, in meters
-int Grid::squareSideInMeters() {
+qreal Grid::squareSideInMeters() {
 	return _squareSideInMeters;
 }
 
-void Grid::squareSideInMeters(int squareSideInMeters) {
+void Grid::squareSideInMeters(qreal squareSideInMeters) {
 	_squareSideInMeters = squareSideInMeters;
 	resetSquareCoordinates();
 }
@@ -161,35 +161,36 @@ void Grid::squareSideInMeters(int squareSideInMeters) {
 void Grid::resetSquareCoordinates() {
 	_sizeInSquares = QSize();
 	_numSquares = 0;
-	_rectInSquares = QRect();
+	_rectInSquares = QRectF();
 }
 
-inline QRect Grid::getBodySquareDimensions(Body const & body) {
+inline QRectF Grid::getBodySquareDimensions(Body const & body) {
 	return this->transformFromMetersToSquares(body.boundingRect);
 }
 
-QRect Grid::getBodySquareDimentionsWithSurroundingSquares(Body const & body) {
+QRectF Grid::getBodySquareDimentionsWithSurroundingSquares(Body const & body) {
 	auto squaresDimensions = getBodySquareDimensions(body);
 	squaresDimensions += QMargins(1, 1, 1, 1);
-	return this->rectInSquares().intersected(squaresDimensions);
+	squaresDimensions &= this->rectInSquares();
+	return squaresDimensions;
 }
 
-QVector<int> Grid::getBodySquareNumbersWithSurroundingSquares(Body const & body) {
+QVector<int> Grid::getBodySquareIndexsWithSurroundingSquares(Body const & body) {
 	auto sourroundingRect = getBodySquareDimentionsWithSurroundingSquares(body);
-	return squareDimensionsSquareNumbers(sourroundingRect);
+	return squareDimensionsSquareIndexs(sourroundingRect);
 }
 
-inline QVector<int> Grid::getBodySquareNumbers(Body const & body) {
-	return this->metersDimensionsSquareNumbers(body.boundingRect);
+inline QVector<int> Grid::getBodySquareIndexs(Body const & body) {
+	return this->metersDimensionsSquareIndexs(body.boundingRect);
 }
 
-inline QVector<int> Grid::metersDimensionsSquareNumbers(QRect const & metersDimensions) {
+inline QVector<int> Grid::metersDimensionsSquareIndexs(QRectF const & metersDimensions) {
 	auto squaresDimensions = this->transformFromMetersToSquares(metersDimensions);
-	return this->squareDimensionsSquareNumbers(squaresDimensions);
+	return this->squareDimensionsSquareIndexs(squaresDimensions);
 }
 
 
-inline QVector<int> Grid::squareDimensionsSquareNumbers(QRect const & squareDimensions) {
+inline QVector<int> Grid::squareDimensionsSquareIndexs(QRectF const & squareDimensions) {
 	int squaresInDimensions = squareDimensions.width() * squareDimensions.height();
 
 	auto indexesArray = QVector<int>(squaresInDimensions);
@@ -212,23 +213,23 @@ inline QVector<int> Grid::squareDimensionsSquareNumbers(QRect const & squareDime
 	return indexesArray;
 }
 
-inline QRect Grid::transformFromMetersToSquares(QRect const & metersRect) {
-	return QRect(transformFromMetersToSquares(metersRect.topLeft()),
+inline QRectF Grid::transformFromMetersToSquares(QRectF const & metersRect) {
+	return QRectF(transformFromMetersToSquares(metersRect.topLeft()),
 		transformFromMetersToSquares(metersRect.bottomRight()));
 }
 
-inline QSize Grid::transformFromMetersToSquares(QSize const & size) {
-	return QSize(this->transformFromMetersToSquares(size.width()),
+inline QSizeF Grid::transformFromMetersToSquares(QSizeF const & size) {
+	return QSizeF(this->transformFromMetersToSquares(size.width()),
 		this->transformFromMetersToSquares(size.height()));
 }
 
-inline QPoint Grid::transformFromMetersToSquares(QPoint const & point) {
+inline QPointF Grid::transformFromMetersToSquares(QPointF const & point) {
 
-	return QPoint(this->transformFromMetersToSquares(point.x()),
+	return QPointF(this->transformFromMetersToSquares(point.x()),
 		this->transformFromMetersToSquares(point.y()));
 }
 
-inline int Grid::transformFromMetersToSquares(int const & meters) {
+inline qreal Grid::transformFromMetersToSquares(qreal const & meters) {
 	if (this->squareSideInMeters() == 0)
 		return 0;
 	return meters / this->squareSideInMeters();
