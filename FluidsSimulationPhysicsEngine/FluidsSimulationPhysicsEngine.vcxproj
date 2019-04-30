@@ -105,6 +105,7 @@
     <ClCompile Include="Bodies\MovingBody.cpp" />
     <ClCompile Include="Bodies\Particle.cpp" />
     <ClCompile Include="Utilities\MathUtilities.cpp" />
+    <ClCompile Include="UnitTests\UnitTestGrid.cpp" />
     <ClCompile Include="Utilities\Memory.cpp" />
     <ClCompile Include="PhysicsEngine.cpp" />
   </ItemGroup>
@@ -117,6 +118,7 @@
     <ClInclude Include="Bodies\MovingBody.h" />
     <ClInclude Include="Bodies\Particle.h" />
     <ClInclude Include="Utilities\MathUtilities.h" />
+    <ClInclude Include="UnitTests\UnitTestGrid.h" />
     <ClInclude Include="Utilities\Memory.h" />
     <ClInclude Include="PhysicsEngine.h" />
     <ClInclude Include="fluidssimulationphysicsengine_global.h" />

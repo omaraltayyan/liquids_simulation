@@ -19,10 +19,10 @@ public:
 	int numSquares();
 
 	// gets the size of this grid in squares
-	const QSizeF& sizeInSquares();
+	const QSize& sizeInSquares();
 
 	// a rectangle representing the grid in squares
-	const QRectF& rectInSquares();
+	const QRect& rectInSquares();
 
 	/*
 	* transforms a given coordinate set from meters to be in
@@ -43,8 +43,8 @@ public:
 	// inside the grid relative to the squares
 	// coordinate system, if the body is out of bounds,
 	// then we return a NULL QRectF
-	QRectF getBodySquareDimensions(Body const & body);
-	QRectF getBodySquareDimentionsWithSurroundingSquares(Body const & body);
+	QRect getBodySquareDimensions(Body const & body);
+	QRect getBodySquareDimentionsWithSurroundingSquares(Body const & body);
 
 	/*
 	*
@@ -59,7 +59,7 @@ public:
 		index of each square these dimensions cover.
 		WARNING: Make sure to delete the array after being done from it.
 	*/
-	QVector<int> Grid::squareDimensionsSquareIndexs(QRectF const & squareDimensions);
+	QVector<int> Grid::squareDimensionsSquareIndexs(QRect const & squareDimensions);
 	QVector<int> Grid::metersDimensionsSquareIndexs(QRectF const & metersDimensions);
 	QVector<int> getBodySquareIndexs(Body const & body);
 	QVector<int> getBodySquareIndexsWithSurroundingSquares(Body const & body);
@@ -72,9 +72,9 @@ private:
 
 	void resetSquareCoordinates();
 
-	QSizeF _sizeInMeters;
-	QSizeF _sizeInSquares;
-	QRectF _rectInSquares;
+	QSizeF _sizeInMeters = QSizeF();
+	QSize _sizeInSquares = QSize();
+	QRect _rectInSquares = QRect();
 	qreal _squareSideInMeters = 0;
 	int _numSquares = 0;
 
