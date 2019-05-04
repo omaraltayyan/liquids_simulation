@@ -30,10 +30,10 @@ void Grid::addBodiesToGrid(const BodiesVector& bodies) {
 
 	auto bodiesSquareIndexs = new QVector<int>[bodies.length()];
 
-	for(int i = 0; i < bodies.length(); i++)
+	for (int i = 0; i < bodies.length(); i++)
 	{
 		auto body = bodies[i];
-		bodiesSquareIndexs[i] = this->metersDimensionsSquareIndexs(body->boundingRect);
+		bodiesSquareIndexs[i] = this->getBodySquareIndexs(*body);
 		for each(int squareIndex in bodiesSquareIndexs[i]) {
 			squaresBodiesCounts[squareIndex]++;
 		}
@@ -75,7 +75,7 @@ void Grid::updateBodiesInGrid() {
 	for (int i = 0; i < allBodies.length(); i++)
 	{
 		auto body = allBodies[i];
-		bodiesSquareIndexs[i] = this->metersDimensionsSquareIndexs(body->boundingRect);
+		bodiesSquareIndexs[i] = this->getBodySquareIndexs(*body);
 		for each(int squareIndex in bodiesSquareIndexs[i]) {
 			squaresBodiesCounts[squareIndex]++;
 		}
@@ -111,8 +111,8 @@ void Grid::updateBodiesInGrid() {
 		squaresBodies[i]->squeeze();
 	}
 
-	delete squaresBodiesCounts;
-	delete bodiesSquareIndexs;
+	delete[] squaresBodiesCounts;
+	delete[] bodiesSquareIndexs;
 }
 
 const QRect& Grid::rectInSquares() {
@@ -128,8 +128,8 @@ const QSize& Grid::sizeInSquares() {
 		// both grid dimensions must be a multiple
 		// of the side of the squares we divide this
 		// grid into
-		assert (MathUtilities::isEqual(fmod(this->sizeInMeters().width(), this->squareSideInMeters()), 0));
-		assert (MathUtilities::isEqual(fmod(this->sizeInMeters().height(), this->squareSideInMeters()), 0));
+		assert(MathUtilities::isEqual(fmod(this->sizeInMeters().width(), this->squareSideInMeters()), 0));
+		assert(MathUtilities::isEqual(fmod(this->sizeInMeters().height(), this->squareSideInMeters()), 0));
 
 		_sizeInSquares = this->transformFromMetersToSquares(this->sizeInMeters()).toSize();
 	}
@@ -205,13 +205,13 @@ inline QVector<int> Grid::squareDimensionsSquareIndexs(QRect const & squareDimen
 	auto bottomPoint = squareDimensions.bottomRight();
 	int squareIndex = 0;
 	if (squaresInDimensions == 1) {
-		indexesArray[0] = topPoint.x() * this->sizeInSquares().width() + topPoint.y();
+		indexesArray[0] = topPoint.x() + topPoint.y() * this->sizeInSquares().width();
 	}
 	if (squaresInDimensions >= 2) {
 		for (int i = topPoint.x(); i <= bottomPoint.x(); i++) {
 			for (int j = topPoint.y(); j <= bottomPoint.y(); j++)
 			{
-				indexesArray[squareIndex] = i * this->sizeInSquares().width() + j;
+				indexesArray[squareIndex] = i + j * this->sizeInSquares().width();
 				squareIndex++;
 			}
 		}
