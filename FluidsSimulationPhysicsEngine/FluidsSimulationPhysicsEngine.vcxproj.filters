@@ -94,6 +94,9 @@
     <ClInclude Include="Utilities\MathUtilities.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="ProjectIncludes.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="fluidssimulationphysicsengine_global.h">
