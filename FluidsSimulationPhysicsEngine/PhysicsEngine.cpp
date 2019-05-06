@@ -65,6 +65,16 @@ void PhysicsEngine::engineUpdateLoop(int threadIndex) {
 
 		this->runUpdateBatch(threadIndex);
 
+		// main thread
+		if (threadIndex == 0) {
+
+			{
+				// wait until all threads besides this one finish processing
+				std::unique_lock<std::mutex> lock(shouldBeProcessingNextUpdateLoopLocker);
+				shouldBeProcessingNextUpdateLoopConditional.wait(lock, [&] {return threadsProcessingCurrentLoop == 1; });
+			}
+			this->applyUpdates();
+		}
 
 		threadsProcessingCurrentLoop--;
 
@@ -80,10 +90,6 @@ void PhysicsEngine::engineUpdateLoop(int threadIndex) {
 			shouldBeProcessingNextUpdateLoopConditional.wait(lock, [&] {return threadsProcessingCurrentLoop == 0; });
 		}
 
-
-		if (threadIndex == 0) {
-			this->applyUpdates();
-		}
 		
 	}
 }
