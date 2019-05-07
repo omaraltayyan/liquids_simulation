@@ -1,11 +1,6 @@
-#include "Bodies\Body.h"
-#include <QRect>
-#include <QVector2D>
-#include <QVector>
 
 #pragma once
-
-typedef QVector<Body*> BodiesVector;
+#include "Bodies\Body.h"
 
 class Grid
 {
@@ -38,6 +33,10 @@ public:
 	qreal squareSideInMeters();
 	void squareSideInMeters(qreal sizeInMeters);
 
+	// get bodies in grid info
+	int bodiesCount();
+	Body& getBodyAtIndex(int index);
+	QVector<BodiesVector*> getBodySourroundingBodiesVectors(int bodyIndex);
 
 	// returns the dimensions of the given body
 	// inside the grid relative to the squares
@@ -69,6 +68,8 @@ public:
 	~Grid();
 
 private:
+	
+	QVector<QVector<int>> bodiesSquareIndexs;
 
 	void resetSquareCoordinates();
 

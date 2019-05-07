@@ -26,7 +26,7 @@ PhysicsEngine::~PhysicsEngine() {
 
 }
 
-PhysicsEngine::PhysicsEngine()
+PhysicsEngine::PhysicsEngine() : bodiesGrid(QSize(24, 18), 3)
 {
 	this->lastMomentProcessingStarted = chrono::high_resolution_clock::now();
 	this->shouldStopEngine = false;
@@ -34,6 +34,7 @@ PhysicsEngine::PhysicsEngine()
 	this->runningThreads = max(1, thread::hardware_concurrency());
 	processingStartSyncronizationBarrier = new ThreadsBarrier(runningThreads);
 	processingEndSyncronizationBarrier = new ThreadsBarrier(runningThreads);
+	processingAfterUpdateSyncronizationBarrier = new ThreadsBarrier(runningThreads);
 
 	this->engineUpdateLoopThreads = new thread*[runningThreads];
 	for (int i = 0; i < runningThreads; i++)
@@ -70,9 +71,8 @@ void PhysicsEngine::engineUpdateLoop(int threadIndex) {
 
 		if (threadIndex == 0) {
 			this->lastMomentProcessingStarted = chrono::high_resolution_clock::now();
+			this->totalBodiesForProcessingLoop = this->bodiesGrid.bodiesCount();
 		}
-
-		this->runUpdateBatch(threadIndex);
 
 		processingStartSyncronizationBarrier->Await();
 
@@ -81,11 +81,19 @@ void PhysicsEngine::engineUpdateLoop(int threadIndex) {
 			break;
 		}
 
+		this->runUpdateBatch(threadIndex);
+
+		processingAfterUpdateSyncronizationBarrier->Await();
+
+		// stop the loop when exiting the thread is required
+		if (shouldStopEngine) {
+			break;
+		}
+
+		this->applyUpdates(threadIndex);
+
 		if (threadIndex == 0) {
-
-			this->applyUpdates();
-
-			// main thread stalls others by not raising it's counter
+			// main thread stalls others by not reaching it's awake
 			// until the time since the last processing start is greater
 			// than or equal to the engine's time delta
 			auto timeSinceLastLoop = chrono::duration_cast<chrono::milliseconds>(chrono::high_resolution_clock::now() - this->lastMomentProcessingStarted).count();
@@ -96,31 +104,41 @@ void PhysicsEngine::engineUpdateLoop(int threadIndex) {
 				OutputDebugStringA(buffer);
 				Sleep(timeBetweenLoops - timeSinceLastLoop);
 			}
-
 		}
+
 		processingEndSyncronizationBarrier->Await();
 
 	}
 }
 
 void PhysicsEngine::runUpdateBatch(int threadIndex) {
-	int sum = 0;
-	for (int i = 0; i < 1000; i++)
-	{
-		sum += i;
-	}
-	char buffer[100];
-	sprintf_s(buffer, "runUpdateBatch: %d thread %d\n", sum, threadIndex);
-	OutputDebugStringA(buffer);
+
+	this->runFunctionOverThreadBodies(threadIndex, [&](Body& body, int index) {
+		auto surroundingBodies = this->bodiesGrid.getBodySourroundingBodiesVectors(index);
+		body.calculateInteractionWithBodies(surroundingBodies);
+	});
 }
 
-void PhysicsEngine::applyUpdates() {
-	int sum = 0;
-	for (int i = 0; i < 1000; i++)
-	{
-		sum += i;
+void PhysicsEngine::applyUpdates(int threadIndex) {
+	this->runFunctionOverThreadBodies(threadIndex, [&](Body& body, int index) {
+		body.applyInteraction();
+	});
+}
+
+template<typename T> void PhysicsEngine::runFunctionOverThreadBodies(int threadIndex, T&& func) {
+	const int bodiesPerThread = this->totalBodiesForProcessingLoop / this->runningThreads;
+
+	int bodiesForCurrentThreadStartIndex = bodiesPerThread * threadIndex;
+
+	int bodiesForCurrentThreadEndIndex = (bodiesPerThread * (threadIndex + 1)) - 1;
+
+	if (threadIndex == this->runningThreads - 1) {
+		bodiesForCurrentThreadEndIndex += this->totalBodiesForProcessingLoop % this->runningThreads;
 	}
-	char buffer[100];
-	sprintf_s(buffer, "applyUpdates: %d\n", sum);
-	OutputDebugStringA(buffer);
+
+	for (int i = bodiesForCurrentThreadStartIndex; i <= bodiesForCurrentThreadEndIndex; i++)
+	{
+		Body& body = this->bodiesGrid.getBodyAtIndex(i);
+		func(body, i);
+	}
 }

@@ -7,13 +7,14 @@ using namespace std;
 
 Grid::Grid(const QSizeF& sizeInMeters, qreal squareSideInMeters)
 {
+	this->bodiesSquareIndexs = QVector<QVector<int>>();
 	this->sizeInMeters(sizeInMeters);
 	this->squareSideInMeters(squareSideInMeters);
 }
 Grid::~Grid()
 {
-	if (squaresBodies.count() > 0) {
-		for (int i = 0; i < squaresBodies.count(); i++)
+	if (squaresBodies.length() > 0) {
+		for (int i = 0; i < squaresBodies.length(); i++)
 		{
 			delete squaresBodies[i];
 		}
@@ -28,18 +29,18 @@ void Grid::addBodiesToGrid(const BodiesVector& bodies) {
 
 	auto squaresBodiesCounts = new int[this->numSquares()]();
 
-	auto bodiesSquareIndexs = new QVector<int>[bodies.length()];
-
-	for (int i = 0; i < bodies.length(); i++)
+	this->bodiesSquareIndexs.reserve(this->bodiesSquareIndexs.length() + bodies.length());
+	
+	for (int i = allBodies.length() - bodies.length(); i < allBodies.length(); i++)
 	{
-		auto body = bodies[i];
+		auto body = allBodies[i];
 		bodiesSquareIndexs[i] = this->getBodySquareIndexs(*body);
 		for each(int squareIndex in bodiesSquareIndexs[i]) {
 			squaresBodiesCounts[squareIndex]++;
 		}
 	}
 
-	if (squaresBodies.count() == 0) {
+	if (squaresBodies.length() == 0) {
 		squaresBodies = QVector<BodiesVector*>(this->numSquares());
 		for (int i = 0; i < this->numSquares(); i++)
 		{
@@ -49,28 +50,26 @@ void Grid::addBodiesToGrid(const BodiesVector& bodies) {
 	else {
 		for (int i = 0; i < this->numSquares(); i++)
 		{
-			squaresBodies[i]->reserve(squaresBodies[i]->size() + squaresBodiesCounts[i]);
+			squaresBodies[i]->reserve(squaresBodies[i]->length() + squaresBodiesCounts[i]);
 		}
 	}
 
-	for (int i = 0; i < bodies.length(); i++)
+	for (int i = allBodies.length() - bodies.length(); i < allBodies.length(); i++)
 	{
-		auto body = bodies[i];
+		auto body = allBodies[i];
 		for each(int squareIndex in bodiesSquareIndexs[i]) {
-			int oldBodiesOffset = squaresBodies[squareIndex]->length() - squaresBodiesCounts[i];
 			squaresBodies[squareIndex]->push_back(body);
 		}
 	}
 
 	delete[] squaresBodiesCounts;
-	delete[] bodiesSquareIndexs;
 }
 
 void Grid::updateBodiesInGrid() {
 
 	auto squaresBodiesCounts = new int[this->numSquares()]();
 
-	auto bodiesSquareIndexs = new QVector<int>[allBodies.length()];
+	this->bodiesSquareIndexs = QVector<QVector<int>>(allBodies.length());
 
 	for (int i = 0; i < allBodies.length(); i++)
 	{
@@ -81,7 +80,7 @@ void Grid::updateBodiesInGrid() {
 		}
 	}
 
-	if (squaresBodies.count() == 0) {
+	if (squaresBodies.length() == 0) {
 		squaresBodies = QVector<BodiesVector*>(this->numSquares());
 		for (int i = 0; i < this->numSquares(); i++)
 		{
@@ -101,7 +100,6 @@ void Grid::updateBodiesInGrid() {
 	{
 		auto body = allBodies[i];
 		for each(int squareIndex in bodiesSquareIndexs[i]) {
-			int oldBodiesOffset = squaresBodies[squareIndex]->length() - squaresBodiesCounts[i];
 			squaresBodies[squareIndex]->push_back(body);
 		}
 	}
@@ -112,8 +110,27 @@ void Grid::updateBodiesInGrid() {
 	}
 
 	delete[] squaresBodiesCounts;
-	delete[] bodiesSquareIndexs;
 }
+
+
+
+int Grid::bodiesCount() {
+	return allBodies.length();
+}
+
+Body& Grid::getBodyAtIndex(int index) {
+	return *(allBodies[index]);
+}
+
+QVector<BodiesVector*> Grid::getBodySourroundingBodiesVectors(int bodyIndex) {
+	auto indexes = bodiesSquareIndexs[bodyIndex];
+	auto squaresVector = QVector<BodiesVector*>(indexes.length());
+	for each(int squareIndex in indexes) {
+		squaresVector.push_back(squaresBodies[squareIndex]);
+	}
+	return squaresVector;
+}
+
 
 const QRect& Grid::rectInSquares() {
 	if (!_rectInSquares.isValid()) {

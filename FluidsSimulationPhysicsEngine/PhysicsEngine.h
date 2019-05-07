@@ -3,6 +3,7 @@
 #include "fluidssimulationphysicsengine_global.h"
 #include "qrect.h"
 #include "ThreadsBarrier.h"
+#include "Grid.h"
 #include <thread>
 #include <atomic>
 #include <mutex>
@@ -24,6 +25,9 @@ class FLUIDSSIMULATIONPHYSICSENGINE_EXPORT PhysicsEngine
 
 	ThreadsBarrier* processingStartSyncronizationBarrier;
 	ThreadsBarrier* processingEndSyncronizationBarrier;
+	ThreadsBarrier* processingAfterUpdateSyncronizationBarrier;
+	
+	int totalBodiesForProcessingLoop;
 
 	void engineUpdateLoop(int threadIndex);
 
@@ -31,9 +35,13 @@ class FLUIDSSIMULATIONPHYSICSENGINE_EXPORT PhysicsEngine
 
 	void runUpdateBatch(int threadIndex);
 	
-	void applyUpdates();
+	void applyUpdates(int threadIndex);
 
 	chrono::steady_clock::time_point lastMomentProcessingStarted;
+
+	Grid bodiesGrid;
+	
+	template<typename T> void runFunctionOverThreadBodies(int threadIndex, T&& func);
 
 public:
 
