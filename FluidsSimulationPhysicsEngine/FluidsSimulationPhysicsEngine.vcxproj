@@ -117,7 +117,7 @@
     <ClInclude Include="Bodies\LiquidParticle.h" />
     <ClInclude Include="Bodies\MovingBody.h" />
     <ClInclude Include="Bodies\Particle.h" />
-    <ClInclude Include="ProjectIncludes.h" />
+    <ClInclude Include="ThreadsBarrier.h" />
     <ClInclude Include="Utilities\MathUtilities.h" />
     <ClInclude Include="UnitTests\UnitTestGrid.h" />
     <ClInclude Include="Utilities\Memory.h" />

@@ -94,7 +94,7 @@
     <ClInclude Include="Utilities\MathUtilities.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="ProjectIncludes.h">
+    <ClInclude Include="ThreadsBarrier.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
