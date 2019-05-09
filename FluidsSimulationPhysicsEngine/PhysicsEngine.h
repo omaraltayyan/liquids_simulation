@@ -13,7 +13,6 @@ class FLUIDSSIMULATIONPHYSICSENGINE_EXPORT PhysicsEngine
 {
 	thread** engineUpdateLoopThreads;
 
-	mutex bodiesAccessLock;
 
 	friend void* engineUpdateLoopThreadFunction(void * engineArg, int threadIndex);
 
@@ -23,13 +22,18 @@ class FLUIDSSIMULATIONPHYSICSENGINE_EXPORT PhysicsEngine
 	condition_variable shouldBeProcessingNextUpdateLoopConditional;
 	mutex shouldBeProcessingNextUpdateLoopLocker;
 
-	ThreadsBarrier* processingStartSyncronizationBarrier;
-	ThreadsBarrier* processingEndSyncronizationBarrier;
-	ThreadsBarrier* processingAfterUpdateSyncronizationBarrier;
-	
+	ThreadsBarrier** synchronizationBarriers;
+
+	const int barriersCount = 5;
+
 	int totalBodiesForProcessingLoop;
 
 	void engineUpdateLoop(int threadIndex);
+
+	atomic<bool> lockGrid;
+
+	mutex bodiesAccessLock;
+	BodiesVector bodiesToAddToGrid;
 
 	int runningThreads;
 
@@ -42,13 +46,16 @@ class FLUIDSSIMULATIONPHYSICSENGINE_EXPORT PhysicsEngine
 	Grid bodiesGrid;
 	
 	template<typename T> void runFunctionOverThreadBodies(int threadIndex, T&& func);
-
+	
+	void performAddCurrentBodiesToGrid();
 public:
 
 	qreal timeDelta = 1.0 / 64.0;
 
 	void resumeEngine();
 	void pauseEngine();
+
+	void addBodiesToGrid(BodiesVector);
 
 	PhysicsEngine();
 	~PhysicsEngine();

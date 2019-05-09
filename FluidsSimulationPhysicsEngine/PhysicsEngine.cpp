@@ -9,8 +9,11 @@ void* engineUpdateLoopThreadFunction(void * engineArg, int threadIndex)
 
 PhysicsEngine::~PhysicsEngine() {
 	this->shouldStopEngine = true;
-	processingStartSyncronizationBarrier->Break();
-	processingEndSyncronizationBarrier->Break();
+	for (int i = 0; i < this->barriersCount; i++)
+	{
+		synchronizationBarriers[i]->Break();
+	}
+
 	for (int i = 0; i < this->runningThreads; i++)
 	{
 		if (this->engineUpdateLoopThreads[i]->joinable())
@@ -21,9 +24,12 @@ PhysicsEngine::~PhysicsEngine() {
 	}
 
 	delete this->engineUpdateLoopThreads;
-	delete processingStartSyncronizationBarrier;
-	delete processingEndSyncronizationBarrier;
 
+	for (int i = 0; i < this->barriersCount; i++)
+	{
+		delete synchronizationBarriers[i];
+	}
+	delete synchronizationBarriers;
 }
 
 PhysicsEngine::PhysicsEngine() : bodiesGrid(QSize(24, 18), 3)
@@ -32,9 +38,13 @@ PhysicsEngine::PhysicsEngine() : bodiesGrid(QSize(24, 18), 3)
 	this->shouldStopEngine = false;
 	this->shouldRunLoop = false;
 	this->runningThreads = max(1, thread::hardware_concurrency());
-	processingStartSyncronizationBarrier = new ThreadsBarrier(runningThreads);
-	processingEndSyncronizationBarrier = new ThreadsBarrier(runningThreads);
-	processingAfterUpdateSyncronizationBarrier = new ThreadsBarrier(runningThreads);
+	this->synchronizationBarriers = new ThreadsBarrier*[this->barriersCount];
+	for (int i = 0; i < this->barriersCount; i++)
+	{
+		synchronizationBarriers[i] = new ThreadsBarrier(runningThreads);
+	}
+
+	lockGrid = false;
 
 	this->engineUpdateLoopThreads = new thread*[runningThreads];
 	for (int i = 0; i < runningThreads; i++)
@@ -55,6 +65,17 @@ void PhysicsEngine::pauseEngine() {
 	shouldBeProcessingNextUpdateLoopConditional.notify_all();
 }
 
+void PhysicsEngine::addBodiesToGrid(BodiesVector bodies)
+{
+	std::lock_guard<std::mutex> lock(bodiesAccessLock);
+	if (lockGrid) {
+		this->bodiesToAddToGrid.append(bodies);
+	}
+	else {
+		this->bodiesGrid.addBodiesToGrid(bodies);
+	}
+}
+
 void PhysicsEngine::engineUpdateLoop(int threadIndex) {
 	while (!shouldStopEngine)
 	{
@@ -69,12 +90,26 @@ void PhysicsEngine::engineUpdateLoop(int threadIndex) {
 			break;
 		}
 
-		if (threadIndex == 0) {
-			this->lastMomentProcessingStarted = chrono::high_resolution_clock::now();
-			this->totalBodiesForProcessingLoop = this->bodiesGrid.bodiesCount();
+		// wait for every thread to come here, if pausing happens, then 
+		// one or more threads will get stuck before reaching this point
+		// enforcing the pause if one of the threads hasn't started yet
+		this->synchronizationBarriers[0]->Await();
+
+		// stop the loop when exiting the thread is required
+		if (shouldStopEngine) {
+			break;
 		}
 
-		processingStartSyncronizationBarrier->Await();
+		if (threadIndex == 0) {
+			performAddCurrentBodiesToGrid();
+			this->lockGrid = true;
+			this->totalBodiesForProcessingLoop = this->bodiesGrid.bodiesCount();
+			this->lastMomentProcessingStarted = chrono::high_resolution_clock::now();
+		}
+
+		// wait for the main thread to finish locking the grid and calculating the 
+		// start time.
+		this->synchronizationBarriers[1]->Await();
 
 		// stop the loop when exiting the thread is required
 		if (shouldStopEngine) {
@@ -83,7 +118,8 @@ void PhysicsEngine::engineUpdateLoop(int threadIndex) {
 
 		this->runUpdateBatch(threadIndex);
 
-		processingAfterUpdateSyncronizationBarrier->Await();
+		// wait for all threads to finish calculating their values
+		this->synchronizationBarriers[2]->Await();
 
 		// stop the loop when exiting the thread is required
 		if (shouldStopEngine) {
@@ -92,7 +128,17 @@ void PhysicsEngine::engineUpdateLoop(int threadIndex) {
 
 		this->applyUpdates(threadIndex);
 
+		// wait for all threads to finish applying updates
+		this->synchronizationBarriers[3]->Await();
+
+		// stop the loop when exiting the thread is required
+		if (shouldStopEngine) {
+			break;
+		}
+
 		if (threadIndex == 0) {
+			performAddCurrentBodiesToGrid();
+			this->lockGrid = false;
 			// main thread stalls others by not reaching it's awake
 			// until the time since the last processing start is greater
 			// than or equal to the engine's time delta
@@ -106,9 +152,23 @@ void PhysicsEngine::engineUpdateLoop(int threadIndex) {
 			}
 		}
 
-		processingEndSyncronizationBarrier->Await();
+		// wait for main thread to finish sleeping extra 
+		// time to avoid processing more than the engine's
+		// time delta
+		this->synchronizationBarriers[4]->Await();
 
+		// stop the loop when exiting the thread is required
+		if (shouldStopEngine) {
+			break;
+		}
 	}
+}
+
+void PhysicsEngine::performAddCurrentBodiesToGrid()
+{
+	std::lock_guard<std::mutex> lock(bodiesAccessLock);
+	this->bodiesGrid.addBodiesToGrid(this->bodiesToAddToGrid);
+	this->bodiesToAddToGrid.clear();
 }
 
 void PhysicsEngine::runUpdateBatch(int threadIndex) {
@@ -117,12 +177,28 @@ void PhysicsEngine::runUpdateBatch(int threadIndex) {
 		auto surroundingBodies = this->bodiesGrid.getBodySourroundingBodiesVectors(index);
 		body.calculateInteractionWithBodies(surroundingBodies);
 	});
+	int x = 0;
+	for (int i = 0; i < 100000; i++)
+	{
+		x += sqrt(3.14 * i);
+	}
+	char buffer[100];
+	sprintf_s(buffer, "runUpdateBatch: %d\n", x);
+	OutputDebugStringA(buffer);
 }
 
 void PhysicsEngine::applyUpdates(int threadIndex) {
 	this->runFunctionOverThreadBodies(threadIndex, [&](Body& body, int index) {
 		body.applyInteraction();
 	});
+	int x = 0;
+	for (int i = 0; i < 10000; i++)
+	{
+		x += sqrt(3.14 * i);
+	}
+	char buffer[100];
+	sprintf_s(buffer, "applyUpdates: %d\n", x);
+	OutputDebugStringA(buffer);
 }
 
 template<typename T> void PhysicsEngine::runFunctionOverThreadBodies(int threadIndex, T&& func) {
