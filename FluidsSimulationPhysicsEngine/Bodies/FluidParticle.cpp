@@ -36,11 +36,5 @@ double FluidParticle::applyKernal(double distance, double radius, SmoothingKerna
 
 }
 
-double FluidParticle::computeDynsity(QVector<BodiesVector*>& neighboringBodies,double radius)
-{
-	return 0.0;
-}
 
-void FluidParticle::updateDynsity()
-{
-}
+
