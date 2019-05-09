@@ -151,16 +151,6 @@ void PhysicsEngine::engineUpdateLoop(int threadIndex) {
 				Sleep(timeBetweenLoops - timeSinceLastLoop);
 			}
 		}
-
-		// wait for main thread to finish sleeping extra 
-		// time to avoid processing more than the engine's
-		// time delta
-		this->synchronizationBarriers[4]->Await();
-
-		// stop the loop when exiting the thread is required
-		if (shouldStopEngine) {
-			break;
-		}
 	}
 }
 

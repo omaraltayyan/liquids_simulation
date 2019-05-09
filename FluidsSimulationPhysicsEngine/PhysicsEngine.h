@@ -24,7 +24,7 @@ class FLUIDSSIMULATIONPHYSICSENGINE_EXPORT PhysicsEngine
 
 	ThreadsBarrier** synchronizationBarriers;
 
-	const int barriersCount = 5;
+	const int barriersCount = 4;
 
 	int totalBodiesForProcessingLoop;
 
