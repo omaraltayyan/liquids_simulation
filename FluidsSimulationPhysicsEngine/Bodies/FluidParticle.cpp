@@ -3,6 +3,10 @@
 
 
 
+FluidParticle::FluidParticle()
+{
+}
+
 FluidParticle::FluidParticle( double viscosity, double mass, float Xposition, float Yposition)
 {	
 	_viscosity = viscosity;
@@ -34,6 +38,30 @@ double FluidParticle::applyKernal(double distance, double radius, SmoothingKerna
 		}		
 	
 
+}
+
+double FluidParticle::computeDynsity(QVector<BodiesVector*> surroundingBodies,double radius)
+{
+	double resultingDynsity = 0.0;
+	for (int i = 0; i < surroundingBodies.length(); i++)
+	{
+		auto bodyVector = surroundingBodies[i];
+		for (int j = 0; j < bodyVector->length(); j++)
+		{
+			auto body = bodyVector->at(j);
+			FluidParticle* particle = dynamic_cast<FluidParticle*>(body);
+			if (particle != NULL)
+			{
+				double distance = this->_position->distanceToPoint(*particle->_position);
+				if (distance < radius)
+				{
+					resultingDynsity += particle->_mass * this->applyKernal(distance, radius, poly6);
+				}
+				
+			}
+		}
+	}
+	return resultingDynsity;
 }
 
 

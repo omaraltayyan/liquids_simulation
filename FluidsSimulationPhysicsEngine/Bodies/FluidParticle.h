@@ -15,6 +15,7 @@ enum SmoothingKernals
 class FluidParticle: public Particle
 {
 public:
+	FluidParticle();
 	FluidParticle(double viscosity,double mass,float Xposition,float Yposition);
 	~FluidParticle();
 private:
@@ -26,6 +27,8 @@ private:
 	QVector2D* _position;
 	QVector2D* _accelration;
 	double applyKernal(double distance, double radius, SmoothingKernals kernal);
+	double computeDynsity(QVector<BodiesVector*> surroundingBodies,double radius);
+	
 	
 	 
 };
