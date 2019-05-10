@@ -28,11 +28,9 @@ double FluidParticle::applyKernal(double distance, double radius, SmoothingKerna
 		case poly6:
 			return (315 / (64*M_PI*qPow(radius,9))) * qPow(((radius*radius) - (distance*distance)),3);			
 		case spiky:
-			return (15 / (M_PI*qPow(radius, 6))) * qPow((radius - distance), 3);
+			return (-45 / (M_PI*qPow(radius, 6))) * qPow((radius - distance), 2);
 		case visc:
-			return (15 / (2 * M_PI*qPow(radius, 3))) *
-				(-(qPow(distance, 3) / (2 * M_PI*qPow(radius, 3))) + 
-				(qPow(distance, 2) / qPow(radius, 2)) + (radius / (2 * distance)) - 1);
+			return (45 / (M_PI*qPow(radius, 6))) * (radius - distance);
 		default:
 			return 0.0;
 		}		
