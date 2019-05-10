@@ -64,5 +64,15 @@ double FluidParticle::computeDynsity(QVector<BodiesVector*> surroundingBodies,do
 	return resultingDynsity;
 }
 
+double FluidParticle::computePressure(double gasConstant, double restDynsity, double dynsity)
+{
+	return gasConstant * (dynsity - restDynsity);
+}
+
+double FluidParticle::computePressureForce(QVector<BodiesVector*> surroundingBodies, double radius)
+{
+	return 0.0;
+}
+
 
 

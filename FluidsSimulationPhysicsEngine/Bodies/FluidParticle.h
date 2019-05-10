@@ -28,6 +28,8 @@ private:
 	QVector2D* _accelration;
 	double applyKernal(double distance, double radius, SmoothingKernals kernal);
 	double computeDynsity(QVector<BodiesVector*> surroundingBodies,double radius);
+	double computePressure(double gasConstant,double restDynsity,double dynsity);
+	double computePressureForce(QVector<BodiesVector*> surroundingBodies, double radius);
 	
 	
 	 
