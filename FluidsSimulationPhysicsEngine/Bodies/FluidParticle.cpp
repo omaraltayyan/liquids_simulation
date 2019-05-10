@@ -12,6 +12,7 @@ FluidParticle::FluidParticle( double viscosity, double mass, float Xposition, fl
 	_viscosity = viscosity;
 	_mass = mass;
 	_position = new QVector2D(Xposition, Yposition);
+	_velocity = new QVector2D(0.0f, 0.0f);
 }
 
 
@@ -90,6 +91,31 @@ double FluidParticle::computePressureForce(QVector<BodiesVector*> surroundingBod
 		}
 	}
 	return -1 * resultingPressureForce;
+}
+
+double FluidParticle::computeViscousForce(QVector<BodiesVector*> surroundingBodies, double radius)
+{
+	double resultingVisousForce = 0.0;
+	for (int i = 0; i < surroundingBodies.length(); i++)
+	{
+		auto bodyVector = surroundingBodies[i];
+		for (int j = 0; j < bodyVector->length(); j++)
+		{
+			auto body = bodyVector->at(j);
+			FluidParticle* particle = dynamic_cast<FluidParticle*>(body);
+			if (particle != NULL)
+			{
+				double distance = this->_position->distanceToPoint(*particle->_position);
+				if (distance < radius)
+				{
+					resultingVisousForce += particle->_mass * ((particle->_velocity - this->_velocity) / 2 * particle->_dynsity)
+						* this->applyKernal(distance, radius, visc);
+				}
+
+			}
+		}
+	}
+	return this->_viscosity * resultingVisousForce;
 }
 
 
