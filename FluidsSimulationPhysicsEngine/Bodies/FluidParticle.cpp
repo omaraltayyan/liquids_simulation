@@ -69,7 +69,27 @@ double FluidParticle::computePressure(double gasConstant, double restDynsity, do
 
 double FluidParticle::computePressureForce(QVector<BodiesVector*> surroundingBodies, double radius)
 {
-	return 0.0;
+	double resultingPressureForce = 0.0;
+	for (int i = 0; i < surroundingBodies.length(); i++)
+	{
+		auto bodyVector = surroundingBodies[i];
+		for (int j = 0; j < bodyVector->length(); j++)
+		{
+			auto body = bodyVector->at(j);
+			FluidParticle* particle = dynamic_cast<FluidParticle*>(body);
+			if (particle != NULL)
+			{
+				double distance = this->_position->distanceToPoint(*particle->_position);
+				if (distance < radius)
+				{
+					resultingPressureForce += particle->_mass * ((this->_pressure+particle->_pressure) / 2 * particle->_dynsity)
+						* this->applyKernal(distance, radius, spiky);
+				}
+
+			}
+		}
+	}
+	return -1 * resultingPressureForce;
 }
 
 
