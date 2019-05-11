@@ -31,6 +31,7 @@ private:
 	double computePressure(double gasConstant,double restDynsity,double dynsity);
 	double computePressureForce(QVector<BodiesVector*> surroundingBodies, double radius);
 	double computeViscousForce(QVector<BodiesVector*> surroundingBodies, double radius);
+	double computeSumOfForces(QVector<BodiesVector*> surroundingBodies, double radius);
 	
 	
 	 
