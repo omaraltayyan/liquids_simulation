@@ -24,9 +24,15 @@ class FLUIDSSIMULATIONPHYSICSENGINE_EXPORT PhysicsEngine
 
 	ThreadsBarrier** synchronizationBarriers;
 
-	const int barriersCount = 4;
+	const int constantBarriersBeforeCalculationsCount = 2;
+
+	const int constantBarriersCount = 3;
+
+	const int calculationOperationsCount = 2;
 
 	int totalBodiesForProcessingLoop;
+
+	int totalBarriers;
 
 	void engineUpdateLoop(int threadIndex);
 
@@ -37,7 +43,7 @@ class FLUIDSSIMULATIONPHYSICSENGINE_EXPORT PhysicsEngine
 
 	int runningThreads;
 
-	void runUpdateBatch(int threadIndex);
+	void runUpdateBatch(int threadIndex, int calculationOperation);
 	
 	void applyUpdates(int threadIndex);
 

@@ -94,9 +94,9 @@ double FluidParticle::computePressureForce(QVector<BodiesVector*> surroundingBod
 	return -1 * resultingPressureForce;
 }
 
-double FluidParticle::computeViscousForce(QVector<BodiesVector*> surroundingBodies, double radius)
+QVector2D FluidParticle::computeViscousForce(QVector<BodiesVector*> surroundingBodies, double radius)
 {
-	double resultingVisousForce = 0.0;
+	QVector2D resultingVisousForce(0,0);
 	for (int i = 0; i < surroundingBodies.length(); i++)
 	{
 		auto bodyVector = surroundingBodies[i];
@@ -108,8 +108,8 @@ double FluidParticle::computeViscousForce(QVector<BodiesVector*> surroundingBodi
 			{
 				double distance = this->_position->distanceToPoint(*particle->_position);
 				if (distance < radius)
-				{						
-					resultingVisousForce += particle->_mass * ((particle->_velocity - this->_velocity) / particle->_dynsity)
+				{
+					resultingVisousForce += particle->_mass * (((*particle->_velocity) - (*this->_velocity)) / particle->_dynsity)
 						* this->applyKernal(distance, radius, visc);
 				}
 

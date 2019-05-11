@@ -9,7 +9,7 @@ void* engineUpdateLoopThreadFunction(void * engineArg, int threadIndex)
 
 PhysicsEngine::~PhysicsEngine() {
 	this->shouldStopEngine = true;
-	for (int i = 0; i < this->barriersCount; i++)
+	for (int i = 0; i < this->totalBarriers; i++)
 	{
 		synchronizationBarriers[i]->Break();
 	}
@@ -25,7 +25,7 @@ PhysicsEngine::~PhysicsEngine() {
 
 	delete this->engineUpdateLoopThreads;
 
-	for (int i = 0; i < this->barriersCount; i++)
+	for (int i = 0; i < this->totalBarriers; i++)
 	{
 		delete synchronizationBarriers[i];
 	}
@@ -38,8 +38,9 @@ PhysicsEngine::PhysicsEngine() : bodiesGrid(QSize(24, 18), 3)
 	this->shouldStopEngine = false;
 	this->shouldRunLoop = false;
 	this->runningThreads = max(1, thread::hardware_concurrency());
-	this->synchronizationBarriers = new ThreadsBarrier*[this->barriersCount];
-	for (int i = 0; i < this->barriersCount; i++)
+	this->totalBarriers = this->constantBarriersCount + this->calculationOperationsCount;
+	this->synchronizationBarriers = new ThreadsBarrier*[this->constantBarriersCount];
+	for (int i = 0; i < this->totalBarriers; i++)
 	{
 		synchronizationBarriers[i] = new ThreadsBarrier(runningThreads);
 	}
@@ -116,14 +117,17 @@ void PhysicsEngine::engineUpdateLoop(int threadIndex) {
 			break;
 		}
 
-		this->runUpdateBatch(threadIndex);
+		for (int calculationOperation = 0; calculationOperation < this->calculationOperationsCount; calculationOperation++)
+		{
+			this->runUpdateBatch(threadIndex, calculationOperation);
 
-		// wait for all threads to finish calculating their values
-		this->synchronizationBarriers[2]->Await();
+			// wait for all threads to finish calculating their values
+			this->synchronizationBarriers[constantBarriersBeforeCalculationsCount + calculationOperation]->Await();
 
-		// stop the loop when exiting the thread is required
-		if (shouldStopEngine) {
-			break;
+			// stop the loop when exiting the thread is required
+			if (shouldStopEngine) {
+				break;
+			}
 		}
 
 		this->applyUpdates(threadIndex);
@@ -161,13 +165,13 @@ void PhysicsEngine::performAddCurrentBodiesToGrid()
 	this->bodiesToAddToGrid.clear();
 }
 
-void PhysicsEngine::runUpdateBatch(int threadIndex) {
+void PhysicsEngine::runUpdateBatch(int threadIndex, int calculationOperation) {
 
 	this->runFunctionOverThreadBodies(threadIndex, [&](Body& body, int index) {
 		auto surroundingBodies = this->bodiesGrid.getBodySourroundingBodiesVectors(index);
-		body.calculateInteractionWithBodies(surroundingBodies);
+		body.calculateInteractionWithBodies(surroundingBodies, calculationOperation);
 	});
-	int x = 0;
+	double x = 0;
 	for (int i = 0; i < 100000; i++)
 	{
 		x += sqrt(3.14 * i);

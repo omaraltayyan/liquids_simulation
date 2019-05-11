@@ -12,11 +12,11 @@ enum SmoothingKernals
 	spiky,
 	visc
 };
-class FluidParticle: public Particle
+class FluidParticle : public Particle
 {
 public:
 	FluidParticle();
-	FluidParticle(double viscosity,double mass,float Xposition,float Yposition);
+	FluidParticle(double viscosity, double mass, float Xposition, float Yposition);
 	~FluidParticle();
 private:
 	double _dynsity;
@@ -27,10 +27,10 @@ private:
 	QVector2D* _position;
 	QVector2D* _accelration;
 	double applyKernal(double distance, double radius, SmoothingKernals kernal);
-	double computeDynsity(QVector<BodiesVector*> surroundingBodies,double radius);
-	double computePressure(double gasConstant,double restDynsity,double dynsity);
+	double computeDynsity(QVector<BodiesVector*> surroundingBodies, double radius);
+	double computePressure(double gasConstant, double restDynsity, double dynsity);
 	double computePressureForce(QVector<BodiesVector*> surroundingBodies, double radius);
-	double computeViscousForce(QVector<BodiesVector*> surroundingBodies, double radius);
+	QVector2D computeViscousForce(QVector<BodiesVector*> surroundingBodies, double radius);
 	double computeSumOfForces(QVector<BodiesVector*> surroundingBodies, double radius);
 	
 	

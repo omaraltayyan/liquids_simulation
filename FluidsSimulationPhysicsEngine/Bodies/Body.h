@@ -13,7 +13,7 @@ public:
 
 	virtual void draw() = 0;
 
-	virtual void calculateInteractionWithBodies(QVector<BodiesVector*> surroundingBodies) {}
+	virtual void calculateInteractionWithBodies(QVector<BodiesVector*> surroundingBodies, int calculationOperation) {}
 	virtual void applyInteraction() {}
 
 	QRectF boundingRect;
