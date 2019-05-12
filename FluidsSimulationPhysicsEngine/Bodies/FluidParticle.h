@@ -29,9 +29,9 @@ private:
 	double applyKernal(double distance, double radius, SmoothingKernals kernal);
 	double computeDynsity(QVector<BodiesVector*> surroundingBodies, double radius);
 	double computePressure(double gasConstant, double restDynsity, double dynsity);
-	double computePressureForce(QVector<BodiesVector*> surroundingBodies, double radius);
+	QVector2D computePressureForce(QVector<BodiesVector*> surroundingBodies, double radius);
 	QVector2D computeViscousForce(QVector<BodiesVector*> surroundingBodies, double radius);
-	double computeSumOfForces(QVector<BodiesVector*> surroundingBodies, double radius);
+	QVector2D computeSumOfForces(QVector<BodiesVector*> surroundingBodies, double radius, double gravityValue);
 	
 	
 	 

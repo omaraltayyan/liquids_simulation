@@ -68,9 +68,9 @@ double FluidParticle::computePressure(double gasConstant, double restDynsity, do
 	return gasConstant * (dynsity - restDynsity);
 }
 
-double FluidParticle::computePressureForce(QVector<BodiesVector*> surroundingBodies, double radius)
+QVector2D FluidParticle::computePressureForce(QVector<BodiesVector*> surroundingBodies, double radius)
 {
-	double resultingPressureForce = 0.0;
+	QVector2D resultingPressureForce(0.0,0.0);
 	for (int i = 0; i < surroundingBodies.length(); i++)
 	{
 		auto bodyVector = surroundingBodies[i];
@@ -80,11 +80,12 @@ double FluidParticle::computePressureForce(QVector<BodiesVector*> surroundingBod
 			FluidParticle* particle = dynamic_cast<FluidParticle*>(body);
 			if (particle != NULL)
 			{
+				auto vec = *particle->_position - *this->_position;
 				double distance = this->_position->distanceToPoint(*particle->_position);
 				
 				if (distance < radius)
 				{
-					resultingPressureForce += particle->_mass * ((this->_pressure+particle->_pressure) / 2 * particle->_dynsity)
+					resultingPressureForce += vec.normalized() * particle->_mass * ((this->_pressure+particle->_pressure) / 2 * particle->_dynsity)
 						* this->applyKernal(distance, radius, spiky);
 				}
 
@@ -105,7 +106,7 @@ QVector2D FluidParticle::computeViscousForce(QVector<BodiesVector*> surroundingB
 			auto body = bodyVector->at(j);
 			FluidParticle* particle = dynamic_cast<FluidParticle*>(body);
 			if (particle != NULL)
-			{
+			{				
 				double distance = this->_position->distanceToPoint(*particle->_position);
 				if (distance < radius)
 				{
@@ -120,9 +121,14 @@ QVector2D FluidParticle::computeViscousForce(QVector<BodiesVector*> surroundingB
 	return this->_viscosity * resultingVisousForce;
 }
 
-double FluidParticle::computeSumOfForces(QVector<BodiesVector*> surroundingBodies, double radius)
-{
-	return 0.0;
+QVector2D FluidParticle::computeSumOfForces(QVector<BodiesVector*> surroundingBodies, double radius,double gravityValue)
+{	
+	QVector2D pressureForce = this->computePressureForce(surroundingBodies, radius);
+	QVector2D viscousForce = this->computeViscousForce(surroundingBodies, radius);
+	QVector2D gravity(0.0, gravityValue);
+	QVector2D gravityForce = gravity * this->_dynsity;
+
+	return pressureForce + viscousForce + gravityForce;
 }
 
 
