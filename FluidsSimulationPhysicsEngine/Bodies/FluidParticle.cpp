@@ -11,8 +11,10 @@ FluidParticle::FluidParticle( double viscosity, double mass, float Xposition, fl
 {	
 	_viscosity = viscosity;
 	_mass = mass;
-	_position = new QVector2D(Xposition, Yposition);
-	_velocity = new QVector2D(0.0f, 0.0f);
+	_position.setX(Xposition); 
+	_position.setY(Yposition);// = new QVector2D(Xposition, Yposition);
+	_velocity.setX(0.0); 
+	_velocity.setY(0.0);
 }
 
 
@@ -50,8 +52,8 @@ double FluidParticle::computeDynsity(QVector<BodiesVector*> surroundingBodies,do
 			auto body = bodyVector->at(j);
 			FluidParticle* particle = dynamic_cast<FluidParticle*>(body);
 			if (particle != NULL)
-			{
-				double distance = this->_position->distanceToPoint(*particle->_position);
+			{				
+				double distance = this->_position.distanceToPoint(particle->_position);
 				if (distance < radius)
 				{
 					resultingDynsity += particle->_mass * this->applyKernal(distance, radius, poly6);
@@ -80,8 +82,8 @@ QVector2D FluidParticle::computePressureForce(QVector<BodiesVector*> surrounding
 			FluidParticle* particle = dynamic_cast<FluidParticle*>(body);
 			if (particle != NULL)
 			{
-				auto vec = *particle->_position - *this->_position;
-				double distance = this->_position->distanceToPoint(*particle->_position);
+				auto vec = particle->_position - this->_position;
+				double distance = this->_position.distanceToPoint(particle->_position);
 				
 				if (distance < radius)
 				{
@@ -107,10 +109,10 @@ QVector2D FluidParticle::computeViscousForce(QVector<BodiesVector*> surroundingB
 			FluidParticle* particle = dynamic_cast<FluidParticle*>(body);
 			if (particle != NULL)
 			{				
-				double distance = this->_position->distanceToPoint(*particle->_position);
+				double distance = this->_position.distanceToPoint(particle->_position);
 				if (distance < radius)
 				{
-					resultingVisousForce += particle->_mass * (((*particle->_velocity) - (*this->_velocity)) / particle->_dynsity)
+					resultingVisousForce += particle->_mass * (((particle->_velocity) - (this->_velocity)) / particle->_dynsity)
 						* this->applyKernal(distance, radius, visc);
 				}
 
@@ -134,7 +136,7 @@ QVector2D FluidParticle::computeSumOfForces(QVector<BodiesVector*> surroundingBo
 QVector2D FluidParticle::computeVelocityChange(double deltaTime, QVector2D sumForces)
 {
 
-	return *this->_velocity + (deltaTime*sumForces/this->_dynsity);
+	return this->_velocity + (deltaTime*sumForces/this->_dynsity);
 }
 
 

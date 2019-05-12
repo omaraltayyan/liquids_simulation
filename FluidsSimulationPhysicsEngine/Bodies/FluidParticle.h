@@ -23,9 +23,9 @@ private:
 	double _viscosity;
 	double _pressure;
 	double _mass;
-	QVector2D* _velocity;
-	QVector2D* _position;
-	QVector2D* _accelration;
+	QVector2D _velocity;
+	QVector2D _position;
+	QVector2D _accelration;
 	double applyKernal(double distance, double radius, SmoothingKernals kernal);
 	double computeDynsity(QVector<BodiesVector*> surroundingBodies, double radius);
 	double computePressure(double gasConstant, double restDynsity, double dynsity);
