@@ -32,6 +32,7 @@ private:
 	QVector2D computePressureForce(QVector<BodiesVector*> surroundingBodies, double radius);
 	QVector2D computeViscousForce(QVector<BodiesVector*> surroundingBodies, double radius);
 	QVector2D computeSumOfForces(QVector<BodiesVector*> surroundingBodies, double radius, double gravityValue);
+	QVector2D computeVelocityChange(double deltaTime,QVector2D sumForces);
 	
 	
 	 

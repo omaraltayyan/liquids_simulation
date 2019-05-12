@@ -131,5 +131,11 @@ QVector2D FluidParticle::computeSumOfForces(QVector<BodiesVector*> surroundingBo
 	return pressureForce + viscousForce + gravityForce;
 }
 
+QVector2D FluidParticle::computeVelocityChange(double deltaTime, QVector2D sumForces)
+{
+
+	return *this->_velocity + (deltaTime*sumForces/this->_dynsity);
+}
+
 
 
