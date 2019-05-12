@@ -133,7 +133,7 @@ void PhysicsEngine::engineUpdateLoop(int threadIndex) {
 		this->applyUpdates(threadIndex);
 
 		// wait for all threads to finish applying updates
-		this->synchronizationBarriers[3]->Await();
+		this->synchronizationBarriers[calculationOperationsCount + constantBarriersBeforeCalculationsCount]->Await();
 
 		// stop the loop when exiting the thread is required
 		if (shouldStopEngine) {
@@ -149,9 +149,7 @@ void PhysicsEngine::engineUpdateLoop(int threadIndex) {
 			auto timeSinceLastLoop = chrono::duration_cast<chrono::milliseconds>(chrono::high_resolution_clock::now() - this->lastMomentProcessingStarted).count();
 			auto timeBetweenLoops = int(this->timeDelta * 1000);
 			if (timeSinceLastLoop < (timeBetweenLoops)) {
-				char buffer[100];
-				sprintf_s(buffer, "sleeping for: %d\n", timeBetweenLoops - timeSinceLastLoop);
-				OutputDebugStringA(buffer);
+				printf("sleeping for: %d\n", timeBetweenLoops - timeSinceLastLoop);
 				Sleep(timeBetweenLoops - timeSinceLastLoop);
 			}
 		}
@@ -174,11 +172,9 @@ void PhysicsEngine::runUpdateBatch(int threadIndex, int calculationOperation) {
 	double x = 0;
 	for (int i = 0; i < 100000; i++)
 	{
-		x += sqrt(3.14 * i);
+		x += sqrt(1.001 * i);
 	}
-	char buffer[100];
-	sprintf_s(buffer, "runUpdateBatch: %d\n", x);
-	OutputDebugStringA(buffer);
+	//printf("runUpdateBatch: %d\n", x);
 }
 
 void PhysicsEngine::applyUpdates(int threadIndex) {
@@ -188,11 +184,9 @@ void PhysicsEngine::applyUpdates(int threadIndex) {
 	int x = 0;
 	for (int i = 0; i < 10000; i++)
 	{
-		x += sqrt(3.14 * i);
+		x += sqrt(1.001 * i);
 	}
-	char buffer[100];
-	sprintf_s(buffer, "applyUpdates: %d\n", x);
-	OutputDebugStringA(buffer);
+	//printf("applyUpdates: %d\n", x);
 }
 
 template<typename T> void PhysicsEngine::runFunctionOverThreadBodies(int threadIndex, T&& func) {

@@ -4,6 +4,8 @@
 #include "PhysicsEngine.h"
 #include <QRectF>
 #include <windows.h>
+#include <iostream>
+#include <stdio.h>
 
 class testBody : public  Body {
 	void draw() {
@@ -21,6 +23,11 @@ UnitTestGrid::~UnitTestGrid()
 }
 
 void UnitTestGrid::run() {
+	AllocConsole();
+	freopen("conin$", "r", stdin);
+	freopen("conout$", "w", stdout);
+	freopen("conout$", "w", stderr);
+
 	//auto grid = Grid(QSize(24, 18), 3);
 	//auto body1 = new testBody();
 	//body1->boundingRect = QRectF(1, 1, 4, 5);
@@ -37,6 +44,6 @@ void UnitTestGrid::run() {
 
 	PhysicsEngine e;
 	e.resumeEngine();
-	OutputDebugStringA("tests valid\n");
+	printf("tests valid\n");
 	Sleep(1000000);
 }
