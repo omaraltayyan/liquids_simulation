@@ -39,7 +39,7 @@ PhysicsEngine::PhysicsEngine() : bodiesGrid(QSize(24, 18), 3)
 	this->shouldRunLoop = false;
 	this->runningThreads = max(1, thread::hardware_concurrency());
 	this->totalBarriers = this->constantBarriersCount + this->calculationOperationsCount;
-	this->synchronizationBarriers = new ThreadsBarrier*[this->constantBarriersCount];
+	this->synchronizationBarriers = new ThreadsBarrier*[this->totalBarriers];
 	for (int i = 0; i < this->totalBarriers; i++)
 	{
 		synchronizationBarriers[i] = new ThreadsBarrier(runningThreads);
@@ -130,6 +130,10 @@ void PhysicsEngine::engineUpdateLoop(int threadIndex) {
 			}
 		}
 
+		if (shouldStopEngine) {
+			break;
+		}
+
 		this->applyUpdates(threadIndex);
 
 		// wait for all threads to finish applying updates
@@ -149,7 +153,7 @@ void PhysicsEngine::engineUpdateLoop(int threadIndex) {
 			auto timeSinceLastLoop = chrono::duration_cast<chrono::milliseconds>(chrono::high_resolution_clock::now() - this->lastMomentProcessingStarted).count();
 			auto timeBetweenLoops = int(this->timeDelta * 1000);
 			if (timeSinceLastLoop < (timeBetweenLoops)) {
-				printf("sleeping for: %d\n", timeBetweenLoops - timeSinceLastLoop);
+				printf("sleeping for: %lld\n", timeBetweenLoops - timeSinceLastLoop);
 				Sleep(timeBetweenLoops - timeSinceLastLoop);
 			}
 		}
