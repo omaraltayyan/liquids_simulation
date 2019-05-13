@@ -32,6 +32,11 @@ PhysicsEngine::~PhysicsEngine() {
 	delete synchronizationBarriers;
 }
 
+Grid & PhysicsEngine::getUnsafeBodiesGrid()
+{
+	return this->bodiesGrid;
+}
+
 PhysicsEngine::PhysicsEngine() : bodiesGrid(QSize(24, 18), 3)
 {
 	this->lastMomentProcessingStarted = chrono::high_resolution_clock::now();
@@ -54,6 +59,11 @@ PhysicsEngine::PhysicsEngine() : bodiesGrid(QSize(24, 18), 3)
 	}
 }
 
+PhysicsEngine * PhysicsEngine::shared()
+{
+	return PhysicsEngine::sharedEngine;
+}
+
 void PhysicsEngine::resumeEngine() {
 	this->shouldRunLoop = true;
 	std::lock_guard<std::mutex> lock(shouldBeProcessingNextUpdateLoopLocker);
@@ -64,6 +74,15 @@ void PhysicsEngine::pauseEngine() {
 	this->shouldRunLoop = false;
 	std::lock_guard<std::mutex> lock(shouldBeProcessingNextUpdateLoopLocker);
 	shouldBeProcessingNextUpdateLoopConditional.notify_all();
+}
+
+template<typename T> void PhysicsEngine::runFunctionOverBodies(T&& func) {
+
+	std::lock_guard<std::mutex> lock(bodiesAccessLock);
+	for each (auto body in this->bodiesGrid.allBodies)
+	{
+		func(body);
+	}
 }
 
 void PhysicsEngine::addBodiesToGrid(BodiesVector bodies)
@@ -163,6 +182,9 @@ void PhysicsEngine::engineUpdateLoop(int threadIndex) {
 void PhysicsEngine::performAddCurrentBodiesToGrid()
 {
 	std::lock_guard<std::mutex> lock(bodiesAccessLock);
+	if (this->bodiesToAddToGrid.length() == 0) {
+		return;
+	}
 	this->bodiesGrid.addBodiesToGrid(this->bodiesToAddToGrid);
 	this->bodiesToAddToGrid.clear();
 }
@@ -178,19 +200,24 @@ void PhysicsEngine::runUpdateBatch(int threadIndex, int calculationOperation) {
 	{
 		x += sqrt(1.001 * i);
 	}
-	//printf("runUpdateBatch: %d\n", x);
+	if (threadIndex == 0) {
+		printf("%f\n", x);
+	}
 }
 
 void PhysicsEngine::applyUpdates(int threadIndex) {
 	this->runFunctionOverThreadBodies(threadIndex, [&](Body& body, int index) {
 		body.applyInteraction();
 	});
-	int x = 0;
-	for (int i = 0; i < 10000; i++)
+	double x = 0;
+	for (int i = 0; i < 100000; i++)
 	{
 		x += sqrt(1.001 * i);
 	}
-	//printf("applyUpdates: %d\n", x);
+
+	if (threadIndex == 0) {
+		printf("%f\n", x);
+	}
 }
 
 template<typename T> void PhysicsEngine::runFunctionOverThreadBodies(int threadIndex, T&& func) {
@@ -210,3 +237,5 @@ template<typename T> void PhysicsEngine::runFunctionOverThreadBodies(int threadI
 		func(body, i);
 	}
 }
+
+PhysicsEngine* PhysicsEngine::sharedEngine = new PhysicsEngine();

@@ -31,7 +31,7 @@ public:
 	// the side of the square this grid gets
 	// divided into, in meters
 	qreal squareSideInMeters();
-	void squareSideInMeters(qreal sizeInMeters);
+	void setSquareSideInMeters(qreal sizeInMeters);
 
 	// get bodies in grid info
 	int bodiesCount();

@@ -9,7 +9,7 @@ Grid::Grid(const QSizeF& sizeInMeters, qreal squareSideInMeters)
 {
 	this->bodiesSquareIndexs = QVector<QVector<int>>();
 	this->sizeInMeters(sizeInMeters);
-	this->squareSideInMeters(squareSideInMeters);
+	this->setSquareSideInMeters(squareSideInMeters);
 }
 Grid::~Grid()
 {
@@ -24,6 +24,11 @@ Grid::~Grid()
 }
 
 void Grid::addBodiesToGrid(const BodiesVector& bodies) {
+
+	if (bodies.length() == 0)
+	{
+		return;
+	}
 
 	allBodies.append(bodies);
 
@@ -176,7 +181,7 @@ qreal Grid::squareSideInMeters() {
 	return _squareSideInMeters;
 }
 
-void Grid::squareSideInMeters(qreal squareSideInMeters) {
+void Grid::setSquareSideInMeters(qreal squareSideInMeters) {
 	_squareSideInMeters = squareSideInMeters;
 	resetSquareCoordinates();
 }

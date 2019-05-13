@@ -54,7 +54,12 @@ class FLUIDSSIMULATIONPHYSICSENGINE_EXPORT PhysicsEngine
 	template<typename T> void runFunctionOverThreadBodies(int threadIndex, T&& func);
 	
 	void performAddCurrentBodiesToGrid();
+
+	static PhysicsEngine* sharedEngine;
+
 public:
+
+	static PhysicsEngine* shared();
 
 	qreal timeDelta = 1.0 / 64.0;
 
@@ -62,6 +67,13 @@ public:
 	void pauseEngine();
 
 	void addBodiesToGrid(BodiesVector);
+
+	template<typename T> void runFunctionOverBodies(T&& func);
+
+	// WARNING: not thread safe, don't access the bodies or 
+	// add bodies them to the grid, use addBodiesToGrid 
+	// and runFunctionOverBodies respectively instead
+	Grid& getUnsafeBodiesGrid();
 
 	PhysicsEngine();
 	~PhysicsEngine();

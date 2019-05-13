@@ -42,8 +42,19 @@ void UnitTestGrid::run() {
 	//printf("tests valid");
 
 
-	PhysicsEngine e;
-	e.resumeEngine();
+	auto e = PhysicsEngine::shared();
+	e->resumeEngine();
+	Sleep(5000);
+	e->pauseEngine();
+	printf("paused\n");
+	Sleep(5000);
+	e->resumeEngine();
+	Sleep(5000);
+	e->pauseEngine();
+	printf("paused\n");
+	Sleep(5000);
+	e->resumeEngine();
+
 	printf("tests valid\n");
 	Sleep(1000000);
 }
