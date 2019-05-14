@@ -138,6 +138,35 @@ QVector2D FluidParticle::computeVelocityChange(double deltaTime, QVector2D sumFo
 
 	return this->_velocity + (deltaTime*sumForces/this->_dynsity);
 }
+/*
+important note about threading:
+	first dynsity should computed for all particles
+	second pressure should be computed for all particles
+	then the rest can work simultinously
+*/
+void FluidParticle::calculateInteractionWithBodies(QVector<BodiesVector*> surroundingBodies, int calculationOperation)
+{
+	// note that dynsity and pressure needs to be computed here
+	// because their values are important in the other methods
+	auto engine = PhysicsEngine::shared();
+	double radius = engine->getUnsafeBodiesGrid().squareSideInMeters();
+	this->_dynsity = this->computeDynsity(surroundingBodies,radius );
+
+	//here gas constant and rest dynsity should variables taken from user input
+	this->_pressure = this->computePressure(2000, 1000, this->_dynsity);
+
+	//here gravity should also be taken from user input
+	double gravity = 12000 * -9.8;
+	this->_force = this->computeSumOfForces(surroundingBodies, radius, gravity);
+	this->_velocity = this->computeVelocityChange(engine->timeDelta,this->_force);
+}
+
+void FluidParticle::applyInteraction()
+{
+	auto engine = PhysicsEngine::shared();
+	this->_position = engine->timeDelta * this->_velocity;
+
+}
 
 
 
