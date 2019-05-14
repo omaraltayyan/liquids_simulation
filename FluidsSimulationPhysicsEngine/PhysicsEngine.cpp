@@ -219,29 +219,12 @@ void PhysicsEngine::runUpdateBatch(int threadIndex, int calculationOperation) {
 		auto surroundingBodies = this->bodiesGrid.getBodySourroundingBodiesVectors(index);
 		body.calculateInteractionWithBodies(surroundingBodies, calculationOperation);
 	});
-	double x = 0;
-	for (int i = 0; i < 100000; i++)
-	{
-		x += sqrt(1.001 * i);
-	}
-	if (threadIndex == 0) {
-		printf("%f\n", x);
-	}
 }
 
 void PhysicsEngine::applyUpdates(int threadIndex) {
 	this->runFunctionOverThreadBodies(threadIndex, [&](Body& body, int index) {
 		body.applyInteraction();
 	});
-	double x = 0;
-	for (int i = 0; i < 100000; i++)
-	{
-		x += sqrt(1.001 * i);
-	}
-
-	if (threadIndex == 0) {
-		printf("%f\n", x);
-	}
 }
 
 template<typename T> void PhysicsEngine::runFunctionOverThreadBodies(int threadIndex, T&& func) {

@@ -43,9 +43,9 @@ void Grid::addBodiesToGrid(const BodiesVector& bodies) {
 	for (int i = allBodies.length() - bodies.length(); i < allBodies.length(); i++)
 	{
 		auto body = allBodies[i];
-		bodiesSquareIndexs[i] = this->getBodySquareIndexs(*body);
-		for each(int squareIndex in bodiesSquareIndexs[i]) {
-			squaresBodiesCounts[squareIndex]++;
+		bodiesSquareIndexs.push_back(this->getBodySquareIndexs(*body));
+		for each(int squareIndex in bodiesSquareIndexs.at(i)) {
+				squaresBodiesCounts[squareIndex]++;
 		}
 	}
 
@@ -84,13 +84,13 @@ void Grid::updateBodiesInGrid() {
 	{
 		auto body = allBodies[i];
 		bodiesSquareIndexs[i] = this->getBodySquareIndexs(*body);
-		for each(int squareIndex in bodiesSquareIndexs[i]) {
+		for each(int squareIndex in bodiesSquareIndexs.at(i)) {
 			squaresBodiesCounts[squareIndex]++;
 		}
 	}
 
 	if (squaresBodies.length() == 0) {
-		squaresBodies = QVector<BodiesVector*>(this->numSquares());
+		squaresBodies = QVector<BodiesVector*>();
 		for (int i = 0; i < this->numSquares(); i++)
 		{
 			squaresBodies[i] = new BodiesVector(squaresBodiesCounts[i]);
@@ -109,7 +109,8 @@ void Grid::updateBodiesInGrid() {
 	{
 		auto body = allBodies[i];
 		for each(int squareIndex in bodiesSquareIndexs[i]) {
-			squaresBodies[squareIndex]->push_back(body);
+				squaresBodies[squareIndex]->push_back(body);
+			
 		}
 	}
 
@@ -224,21 +225,26 @@ inline QVector<int> Grid::metersDimensionsSquareIndexs(QRectF const & metersDime
 
 inline QVector<int> Grid::squareDimensionsSquareIndexs(QRect const & squareDimensions) {
 	int squaresInDimensions = squareDimensions.width() * squareDimensions.height();
+	auto numberOfSquares = this->numSquares();
 
-	auto indexesArray = QVector<int>(squaresInDimensions);
-
+	auto indexesArray = QVector<int>();
+	indexesArray.reserve(squaresInDimensions);
 	auto topPoint = squareDimensions.topLeft();
 	auto bottomPoint = squareDimensions.bottomRight();
-	int squareIndex = 0;
 	if (squaresInDimensions == 1) {
-		indexesArray[0] = topPoint.x() + topPoint.y() * this->sizeInSquares().width();
+		int squareIndex = topPoint.x() + topPoint.y() * this->sizeInSquares().width();
+		if (squareIndex >= 0 && squareIndex < numberOfSquares) {
+			indexesArray.push_back(squareIndex);
+		}
 	}
 	if (squaresInDimensions >= 2) {
 		for (int i = topPoint.x(); i <= bottomPoint.x(); i++) {
 			for (int j = topPoint.y(); j <= bottomPoint.y(); j++)
 			{
-				indexesArray[squareIndex] = i + j * this->sizeInSquares().width();
-				squareIndex++;
+				int squareIndex = i + j * this->sizeInSquares().width();
+				if (squareIndex >= 0 && squareIndex < numberOfSquares) {
+					indexesArray.push_back(squareIndex);
+				}
 			}
 		}
 	}

@@ -4,8 +4,9 @@
 
 int main(int argc, char *argv[])
 {
-	auto grid = UnitTestGrid();
-	grid.run();
+	auto grid = new UnitTestGrid();
+	grid->run();
+	delete grid;
 	/*
 	QApplication a(argc, argv);
 	MainWindow w;

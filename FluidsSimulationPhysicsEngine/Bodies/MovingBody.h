@@ -4,9 +4,6 @@ class MovingBody :
 	public Body
 {
 public:
-
-	virtual void manageCollision(Body* other) = 0;
-
 	MovingBody(QRectF _boundingRect);
 };
 
