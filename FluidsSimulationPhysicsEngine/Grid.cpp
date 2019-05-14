@@ -134,7 +134,8 @@ Body& Grid::getBodyAtIndex(int index) {
 
 QVector<BodiesVector*> Grid::getBodySourroundingBodiesVectors(int bodyIndex) {
 	auto indexes = bodiesSquareIndexs[bodyIndex];
-	auto squaresVector = QVector<BodiesVector*>(indexes.length());
+	auto squaresVector = QVector<BodiesVector*>();
+	squaresVector.reserve(indexes.length());
 	for each(int squareIndex in indexes) {
 		squaresVector.push_back(squaresBodies[squareIndex]);
 	}

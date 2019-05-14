@@ -23,8 +23,8 @@ void UnitTestGrid::addRandomBodies() {
 	auto e = PhysicsEngine::shared();
 	auto gridSize = e->getUnsafeBodiesGrid().sizeInMeters();
 
-	std::normal_distribution<> XPositionDistribution(0, gridSize.width());
-	std::normal_distribution<> YPositionDistribution(0, gridSize.height());
+	std::normal_distribution<> XPositionDistribution(gridSize.width() / 2, 2);
+	std::normal_distribution<> YPositionDistribution(gridSize.height() / 2, 2);
 
 	BodiesVector bodies;
 	bodies.reserve(5000);
