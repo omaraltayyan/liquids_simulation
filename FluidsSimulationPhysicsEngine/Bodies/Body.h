@@ -10,8 +10,9 @@ typedef QVector<Body*> BodiesVector;
 class Body
 {
 public:
+	virtual Body* drawableClone() const = 0;
 
-	virtual void draw() = 0;
+	virtual void draw() const = 0;
 
 	virtual void calculateInteractionWithBodies(QVector<BodiesVector*> surroundingBodies, int calculationOperation) {}
 	virtual void applyInteraction() {}

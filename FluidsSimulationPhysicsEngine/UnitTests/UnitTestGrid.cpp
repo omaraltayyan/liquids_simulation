@@ -8,7 +8,7 @@
 #include <stdio.h>
 
 class testBody : public  Body {
-	void draw() {
+	 void draw() const {
 
 	}
 };

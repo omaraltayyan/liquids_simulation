@@ -34,6 +34,7 @@ public:
 	void setSquareSideInMeters(qreal sizeInMeters);
 
 	// get bodies in grid info
+	BodiesVector getAllBodies();
 	int bodiesCount();
 	Body& getBodyAtIndex(int index);
 	QVector<BodiesVector*> getBodySourroundingBodiesVectors(int bodyIndex);

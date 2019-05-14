@@ -68,11 +68,11 @@ public:
 
 	void addBodiesToGrid(BodiesVector);
 
-	template<typename T> void runFunctionOverBodies(T&& func);
+	template<typename T> void runFunctionOverDrawableBodies(T&& func);
 
 	// WARNING: not thread safe, don't access the bodies or 
-	// add bodies them to the grid, use addBodiesToGrid 
-	// and runFunctionOverBodies respectively instead
+	// add bodies them to the grid, use runFunctionOverDrawableBodies
+	// and addBodiesToGrid respectively instead
 	Grid& getUnsafeBodiesGrid();
 
 	PhysicsEngine();

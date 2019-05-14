@@ -76,12 +76,20 @@ void PhysicsEngine::pauseEngine() {
 	shouldBeProcessingNextUpdateLoopConditional.notify_all();
 }
 
-template<typename T> void PhysicsEngine::runFunctionOverBodies(T&& func) {
-
-	std::lock_guard<std::mutex> lock(bodiesAccessLock);
-	for each (auto body in this->bodiesGrid.allBodies)
+template<typename T> void PhysicsEngine::runFunctionOverDrawableBodies(T&& func) {
+	BodiesVector bodiesCopy;
 	{
-		func(body);
+		std::lock_guard<std::mutex> lock(bodiesAccessLock);
+		auto bodies = this->bodiesGrid.getAllBodies();
+		bodiesCopy = BodiesVector(bodies.length());
+		for (int i = 0; i < bodies.length(); i++)
+		{
+			bodiesCopy[i] = bodies.at(i)->drawableClone();
+		}
+	}
+	for (int i = 0; i < bodiesCopy.length(); i++)
+	{
+		func(bodiesCopy.at(i));
 	}
 }
 
@@ -140,23 +148,35 @@ void PhysicsEngine::engineUpdateLoop(int threadIndex) {
 		{
 			this->runUpdateBatch(threadIndex, calculationOperation);
 
+			if (threadIndex == 0 && calculationOperation == this->calculationOperationsCount - 1) {
+				bodiesAccessLock.lock();
+			}
 			// wait for all threads to finish calculating their values
 			this->synchronizationBarriers[constantBarriersBeforeCalculationsCount + calculationOperation]->Await();
 
 			// stop the loop when exiting the thread is required
 			if (shouldStopEngine) {
+				if (threadIndex == 0 && calculationOperation == this->calculationOperationsCount - 1) {
+					bodiesAccessLock.unlock();
+				}
 				break;
 			}
 		}
 
 		if (shouldStopEngine) {
+			if (threadIndex == 0) {
+				bodiesAccessLock.unlock();
+			}
 			break;
 		}
-
 		this->applyUpdates(threadIndex);
 
 		// wait for all threads to finish applying updates
 		this->synchronizationBarriers[calculationOperationsCount + constantBarriersBeforeCalculationsCount]->Await();
+
+		if (threadIndex == 0) {
+			bodiesAccessLock.unlock();
+		}
 
 		// stop the loop when exiting the thread is required
 		if (shouldStopEngine) {
@@ -165,6 +185,7 @@ void PhysicsEngine::engineUpdateLoop(int threadIndex) {
 
 		if (threadIndex == 0) {
 			performAddCurrentBodiesToGrid();
+			this->bodiesGrid.updateBodiesInGrid();
 			this->lockGrid = false;
 			// main thread stalls others by not reaching it's awake
 			// until the time since the last processing start is greater

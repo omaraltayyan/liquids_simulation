@@ -23,6 +23,10 @@ Grid::~Grid()
 
 }
 
+BodiesVector Grid::getAllBodies() {
+	return allBodies;
+}
+
 void Grid::addBodiesToGrid(const BodiesVector& bodies) {
 
 	if (bodies.length() == 0)
