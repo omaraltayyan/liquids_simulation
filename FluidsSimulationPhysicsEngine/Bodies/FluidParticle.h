@@ -4,7 +4,7 @@
 #include <QVector2D>
 #include <qmath.h>
 #include "Grid.h"
-
+#include "PhysicsEngine.h"
 
 enum SmoothingKernals
 {
@@ -27,5 +27,10 @@ private:
 	QVector2D computeViscousForce(QVector<BodiesVector*> surroundingBodies, double radius);
 	QVector2D computeSumOfForces(QVector<BodiesVector*> surroundingBodies, double radius, double gravityValue);
 	QVector2D computeVelocityChange(double deltaTime,QVector2D sumForces);
+
+	void calculateInteractionWithBodies(QVector<BodiesVector*> surroundingBodies, int calculationOperation);
+	void applyInteraction();
+	
+	 
 };
 
