@@ -80,5 +80,8 @@ void UnitTestGrid::run() {
 	addRandomBodies();
 
 	printf("tests valid\n");
+	printf("bodies: %d", e->getDrawableBodiesCopy()->length());
+	Sleep(5000);
+
 	Sleep(1000000);
 }
