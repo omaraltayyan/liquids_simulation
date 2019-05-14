@@ -136,16 +136,21 @@ void FluidParticle::calculateInteractionWithBodies(QVector<BodiesVector*> surrou
 	// note that dynsity and pressure needs to be computed here
 	// because their values are important in the other methods
 	auto engine = PhysicsEngine::shared();
-	double radius = engine->getUnsafeBodiesGrid().squareSideInMeters();
-	this->_dynsity = this->computeDynsity(surroundingBodies,radius );
+	double radius = engine->getUnsafeBodiesGrid().squareSideInCentimeters();
+	if (calculationOperation == 0) {
+		this->_dynsity = this->computeDynsity(surroundingBodies, radius);
+	}
+	else if (calculationOperation == 1) {
+		//here gas constant and rest dynsity should variables taken from user input
+		this->_pressure = this->computePressure(2000, 1000, this->_dynsity);
+	}
+	else {
+		//here gravity should also be taken from user input
+		double gravity = 100 * -9.8;
+		this->_force = this->computeSumOfForces(surroundingBodies, radius, gravity);
+		this->_velocity = this->computeVelocityChange(engine->timeDelta, this->_force);
+	}
 
-	//here gas constant and rest dynsity should variables taken from user input
-	this->_pressure = this->computePressure(2000, 1000, this->_dynsity);
-
-	//here gravity should also be taken from user input
-	double gravity = 12000 * -9.8;
-	this->_force = this->computeSumOfForces(surroundingBodies, radius, gravity);
-	this->_velocity = this->computeVelocityChange(engine->timeDelta,this->_force);
 }
 
 void FluidParticle::applyInteraction()

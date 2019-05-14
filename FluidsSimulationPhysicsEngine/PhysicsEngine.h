@@ -28,7 +28,7 @@ class FLUIDSSIMULATIONPHYSICSENGINE_EXPORT PhysicsEngine
 
 	const int constantBarriersCount = 3;
 
-	const int calculationOperationsCount = 2;
+	const int calculationOperationsCount = 3;
 
 	int totalBodiesForProcessingLoop;
 

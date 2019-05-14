@@ -7,8 +7,8 @@ class Grid
 
 public:
 	// the grid window size
-	const QSizeF& sizeInMeters() const;
-	void sizeInMeters(const QSizeF& sizeInMeters);
+	const QSizeF& sizeInCentimeters() const;
+	void sizeInCentimeters(const QSizeF& sizeInCentimeters);
 
 	// number of squares this grid
 	int numSquares();
@@ -20,18 +20,18 @@ public:
 	const QRect& rectInSquares();
 
 	/*
-	* transforms a given coordinate set from meters to be in
+	* transforms a given coordinate set from centimeters to be in
 	* squares
 	*/
-	QRectF transformFromMetersToSquares(QRectF const & metersRect);
-	qreal transformFromMetersToSquares(qreal const & meters);
-	QPointF transformFromMetersToSquares(QPointF const & metersRect);
-	QSizeF transformFromMetersToSquares(QSizeF const & metersRect);
+	QRectF transformFromCentimetersToSquares(QRectF const & centimetersRect);
+	qreal transformFromCentimetersToSquares(qreal const & centimeters);
+	QPointF transformFromCentimetersToSquares(QPointF const & centimetersRect);
+	QSizeF transformFromCentimetersToSquares(QSizeF const & centimetersRect);
 
 	// the side of the square this grid gets
-	// divided into, in meters
-	qreal squareSideInMeters();
-	void setSquareSideInMeters(qreal sizeInMeters);
+	// divided into, in centimeters
+	qreal squareSideInCentimeters();
+	void setSquareSideInCentimeters(qreal sizeInCentimeters);
 
 	// get bodies in grid info
 	BodiesVector getAllBodies();
@@ -60,12 +60,12 @@ public:
 		WARNING: Make sure to delete the array after being done from it.
 	*/
 	QVector<int> Grid::squareDimensionsSquareIndexs(QRect const & squareDimensions);
-	QVector<int> Grid::metersDimensionsSquareIndexs(QRectF const & metersDimensions);
+	QVector<int> Grid::centimetersDimensionsSquareIndexs(QRectF const & centimetersDimensions);
 	QVector<int> getBodySquareIndexs(Body const & body);
 	QVector<int> getBodySquareIndexsWithSurroundingSquares(Body const & body);
 
 
-	Grid(const QSizeF& sizeInMeters, qreal squareSideInMeters);
+	Grid(const QSizeF& sizeInCentimeters, qreal squareSideInCentimeters);
 	~Grid();
 
 private:
@@ -74,10 +74,10 @@ private:
 
 	void resetSquareCoordinates();
 
-	QSizeF _sizeInMeters = QSizeF();
+	QSizeF _sizeInCentimeters = QSizeF();
 	QSize _sizeInSquares = QSize();
 	QRect _rectInSquares = QRect();
-	qreal _squareSideInMeters = 0;
+	qreal _squareSideInCentimeters = 0;
 	int _numSquares = 0;
 
 	QVector<BodiesVector*> squaresBodies;

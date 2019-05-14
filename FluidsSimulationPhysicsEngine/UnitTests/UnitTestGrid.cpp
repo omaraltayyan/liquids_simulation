@@ -21,17 +21,17 @@ UnitTestGrid::~UnitTestGrid()
 void UnitTestGrid::addRandomBodies() {
 
 	auto e = PhysicsEngine::shared();
-	auto gridSize = e->getUnsafeBodiesGrid().sizeInMeters();
+	auto gridSize = e->getUnsafeBodiesGrid().sizeInCentimeters();
 
-	std::normal_distribution<> XPositionDistribution(gridSize.width() / 2, 2);
-	std::normal_distribution<> YPositionDistribution(gridSize.height() / 2, 2);
+	std::uniform_real_distribution<> XPositionDistribution(0, gridSize.width());
+	std::uniform_real_distribution<> YPositionDistribution(0, gridSize.height());
 
 	BodiesVector bodies;
 	bodies.reserve(5000);
 	for (int i = 0; i < 5000; i++)
 	{
 		auto position = QPointF(XPositionDistribution(randomEngine), YPositionDistribution(randomEngine));
-		auto body = new FluidParticle(position, 0.2, 0.2, 0.2);
+		auto body = new FluidParticle(position, 0.2, 250, 65);
 		bodies.push_back(body);
 	}
 	e->addBodiesToGrid(bodies);
@@ -63,7 +63,7 @@ void UnitTestGrid::run() {
 	addRandomBodies();
 
 	printf("paused\n");
-	Sleep(5000);
+	Sleep(1000);
 	e->resumeEngine();
 
 	addRandomBodies();
@@ -74,7 +74,7 @@ void UnitTestGrid::run() {
 	printf("paused\n");
 	addRandomBodies();
 
-	Sleep(5000);
+	Sleep(1000);
 	e->resumeEngine();
 
 	addRandomBodies();

@@ -37,7 +37,7 @@ Grid & PhysicsEngine::getUnsafeBodiesGrid()
 	return this->bodiesGrid;
 }
 
-PhysicsEngine::PhysicsEngine() : bodiesGrid(QSize(24, 18), 3)
+PhysicsEngine::PhysicsEngine() : bodiesGrid(QSize(130, 100), 2.5)
 {
 	this->lastMomentProcessingStarted = chrono::high_resolution_clock::now();
 	this->shouldStopEngine = false;
@@ -186,6 +186,9 @@ void PhysicsEngine::engineUpdateLoop(int threadIndex) {
 		}
 
 		if (threadIndex == 0) {
+			this->bodiesGrid.updateBodiesInGrid();
+			printf("bodies: %d\n", this->bodiesGrid.getAllBodies().length());
+
 			performAddCurrentBodiesToGrid();
 			this->bodiesGrid.updateBodiesInGrid();
 			bodiesAccessLock.unlock();
