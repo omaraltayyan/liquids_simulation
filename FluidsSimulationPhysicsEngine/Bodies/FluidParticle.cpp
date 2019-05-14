@@ -151,8 +151,7 @@ void FluidParticle::calculateInteractionWithBodies(QVector<BodiesVector*> surrou
 void FluidParticle::applyInteraction()
 {
 	auto engine = PhysicsEngine::shared();
-	this->_position = engine->timeDelta * this->_velocity;
-
+	this->setPosition((engine->timeDelta * this->_velocity).toPointF());
 }
 
 
