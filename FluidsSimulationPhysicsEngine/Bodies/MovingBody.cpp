@@ -1,12 +1,6 @@
 #include "MovingBody.h"
 
 
-
-MovingBody::MovingBody()
-{
-}
-
-
-MovingBody::~MovingBody()
+MovingBody::MovingBody(QRectF boundingRect) : Body(boundingRect)
 {
 }

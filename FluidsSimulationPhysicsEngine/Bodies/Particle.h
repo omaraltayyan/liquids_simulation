@@ -3,11 +3,16 @@
 class Particle :
 	public MovingBody
 {
+	void updatePosition();
+
 public:
 
-	virtual void interactWith(Particle* other) = 0;
+	qreal sizeRadius;
+	QPointF position;
+	QVector2D positionVector;
+	void setPosition(const QPointF& newPosition);
+	void setPosition(qreal x, qreal y);
 
-	Particle();
-	~Particle();
+	Particle(const QPointF& position, qreal sizeRadius);
 };
 

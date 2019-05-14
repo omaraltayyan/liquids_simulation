@@ -10,16 +10,17 @@ typedef QVector<Body*> BodiesVector;
 class Body
 {
 public:
-	virtual Body* drawableClone() const = 0;
-
-	virtual void draw() const = 0;
+	virtual Body drawableClone() const {
+		return *this;
+	};
 
 	virtual void calculateInteractionWithBodies(QVector<BodiesVector*> surroundingBodies, int calculationOperation) {}
 	virtual void applyInteraction() {}
 
 	QRectF boundingRect;
 
+	Body(const Body& p);
+	Body(QRectF boundingRect);
 	Body();
-	~Body();
 };
 

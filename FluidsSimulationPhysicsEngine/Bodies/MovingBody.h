@@ -7,7 +7,6 @@ public:
 
 	virtual void manageCollision(Body* other) = 0;
 
-	MovingBody();
-	~MovingBody();
+	MovingBody(QRectF _boundingRect);
 };
 

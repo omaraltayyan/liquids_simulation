@@ -4,7 +4,7 @@ class GasParticle :
 	public FluidParticle
 {
 public:
-	GasParticle();
-	~GasParticle();
+	using FluidParticle::FluidParticle;
+
 };
 

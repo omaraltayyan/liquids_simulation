@@ -5,7 +5,6 @@
 class LiquidParticle: public FluidParticle
 {
 public:
-	LiquidParticle();
-	~LiquidParticle();
+	using FluidParticle::FluidParticle;
 };
 

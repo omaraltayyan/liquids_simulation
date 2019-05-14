@@ -2,11 +2,3 @@
 
 
 
-GasParticle::GasParticle()
-{
-}
-
-
-GasParticle::~GasParticle()
-{
-}

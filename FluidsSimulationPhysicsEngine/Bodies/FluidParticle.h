@@ -15,12 +15,11 @@ enum SmoothingKernals
 class FluidParticle : public Particle
 {
 public:
-	FluidParticle();
-	FluidParticle(double viscosity, double mass, float Xposition, float Yposition);
-	~FluidParticle();
+	FluidParticle(const QPointF& position, qreal sizeRadius, double viscosity, double mass);
+
 private:
 	double _dynsity, _viscosity, _pressure, _mass;
-	QVector2D _velocity, _position, _force, _tempVelocity, _tempForce;
+	QVector2D _velocity, _force, _tempVelocity, _tempForce;
 	double applyKernal(double distance, double radius, SmoothingKernals kernal);
 	double computeDynsity(QVector<BodiesVector*> surroundingBodies, double radius);
 	double computePressure(double gasConstant, double restDynsity, double dynsity);
@@ -28,8 +27,5 @@ private:
 	QVector2D computeViscousForce(QVector<BodiesVector*> surroundingBodies, double radius);
 	QVector2D computeSumOfForces(QVector<BodiesVector*> surroundingBodies, double radius, double gravityValue);
 	QVector2D computeVelocityChange(double deltaTime,QVector2D sumForces);
-	
-	
-	 
 };
 

@@ -36,9 +36,10 @@ class FLUIDSSIMULATIONPHYSICSENGINE_EXPORT PhysicsEngine
 
 	void engineUpdateLoop(int threadIndex);
 
-	atomic<bool> lockGrid;
+	atomic<bool> lockGridAddition;
 
 	mutex bodiesAccessLock;
+	mutex bodiesToAddToGridLock;
 	BodiesVector bodiesToAddToGrid;
 
 	int runningThreads;
@@ -68,10 +69,10 @@ public:
 
 	void addBodiesToGrid(BodiesVector);
 
-	template<typename T> void runFunctionOverDrawableBodies(T&& func);
+	QVector<Body>* getDrawableBodiesCopy();
 
 	// WARNING: not thread safe, don't access the bodies or 
-	// add bodies them to the grid, use runFunctionOverDrawableBodies
+	// add bodies them to the grid, use getDrawableBodiesCopy
 	// and addBodiesToGrid respectively instead
 	Grid& getUnsafeBodiesGrid();
 

@@ -1,25 +1,12 @@
 #include "FluidParticle.h"
 #include <qmath.h>
 
-
-
-FluidParticle::FluidParticle()
-{
-}
-
-FluidParticle::FluidParticle( double viscosity, double mass, float Xposition, float Yposition)
+FluidParticle::FluidParticle(const QPointF& position, qreal sizeRadius, double viscosity, double mass) : Particle(position, sizeRadius)
 {	
 	_viscosity = viscosity;
 	_mass = mass;
-	_position.setX(Xposition); 
-	_position.setY(Yposition);// = new QVector2D(Xposition, Yposition);
 	_velocity.setX(0.0); 
 	_velocity.setY(0.0);
-}
-
-
-FluidParticle::~FluidParticle()
-{
 }
 
 
@@ -53,7 +40,7 @@ double FluidParticle::computeDynsity(QVector<BodiesVector*> surroundingBodies,do
 			FluidParticle* particle = dynamic_cast<FluidParticle*>(body);
 			if (particle != NULL)
 			{				
-				double distance = this->_position.distanceToPoint(particle->_position);
+				double distance = this->positionVector.distanceToPoint(particle->positionVector);
 				if (distance < radius)
 				{
 					resultingDynsity += particle->_mass * this->applyKernal(distance, radius, poly6);
@@ -82,8 +69,8 @@ QVector2D FluidParticle::computePressureForce(QVector<BodiesVector*> surrounding
 			FluidParticle* particle = dynamic_cast<FluidParticle*>(body);
 			if (particle != NULL)
 			{
-				auto vec = particle->_position - this->_position;
-				double distance = this->_position.distanceToPoint(particle->_position);
+				auto vec = particle->positionVector - this->positionVector;
+				double distance = this->positionVector.distanceToPoint(particle->positionVector);
 				
 				if (distance < radius)
 				{
@@ -109,7 +96,7 @@ QVector2D FluidParticle::computeViscousForce(QVector<BodiesVector*> surroundingB
 			FluidParticle* particle = dynamic_cast<FluidParticle*>(body);
 			if (particle != NULL)
 			{				
-				double distance = this->_position.distanceToPoint(particle->_position);
+				double distance = this->positionVector.distanceToPoint(particle->positionVector);
 				if (distance < radius)
 				{
 					resultingVisousForce += particle->_mass * (((particle->_velocity) - (this->_velocity)) / particle->_dynsity)

@@ -7,11 +7,6 @@
 #include <iostream>
 #include <stdio.h>
 
-class testBody : public  Body {
-	 void draw() const {
-
-	}
-};
 
 UnitTestGrid::UnitTestGrid()
 {
@@ -29,13 +24,9 @@ void UnitTestGrid::run() {
 	freopen("conout$", "w", stderr);
 
 	//auto grid = Grid(QSize(24, 18), 3);
-	//auto body1 = new testBody();
-	//body1->boundingRect = QRectF(1, 1, 4, 5);
-	//auto body2 = new testBody();
-	//body2->boundingRect = QRectF(12, 10, 1, 2);
-
-	//auto body3 = new testBody();
-	//body3->boundingRect = QRectF(4, 2.9, 2.2, 1.2);
+	//auto body1 = new Body(QRectF(1, 1, 4, 5));
+	//auto body2 = new Body(QRectF(12, 10, 1, 2));
+	//auto body3 = new Body(QRectF(4, 2.9, 2.2, 1.2));
 
 	//BodiesVector bodies = { body1, body2,  body3 };
 	//grid.addBodiesToGrid(bodies);

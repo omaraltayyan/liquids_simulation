@@ -50,7 +50,7 @@ PhysicsEngine::PhysicsEngine() : bodiesGrid(QSize(24, 18), 3)
 		synchronizationBarriers[i] = new ThreadsBarrier(runningThreads);
 	}
 
-	lockGrid = false;
+	lockGridAddition = false;
 
 	this->engineUpdateLoopThreads = new thread*[runningThreads];
 	for (int i = 0; i < runningThreads; i++)
@@ -76,30 +76,29 @@ void PhysicsEngine::pauseEngine() {
 	shouldBeProcessingNextUpdateLoopConditional.notify_all();
 }
 
-template<typename T> void PhysicsEngine::runFunctionOverDrawableBodies(T&& func) {
-	BodiesVector bodiesCopy;
+QVector<Body>* PhysicsEngine::getDrawableBodiesCopy() {
+	QVector<Body>* bodiesCopy;
 	{
 		std::lock_guard<std::mutex> lock(bodiesAccessLock);
 		auto bodies = this->bodiesGrid.getAllBodies();
-		bodiesCopy = BodiesVector(bodies.length());
+		bodiesCopy = new QVector<Body>();
+		bodiesCopy->reserve(bodies.length());
 		for (int i = 0; i < bodies.length(); i++)
 		{
-			bodiesCopy[i] = bodies.at(i)->drawableClone();
+			bodiesCopy->push_back(bodies.at(i)->drawableClone());
 		}
 	}
-	for (int i = 0; i < bodiesCopy.length(); i++)
-	{
-		func(bodiesCopy.at(i));
-	}
+	return bodiesCopy;
 }
 
 void PhysicsEngine::addBodiesToGrid(BodiesVector bodies)
 {
-	std::lock_guard<std::mutex> lock(bodiesAccessLock);
-	if (lockGrid) {
+	if (lockGridAddition) {
+		std::lock_guard<std::mutex> lock(bodiesToAddToGridLock);
 		this->bodiesToAddToGrid.append(bodies);
 	}
 	else {
+		std::lock_guard<std::mutex> lock(bodiesAccessLock);
 		this->bodiesGrid.addBodiesToGrid(bodies);
 	}
 }
@@ -129,9 +128,12 @@ void PhysicsEngine::engineUpdateLoop(int threadIndex) {
 		}
 
 		if (threadIndex == 0) {
-			performAddCurrentBodiesToGrid();
-			this->lockGrid = true;
-			this->totalBodiesForProcessingLoop = this->bodiesGrid.bodiesCount();
+			this->lockGridAddition = true;
+			{
+				std::lock_guard<std::mutex> lock(bodiesAccessLock);
+				performAddCurrentBodiesToGrid();
+				this->totalBodiesForProcessingLoop = this->bodiesGrid.bodiesCount();
+			}
 			this->lastMomentProcessingStarted = chrono::high_resolution_clock::now();
 		}
 
@@ -174,19 +176,20 @@ void PhysicsEngine::engineUpdateLoop(int threadIndex) {
 		// wait for all threads to finish applying updates
 		this->synchronizationBarriers[calculationOperationsCount + constantBarriersBeforeCalculationsCount]->Await();
 
-		if (threadIndex == 0) {
-			bodiesAccessLock.unlock();
-		}
 
 		// stop the loop when exiting the thread is required
 		if (shouldStopEngine) {
+			if (threadIndex == 0) {
+				bodiesAccessLock.unlock();
+			}
 			break;
 		}
 
 		if (threadIndex == 0) {
 			performAddCurrentBodiesToGrid();
 			this->bodiesGrid.updateBodiesInGrid();
-			this->lockGrid = false;
+			bodiesAccessLock.unlock();
+			this->lockGridAddition = false;
 			// main thread stalls others by not reaching it's awake
 			// until the time since the last processing start is greater
 			// than or equal to the engine's time delta
@@ -202,7 +205,7 @@ void PhysicsEngine::engineUpdateLoop(int threadIndex) {
 
 void PhysicsEngine::performAddCurrentBodiesToGrid()
 {
-	std::lock_guard<std::mutex> lock(bodiesAccessLock);
+	std::lock_guard<std::mutex> lock(bodiesToAddToGridLock);
 	if (this->bodiesToAddToGrid.length() == 0) {
 		return;
 	}
