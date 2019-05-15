@@ -10,8 +10,8 @@ MainWindow::MainWindow(QWidget *parent)
 	QTimer *timer = new QTimer(this);
 	ui.openGLWidget->engine = &engine;
 	connect(timer, &QTimer::timeout, [=] {
-		emitter.addRandomBodies(&engine, 50);
 		ui.openGLWidget->update();
+		emitter.addRandomBodies(&engine, 20);
 	});
 
 	timer->start(1000 / 60);
