@@ -73,7 +73,7 @@ public:
 
 	void runFunctionOverBodies(const function <void(Body*)>&& func);
 	
-	QVector2D gravity = QVector2D(0.0, 100 * 9.8);
+	QVector2D gravity = QVector2D(0.0,9.8);
 
 	// WARNING: not thread safe, don't access the bodies or 
 	// add bodies them to the grid, use runFunctionOverBodies
