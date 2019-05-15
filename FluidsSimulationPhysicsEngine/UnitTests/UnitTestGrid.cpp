@@ -1,10 +1,7 @@
 #include "UnitTestGrid.h"
-#include "Grid.h"
 #include "Bodies\FluidParticle.h"
-#include "PhysicsEngine.h"
 #include "RandomEmitter.h"
 #include <QRectF>
-#include <windows.h>
 #include <windows.h>
 #include <iostream>
 #include <stdio.h>

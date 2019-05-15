@@ -18,11 +18,26 @@ SimulationCanvasGLWidget::~SimulationCanvasGLWidget()
 }
 
 void SimulationCanvasGLWidget::mousePressEvent(QMouseEvent *event) {
+	QOpenGLWidget::mousePressEvent(event);
 	addBodiesAtWidgetPosition(event->pos());
 }
 
 void SimulationCanvasGLWidget::mouseMoveEvent(QMouseEvent *event) {
+	QOpenGLWidget::mouseMoveEvent(event);
+
 	addBodiesAtWidgetPosition(event->pos());
+}
+
+void SimulationCanvasGLWidget::mouseReleaseEvent(QMouseEvent * event)
+{
+	QOpenGLWidget::mouseReleaseEvent(event);
+
+}
+
+void SimulationCanvasGLWidget::leaveEvent(QEvent *event)
+{
+	QOpenGLWidget::leaveEvent(event);
+
 }
 
 void SimulationCanvasGLWidget::addBodiesAtWidgetPosition(QPointF position) {
@@ -34,7 +49,7 @@ void SimulationCanvasGLWidget::addBodiesAtWidgetPosition(QPointF position) {
 	position.rx() *= xscaleFactor;
 	position.ry() *= yscaleFactor;
 
-	emitter->addRandomBodies(engine, 50, position);
+	emitter->addRandomBodies(engine, 200, position);
 }
 
 void SimulationCanvasGLWidget::paintEvent(QPaintEvent *event)

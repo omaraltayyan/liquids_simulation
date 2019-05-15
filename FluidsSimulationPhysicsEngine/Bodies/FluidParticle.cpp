@@ -139,12 +139,10 @@ void FluidParticle::calculateInteractionWithBodies(QVector<BodiesVector*> surrou
 	double radius = engine->getUnsafeBodiesGrid().squareSideInCentimeters();
 	if (calculationOperation == 0) {
 		this->_dynsity = this->computeDynsity(surroundingBodies, radius);
-	}
-	else if (calculationOperation == 1) {
 		//here gas constant and rest dynsity should variables taken from user input
 		this->_pressure = this->computePressure(0.01, 2000, this->_dynsity);
 	}
-	else {
+	else if (calculationOperation == 1) {
 		//here gravity should also be taken from user input
 		double gravity = 100 * 9.8;
 		this->_force = this->computeSumOfForces(surroundingBodies, radius, gravity);

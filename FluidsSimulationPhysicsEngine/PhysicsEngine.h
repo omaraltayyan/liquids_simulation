@@ -28,7 +28,7 @@ class FLUIDSSIMULATIONPHYSICSENGINE_EXPORT PhysicsEngine
 
 	const int constantBarriersCount = 3;
 
-	const int calculationOperationsCount = 3;
+	const int calculationOperationsCount = 2;
 
 	int totalBodiesForProcessingLoop;
 
@@ -63,7 +63,8 @@ public:
 	static PhysicsEngine* shared();
 
 	qreal timeDelta = 1.0 / 64.0;
-
+	atomic<int> bodiesCount = 0;
+	atomic<double> fps = 0;
 	void resumeEngine();
 	void pauseEngine();
 

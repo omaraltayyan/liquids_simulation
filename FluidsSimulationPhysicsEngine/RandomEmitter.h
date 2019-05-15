@@ -12,7 +12,7 @@ class RandomEmitter
 public:
 	void addRandomBodies(PhysicsEngine* engine, int bodiesCount, QPointF generationPosition = QPointF());
 
-	qreal squareRadius = 0.5;
+	qreal squareRadius = 2;
 
 	RandomEmitter();
 	~RandomEmitter();

@@ -171,11 +171,9 @@ void PhysicsEngine::engineUpdateLoop(int threadIndex) {
 		}
 
 		if (threadIndex == 0) {
-			this->bodiesGrid.updateBodiesInGrid();
-			printf("bodies: %d\n", this->bodiesGrid.getAllBodies().length());
-
 			performAddCurrentBodiesToGrid();
 			this->bodiesGrid.updateBodiesInGrid();
+			this->bodiesCount = this->bodiesGrid.bodiesCount();
 			bodiesAccessLock.unlock();
 			this->lockGridAddition = false;
 			// main thread stalls others by not reaching it's awake
@@ -183,8 +181,8 @@ void PhysicsEngine::engineUpdateLoop(int threadIndex) {
 			// than or equal to the engine's time delta
 			auto timeSinceLastLoop = chrono::duration_cast<chrono::milliseconds>(chrono::high_resolution_clock::now() - this->lastMomentProcessingStarted).count();
 			auto timeBetweenLoops = int(this->timeDelta * 1000);
+			this->fps = 1000.0 / max(timeSinceLastLoop, 1);
 			if (timeSinceLastLoop < (timeBetweenLoops)) {
-				printf("sleeping for: %lld\n", timeBetweenLoops - timeSinceLastLoop);
 				Sleep(timeBetweenLoops - timeSinceLastLoop);
 			}
 		}
@@ -216,8 +214,7 @@ void PhysicsEngine::applyUpdates(int threadIndex) {
 }
 
 int PhysicsEngine::getBodiesCount() {
-	std::lock_guard<std::mutex> lock(bodiesAccessLock);
-	return this->bodiesGrid.bodiesCount();
+	return this->bodiesCount;
 }
 
 template<typename T> void PhysicsEngine::runFunctionOverThreadBodies(int threadIndex, T&& func) {
