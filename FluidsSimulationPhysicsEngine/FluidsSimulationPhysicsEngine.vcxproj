@@ -99,9 +99,7 @@
   <ItemGroup>
     <ClCompile Include="Bodies\Body.cpp" />
     <ClCompile Include="Bodies\FluidParticle.cpp" />
-    <ClCompile Include="Bodies\GasParticle.cpp" />
     <ClCompile Include="Grid.cpp" />
-    <ClCompile Include="Bodies\LiquidParticle.cpp" />
     <ClCompile Include="Bodies\MovingBody.cpp" />
     <ClCompile Include="Bodies\Particle.cpp" />
     <ClCompile Include="RandomEmitter.cpp" />
@@ -113,9 +111,7 @@
   <ItemGroup>
     <ClInclude Include="Bodies\Body.h" />
     <ClInclude Include="Bodies\FluidParticle.h" />
-    <ClInclude Include="Bodies\GasParticle.h" />
     <ClInclude Include="Grid.h" />
-    <ClInclude Include="Bodies\LiquidParticle.h" />
     <ClInclude Include="Bodies\MovingBody.h" />
     <ClInclude Include="Bodies\Particle.h" />
     <ClInclude Include="RandomEmitter.h" />

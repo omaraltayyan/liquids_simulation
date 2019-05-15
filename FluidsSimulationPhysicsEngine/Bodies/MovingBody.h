@@ -4,6 +4,6 @@ class MovingBody :
 	public Body
 {
 public:
-	MovingBody(QRectF _boundingRect);
+	using Body::Body;
 };
 

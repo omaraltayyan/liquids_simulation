@@ -13,7 +13,6 @@ class FLUIDSSIMULATIONPHYSICSENGINE_EXPORT PhysicsEngine
 {
 	thread** engineUpdateLoopThreads;
 
-
 	friend void* engineUpdateLoopThreadFunction(void * engineArg, int threadIndex);
 
 	atomic<bool> shouldRunLoop;
@@ -52,7 +51,7 @@ class FLUIDSSIMULATIONPHYSICSENGINE_EXPORT PhysicsEngine
 
 	Grid bodiesGrid;
 	
-	template<typename T> void runFunctionOverThreadBodies(int threadIndex, T&& func);
+	void runFunctionOverThreadBodies(int threadIndex, const function <void(Body*, int)>&& func);
 	
 	void performAddCurrentBodiesToGrid();
 
@@ -72,14 +71,9 @@ public:
 
 	void addBodiesToGrid(BodiesVector);
 
-	template<typename T> void runFunctionOverBodies(T&& func) {
-		std::lock_guard<std::mutex> lock(bodiesAccessLock);
-		auto bodies = this->bodiesGrid.getAllBodies();
-		for (int i = 0; i < this->bodiesGrid.bodiesCount(); i++)
-		{
-			func(this->bodiesGrid.getBodyAtIndex(i));
-		}
-	};
+	void runFunctionOverBodies(const function <void(Body*)>&& func);
+	
+	QVector2D gravity = QVector2D(0.0, 100 * 9.8);
 
 	// WARNING: not thread safe, don't access the bodies or 
 	// add bodies them to the grid, use runFunctionOverBodies

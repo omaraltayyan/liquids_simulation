@@ -4,15 +4,15 @@
 #include <QVector>
 
 class Body;
+class PhysicsEngine;
 
 typedef QVector<Body*> BodiesVector;
 
 class Body
 {
 public:
-	virtual Body drawableClone() const {
-		return *this;
-	};
+	
+	PhysicsEngine* engine;
 
 	virtual void calculateInteractionWithBodies(QVector<BodiesVector*> surroundingBodies, int calculationOperation) {}
 	virtual void applyInteraction() {}
@@ -20,7 +20,7 @@ public:
 	QRectF boundingRect;
 
 	Body(const Body& p);
-	Body(QRectF boundingRect);
+	Body(QRectF boundingRect, PhysicsEngine* engine);
 	Body();
 };
 

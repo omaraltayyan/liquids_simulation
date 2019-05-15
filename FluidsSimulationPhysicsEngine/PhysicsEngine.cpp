@@ -217,7 +217,16 @@ int PhysicsEngine::getBodiesCount() {
 	return this->bodiesCount;
 }
 
-template<typename T> void PhysicsEngine::runFunctionOverThreadBodies(int threadIndex, T&& func) {
+void PhysicsEngine::runFunctionOverBodies(const function <void(Body*)>&& func) {
+	std::lock_guard<std::mutex> lock(bodiesAccessLock);
+	auto bodies = this->bodiesGrid.getAllBodies();
+	for (int i = 0; i < this->bodiesGrid.bodiesCount(); i++)
+	{
+		func(this->bodiesGrid.getBodyAtIndex(i));
+	}
+}
+
+void PhysicsEngine::runFunctionOverThreadBodies(int threadIndex, const function <void(Body*, int)>&& func) {
 	const int bodiesPerThread = this->totalBodiesForProcessingLoop / this->runningThreads;
 
 	int bodiesForCurrentThreadStartIndex = bodiesPerThread * threadIndex;

@@ -17,15 +17,21 @@ void RandomEmitter::addRandomBodies(PhysicsEngine* engine, int bodiesCount, QPoi
 		return;
 	}
 
-	std::uniform_real_distribution<> XPositionDistribution(generationPosition.x() - squareRadius, generationPosition.x() + squareRadius);
-	std::uniform_real_distribution<> YPositionDistribution(generationPosition.y() - squareRadius, generationPosition.y() + squareRadius);
+	std::uniform_real_distribution<> XPositionDistribution(
+		generationPosition.x() - this->emissionAreaSquareRadius,
+		generationPosition.x() + this->emissionAreaSquareRadius);
+
+	std::uniform_real_distribution<> YPositionDistribution(
+		generationPosition.y() - this->emissionAreaSquareRadius,
+		generationPosition.y() + this->emissionAreaSquareRadius);
 
 	BodiesVector bodies;
 	bodies.reserve(bodiesCount);
 	for (int i = 0; i < bodiesCount; i++)
 	{
 		auto position = QPointF(XPositionDistribution(randomEngine), YPositionDistribution(randomEngine));
-		auto body = new FluidParticle(position, 0.2, 250, 65);
+		auto body = new FluidParticle(position, engine, this->emittedParticleRadius, this->emittedParticleViscosity,
+			this->emittedParticleMass, this->emittedParticleGasConstant, this->emittedParticleRestDensity);
 		bodies.push_back(body);
 	}
 	engine->addBodiesToGrid(bodies);
