@@ -17,10 +17,10 @@ private:
 	PhysicsEngine engine;
 	RandomEmitter emitter;
 
-private slots:
-void drawingWindowClicked();
-void inputChanged();
-void pauseClicked();
-void clearClicked();
+	void inputChanged();
+	void linkLineEditWithValue(QLineEdit* lineEdit, double * doubleValue);
+	void updateDoubleValueWithText(QString text, double * doubleValue);
+	void pauseClicked();
+	void clearClicked();
 
 };

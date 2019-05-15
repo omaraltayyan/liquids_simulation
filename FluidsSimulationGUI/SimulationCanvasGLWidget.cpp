@@ -20,7 +20,7 @@ SimulationCanvasGLWidget::~SimulationCanvasGLWidget()
 void SimulationCanvasGLWidget::mousePressEvent(QMouseEvent *event) {
 	QOpenGLWidget::mousePressEvent(event);
 	addBodiesAtWidgetPosition(event->pos());
-	engine->pauseEngine();
+	// engine->pauseEngine();
 }
 
 void SimulationCanvasGLWidget::mouseMoveEvent(QMouseEvent *event) {
@@ -32,13 +32,13 @@ void SimulationCanvasGLWidget::mouseMoveEvent(QMouseEvent *event) {
 void SimulationCanvasGLWidget::mouseReleaseEvent(QMouseEvent * event)
 {
 	QOpenGLWidget::mouseReleaseEvent(event);
-	engine->resumeEngine();
+	// engine->resumeEngine();
 }
 
 void SimulationCanvasGLWidget::leaveEvent(QEvent *event)
 {
 	QOpenGLWidget::leaveEvent(event);
-	engine->resumeEngine();
+	// engine->resumeEngine();
 
 }
 

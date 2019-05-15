@@ -50,7 +50,7 @@ public:
 	*
 	*/
 	void addBodiesToGrid(const BodiesVector& bodies);
-
+	void clearBodies();
 	void updateBodiesInGrid();
 
 	/*

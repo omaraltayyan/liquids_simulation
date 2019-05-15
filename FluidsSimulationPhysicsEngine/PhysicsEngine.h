@@ -57,6 +57,9 @@ class FLUIDSSIMULATIONPHYSICSENGINE_EXPORT PhysicsEngine
 
 	static PhysicsEngine* sharedEngine;
 
+	atomic<bool> clearBoddies = false;
+	void perfromClearBoddies();
+
 public:
 
 	static PhysicsEngine* shared();
@@ -67,9 +70,14 @@ public:
 	void resumeEngine();
 	void pauseEngine();
 
+	bool isPaused();
+
 	atomic<int> speedSlownessScale = 1;
 
 	int getBodiesCount();
+
+	void clearBodies();
+
 
 	void addBodiesToGrid(BodiesVector);
 

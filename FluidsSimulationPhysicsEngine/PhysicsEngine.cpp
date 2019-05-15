@@ -76,6 +76,40 @@ void PhysicsEngine::pauseEngine() {
 	shouldBeProcessingNextUpdateLoopConditional.notify_all();
 }
 
+bool PhysicsEngine::isPaused() {
+	return !this->shouldRunLoop;
+}
+
+void PhysicsEngine::clearBodies()
+{
+	if (isPaused()) {
+		std::lock_guard<std::mutex> lock(bodiesAccessLock);
+		clearBoddies = true;
+		perfromClearBoddies();
+		clearBoddies = false;
+	}
+	else {
+		clearBoddies = true;
+	}
+}
+
+void PhysicsEngine::perfromClearBoddies() {
+	if (clearBoddies) {
+		{
+			std::lock_guard<std::mutex> lock(bodiesToAddToGridLock);
+
+			for each(auto body in this->bodiesToAddToGrid) {
+				delete body;
+			}
+			this->bodiesToAddToGrid.clear();
+		}
+
+		this->bodiesGrid.clearBodies();
+		this->bodiesCount = 0;
+		clearBoddies = false;
+	}
+}
+
 void PhysicsEngine::addBodiesToGrid(BodiesVector bodies)
 {
 	if (lockGridAddition) {
@@ -117,6 +151,7 @@ void PhysicsEngine::engineUpdateLoop(int threadIndex) {
 			this->lockGridAddition = true;
 			{
 				std::lock_guard<std::mutex> lock(bodiesAccessLock);
+				perfromClearBoddies();
 				performAddCurrentBodiesToGrid();
 				this->totalBodiesForProcessingLoop = this->bodiesGrid.bodiesCount();
 			}
@@ -172,6 +207,7 @@ void PhysicsEngine::engineUpdateLoop(int threadIndex) {
 		}
 
 		if (threadIndex == 0) {
+			perfromClearBoddies();
 			performAddCurrentBodiesToGrid();
 			this->bodiesGrid.updateBodiesInGrid();
 			this->bodiesCount = this->bodiesGrid.bodiesCount();

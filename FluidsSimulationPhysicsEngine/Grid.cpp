@@ -81,6 +81,22 @@ void Grid::addBodiesToGrid(const BodiesVector& bodies) {
 	delete[] squaresBodiesCounts;
 }
 
+void Grid::clearBodies()
+{
+	for each(auto body in this->allBodies) {
+		delete body;
+	}
+	allBodies.clear();
+	allBodies.squeeze();
+	this->bodiesSquareIndexs.clear();
+	this->bodiesSquareIndexs.squeeze();
+	for (int i = 0; i < this->numSquares(); i++)
+	{
+		squaresBodies[i]->clear();
+		squaresBodies[i]->squeeze();
+	}
+}
+
 void Grid::updateBodiesInGrid() {
 
 	auto squaresBodiesCounts = new int[this->numSquares()]();
@@ -125,7 +141,6 @@ void Grid::updateBodiesInGrid() {
 		auto body = allBodies[i];
 		for each(int squareIndex in bodiesSquareIndexs[i]) {
 				squaresBodies[squareIndex]->push_back(body);
-			
 		}
 	}
 
