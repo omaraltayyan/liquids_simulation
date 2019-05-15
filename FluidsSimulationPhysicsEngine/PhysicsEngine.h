@@ -67,12 +67,21 @@ public:
 	void resumeEngine();
 	void pauseEngine();
 
+	int getBodiesCount();
+
 	void addBodiesToGrid(BodiesVector);
 
-	QVector<Body>* getDrawableBodiesCopy();
+	template<typename T> void runFunctionOverBodies(T&& func) {
+		std::lock_guard<std::mutex> lock(bodiesAccessLock);
+		auto bodies = this->bodiesGrid.getAllBodies();
+		for (int i = 0; i < this->bodiesGrid.bodiesCount(); i++)
+		{
+			func(this->bodiesGrid.getBodyAtIndex(i));
+		}
+	};
 
 	// WARNING: not thread safe, don't access the bodies or 
-	// add bodies them to the grid, use getDrawableBodiesCopy
+	// add bodies them to the grid, use runFunctionOverBodies
 	// and addBodiesToGrid respectively instead
 	Grid& getUnsafeBodiesGrid();
 

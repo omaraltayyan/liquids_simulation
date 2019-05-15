@@ -2,40 +2,21 @@
 #include "Grid.h"
 #include "Bodies\FluidParticle.h"
 #include "PhysicsEngine.h"
+#include "RandomEmitter.h"
 #include <QRectF>
+#include <windows.h>
 #include <windows.h>
 #include <iostream>
 #include <stdio.h>
 
-
-UnitTestGrid::UnitTestGrid() : randomEngine(randomDevice())
+UnitTestGrid::UnitTestGrid()
 {
-	randomEngine.seed();
 }
-
 
 UnitTestGrid::~UnitTestGrid()
 {
 }
 
-void UnitTestGrid::addRandomBodies() {
-
-	auto e = PhysicsEngine::shared();
-	auto gridSize = e->getUnsafeBodiesGrid().sizeInCentimeters();
-
-	std::uniform_real_distribution<> XPositionDistribution(0, gridSize.width());
-	std::uniform_real_distribution<> YPositionDistribution(0, gridSize.height());
-
-	BodiesVector bodies;
-	bodies.reserve(5000);
-	for (int i = 0; i < 5000; i++)
-	{
-		auto position = QPointF(XPositionDistribution(randomEngine), YPositionDistribution(randomEngine));
-		auto body = new FluidParticle(position, 0.2, 250, 65);
-		bodies.push_back(body);
-	}
-	e->addBodiesToGrid(bodies);
-}
 
 void UnitTestGrid::run() {
 	AllocConsole();
@@ -53,34 +34,35 @@ void UnitTestGrid::run() {
 	//printf("tests valid");
 	auto e = PhysicsEngine::shared();
 	
-	addRandomBodies();
+	RandomEmitter emitter;
+
+	emitter.addRandomBodies(e, 5000);
 
 	e->resumeEngine();
-	addRandomBodies();
+	emitter.addRandomBodies(e, 5000);
 	Sleep(5000);
 
 	e->pauseEngine();
-	addRandomBodies();
+	emitter.addRandomBodies(e, 5000);
 
 	printf("paused\n");
 	Sleep(1000);
 	e->resumeEngine();
 
-	addRandomBodies();
+	emitter.addRandomBodies(e, 5000);
 
 	Sleep(5000);
 	e->pauseEngine();
 
 	printf("paused\n");
-	addRandomBodies();
+	emitter.addRandomBodies(e, 5000);
 
 	Sleep(1000);
 	e->resumeEngine();
 
-	addRandomBodies();
+	emitter.addRandomBodies(e, 5000);
 
 	printf("tests valid\n");
-	printf("bodies: %d", e->getDrawableBodiesCopy()->length());
 	Sleep(5000);
 
 	Sleep(1000000);

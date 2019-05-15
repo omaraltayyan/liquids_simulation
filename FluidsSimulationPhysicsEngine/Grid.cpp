@@ -105,7 +105,7 @@ void Grid::updateBodiesInGrid() {
 	}
 
 	if (squaresBodies.length() == 0) {
-		squaresBodies = QVector<BodiesVector*>();
+		squaresBodies = QVector<BodiesVector*>(this->numSquares());
 		for (int i = 0; i < this->numSquares(); i++)
 		{
 			squaresBodies[i] = new BodiesVector(squaresBodiesCounts[i]);
@@ -143,8 +143,8 @@ int Grid::bodiesCount() {
 	return allBodies.length();
 }
 
-Body& Grid::getBodyAtIndex(int index) {
-	return *(allBodies[index]);
+Body* Grid::getBodyAtIndex(int index) {
+	return allBodies.at(index);
 }
 
 QVector<BodiesVector*> Grid::getBodySourroundingBodiesVectors(int bodyIndex) {

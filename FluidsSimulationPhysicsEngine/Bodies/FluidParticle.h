@@ -15,6 +15,11 @@ enum SmoothingKernals
 class FluidParticle : public Particle
 {
 public:
+
+	Body drawableClone() const {
+		return *this;
+	};
+
 	FluidParticle(const QPointF& position, qreal sizeRadius, double viscosity, double mass);
 
 private:

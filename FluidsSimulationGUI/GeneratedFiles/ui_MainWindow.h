@@ -16,11 +16,11 @@
 #include <QtWidgets/QLineEdit>
 #include <QtWidgets/QMainWindow>
 #include <QtWidgets/QMenuBar>
-#include <QtWidgets/QOpenGLWidget>
 #include <QtWidgets/QStatusBar>
 #include <QtWidgets/QTabWidget>
 #include <QtWidgets/QToolBar>
 #include <QtWidgets/QWidget>
+#include "SimulationCanvasGLWidget.h"
 
 QT_BEGIN_NAMESPACE
 
@@ -32,7 +32,7 @@ public:
     QWidget *widget;
     QLineEdit *ParticleMassText;
     QLabel *label;
-    QOpenGLWidget *openGLWidget;
+    SimulationCanvasGLWidget *openGLWidget;
     QTabWidget *tabWidget;
     QWidget *tab;
     QWidget *tab_2;
@@ -44,7 +44,7 @@ public:
     {
         if (MainWindowClass->objectName().isEmpty())
             MainWindowClass->setObjectName(QString::fromUtf8("MainWindowClass"));
-        MainWindowClass->resize(997, 854);
+        MainWindowClass->resize(854, 784);
         centralWidget = new QWidget(MainWindowClass);
         centralWidget->setObjectName(QString::fromUtf8("centralWidget"));
         gridLayout = new QGridLayout(centralWidget);
@@ -80,13 +80,14 @@ public:
 
         gridLayout->addWidget(widget, 0, 2, 2, 1);
 
-        openGLWidget = new QOpenGLWidget(centralWidget);
+        openGLWidget = new SimulationCanvasGLWidget(centralWidget);
         openGLWidget->setObjectName(QString::fromUtf8("openGLWidget"));
         QSizePolicy sizePolicy3(QSizePolicy::Expanding, QSizePolicy::Expanding);
         sizePolicy3.setHorizontalStretch(0);
         sizePolicy3.setVerticalStretch(0);
         sizePolicy3.setHeightForWidth(openGLWidget->sizePolicy().hasHeightForWidth());
         openGLWidget->setSizePolicy(sizePolicy3);
+        openGLWidget->setMinimumSize(QSize(300, 300));
         openGLWidget->setMouseTracking(true);
 
         gridLayout->addWidget(openGLWidget, 0, 0, 1, 1);
@@ -114,7 +115,7 @@ public:
         MainWindowClass->setStatusBar(statusBar);
         menuBar = new QMenuBar(MainWindowClass);
         menuBar->setObjectName(QString::fromUtf8("menuBar"));
-        menuBar->setGeometry(QRect(0, 0, 997, 21));
+        menuBar->setGeometry(QRect(0, 0, 854, 21));
         MainWindowClass->setMenuBar(menuBar);
         mainToolBar = new QToolBar(MainWindowClass);
         mainToolBar->setObjectName(QString::fromUtf8("mainToolBar"));

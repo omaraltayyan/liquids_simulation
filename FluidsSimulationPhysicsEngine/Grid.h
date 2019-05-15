@@ -36,7 +36,7 @@ public:
 	// get bodies in grid info
 	BodiesVector getAllBodies();
 	int bodiesCount();
-	Body& getBodyAtIndex(int index);
+	Body* getBodyAtIndex(int index);
 	QVector<BodiesVector*> getBodySourroundingBodiesVectors(int bodyIndex);
 
 	// returns the dimensions of the given body

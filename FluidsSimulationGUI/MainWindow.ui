@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>997</width>
-    <height>854</height>
+    <width>854</width>
+    <height>784</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -82,12 +82,18 @@
      </widget>
     </item>
     <item row="0" column="0">
-     <widget class="QOpenGLWidget" name="openGLWidget">
+     <widget class="SimulationCanvasGLWidget" name="openGLWidget">
       <property name="sizePolicy">
        <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
         <horstretch>0</horstretch>
         <verstretch>0</verstretch>
        </sizepolicy>
+      </property>
+      <property name="minimumSize">
+       <size>
+        <width>300</width>
+        <height>300</height>
+       </size>
       </property>
       <property name="mouseTracking">
        <bool>true</bool>
@@ -128,7 +134,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>997</width>
+     <width>854</width>
      <height>21</height>
     </rect>
    </property>
@@ -143,6 +149,13 @@
   </widget>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
+ <customwidgets>
+  <customwidget>
+   <class>SimulationCanvasGLWidget</class>
+   <extends>QOpenGLWidget</extends>
+   <header>SimulationCanvasGLWidget.h</header>
+  </customwidget>
+ </customwidgets>
  <resources>
   <include location="MainWindow.qrc"/>
  </resources>

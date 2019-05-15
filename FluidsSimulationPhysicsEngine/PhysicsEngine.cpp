@@ -76,21 +76,6 @@ void PhysicsEngine::pauseEngine() {
 	shouldBeProcessingNextUpdateLoopConditional.notify_all();
 }
 
-QVector<Body>* PhysicsEngine::getDrawableBodiesCopy() {
-	QVector<Body>* bodiesCopy;
-	{
-		std::lock_guard<std::mutex> lock(bodiesAccessLock);
-		auto bodies = this->bodiesGrid.getAllBodies();
-		bodiesCopy = new QVector<Body>();
-		bodiesCopy->reserve(bodies.length());
-		for (int i = 0; i < bodies.length(); i++)
-		{
-			bodiesCopy->push_back(bodies.at(i)->drawableClone());
-		}
-	}
-	return bodiesCopy;
-}
-
 void PhysicsEngine::addBodiesToGrid(BodiesVector bodies)
 {
 	if (lockGridAddition) {
@@ -218,16 +203,21 @@ void PhysicsEngine::performAddCurrentBodiesToGrid()
 
 void PhysicsEngine::runUpdateBatch(int threadIndex, int calculationOperation) {
 
-	this->runFunctionOverThreadBodies(threadIndex, [&](Body& body, int index) {
+	this->runFunctionOverThreadBodies(threadIndex, [&](Body* body, int index) {
 		auto surroundingBodies = this->bodiesGrid.getBodySourroundingBodiesVectors(index);
-		body.calculateInteractionWithBodies(surroundingBodies, calculationOperation);
+		body->calculateInteractionWithBodies(surroundingBodies, calculationOperation);
 	});
 }
 
 void PhysicsEngine::applyUpdates(int threadIndex) {
-	this->runFunctionOverThreadBodies(threadIndex, [&](Body& body, int index) {
-		body.applyInteraction();
+	this->runFunctionOverThreadBodies(threadIndex, [&](Body* body, int index) {
+		body->applyInteraction();
 	});
+}
+
+int PhysicsEngine::getBodiesCount() {
+	std::lock_guard<std::mutex> lock(bodiesAccessLock);
+	return this->bodiesGrid.bodiesCount();
 }
 
 template<typename T> void PhysicsEngine::runFunctionOverThreadBodies(int threadIndex, T&& func) {
@@ -243,7 +233,7 @@ template<typename T> void PhysicsEngine::runFunctionOverThreadBodies(int threadI
 
 	for (int i = bodiesForCurrentThreadStartIndex; i <= bodiesForCurrentThreadEndIndex; i++)
 	{
-		Body& body = this->bodiesGrid.getBodyAtIndex(i);
+		Body* body = this->bodiesGrid.getBodyAtIndex(i);
 		func(body, i);
 	}
 }
