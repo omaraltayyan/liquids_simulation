@@ -180,7 +180,7 @@ void PhysicsEngine::engineUpdateLoop(int threadIndex) {
 			// until the time since the last processing start is greater
 			// than or equal to the engine's time delta
 			auto timeSinceLastLoop = chrono::duration_cast<chrono::milliseconds>(chrono::high_resolution_clock::now() - this->lastMomentProcessingStarted).count();
-			auto timeBetweenLoops = int(this->timeDelta * 1000);
+			auto timeBetweenLoops = int(this->timeDelta * 1000 * speedSlownessScale);
 			this->fps = 1000.0 / max(timeSinceLastLoop, 1);
 			if (timeSinceLastLoop < (timeBetweenLoops)) {
 				Sleep(timeBetweenLoops - timeSinceLastLoop);
