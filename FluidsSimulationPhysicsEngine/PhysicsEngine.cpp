@@ -37,7 +37,7 @@ Grid & PhysicsEngine::getUnsafeBodiesGrid()
 	return this->bodiesGrid;
 }
 
-PhysicsEngine::PhysicsEngine() : bodiesGrid(QSize(130, 100), 2.5)
+PhysicsEngine::PhysicsEngine() : bodiesGrid(QSize(400, 300), 2.5)
 {
 	this->lastMomentProcessingStarted = chrono::high_resolution_clock::now();
 	this->shouldStopEngine = false;
@@ -85,6 +85,7 @@ void PhysicsEngine::addBodiesToGrid(BodiesVector bodies)
 	else {
 		std::lock_guard<std::mutex> lock(bodiesAccessLock);
 		this->bodiesGrid.addBodiesToGrid(bodies);
+		this->bodiesCount = this->bodiesGrid.bodiesCount();
 	}
 }
 
