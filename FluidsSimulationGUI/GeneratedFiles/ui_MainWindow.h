@@ -88,7 +88,8 @@ public:
         sizePolicy3.setHeightForWidth(openGLWidget->sizePolicy().hasHeightForWidth());
         openGLWidget->setSizePolicy(sizePolicy3);
         openGLWidget->setMinimumSize(QSize(300, 300));
-        openGLWidget->setMouseTracking(true);
+        openGLWidget->setCursor(QCursor(Qt::PointingHandCursor));
+        openGLWidget->setMouseTracking(false);
 
         gridLayout->addWidget(openGLWidget, 0, 0, 1, 1);
 

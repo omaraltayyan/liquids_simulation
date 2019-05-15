@@ -9,9 +9,11 @@ MainWindow::MainWindow(QWidget *parent)
 
 	QTimer *timer = new QTimer(this);
 	ui.openGLWidget->engine = &engine;
+	ui.openGLWidget->emitter = &emitter;
+
 	connect(timer, &QTimer::timeout, [=] {
 		ui.openGLWidget->update();
-		emitter.addRandomBodies(&engine, 20);
+		ui.statusBar->showMessage(QString::asprintf("Bodies: %d", engine.getBodiesCount()));
 	});
 
 	timer->start(1000 / 60);

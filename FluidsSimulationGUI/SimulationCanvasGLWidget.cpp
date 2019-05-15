@@ -17,6 +17,26 @@ SimulationCanvasGLWidget::~SimulationCanvasGLWidget()
 {
 }
 
+void SimulationCanvasGLWidget::mousePressEvent(QMouseEvent *event) {
+	addBodiesAtWidgetPosition(event->pos());
+}
+
+void SimulationCanvasGLWidget::mouseMoveEvent(QMouseEvent *event) {
+	addBodiesAtWidgetPosition(event->pos());
+}
+
+void SimulationCanvasGLWidget::addBodiesAtWidgetPosition(QPointF position) {
+
+	auto gridSize = engine->getUnsafeBodiesGrid().sizeInCentimeters();
+
+	double xscaleFactor = gridSize.width() / this->width();
+	double yscaleFactor = gridSize.height() / this->height();
+	position.rx() *= xscaleFactor;
+	position.ry() *= yscaleFactor;
+
+	emitter->addRandomBodies(engine, 50, position);
+}
+
 void SimulationCanvasGLWidget::paintEvent(QPaintEvent *event)
 {
 	QPainter painter;
