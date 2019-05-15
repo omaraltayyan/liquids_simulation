@@ -78,14 +78,14 @@ QVector2D FluidParticle::computePressureForce(QVector<BodiesVector*> surrounding
 				
 				if (distance < radius)
 				{
-					resultingPressureForce += vec.normalized() * particle->_mass * ((this->_pressure+particle->_pressure) / 2 * particle->_density)
+					resultingPressureForce += -vec.normalized() * particle->_mass * ((this->_pressure+particle->_pressure) / 2 * particle->_density)
 						* this->applyKernal(distance, radius, spiky);
 				}
 
 			}
 		}
 	}
-	return -1 * resultingPressureForce;
+	return  resultingPressureForce;
 }
 
 QVector2D FluidParticle::computeViscousForce(QVector<BodiesVector*> surroundingBodies, double radius)
