@@ -152,7 +152,7 @@ QVector<BodiesVector*> Grid::getBodySourroundingBodiesVectors(int bodyIndex) {
 	auto squaresVector = QVector<BodiesVector*>();
 	squaresVector.reserve(indexes.length());
 	for each(int squareIndex in indexes) {
-		squaresVector.push_back(squaresBodies[squareIndex]);
+		squaresVector.push_back(squaresBodies.at(squareIndex));
 	}
 	return squaresVector;
 }

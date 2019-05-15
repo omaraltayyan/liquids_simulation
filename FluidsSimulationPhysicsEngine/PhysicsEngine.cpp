@@ -147,7 +147,7 @@ void PhysicsEngine::engineUpdateLoop(int threadIndex) {
 				if (threadIndex == 0 && calculationOperation == this->calculationOperationsCount - 1) {
 					bodiesAccessLock.unlock();
 				}
-				break;
+				return;
 			}
 		}
 
