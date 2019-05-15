@@ -155,6 +155,50 @@ void FluidParticle::applyInteraction()
 {
 	this->positionVector += (this->engine->timeDelta * this->_velocity);
 	this->setPosition(this->positionVector.toPointF());
+	auto size = this->engine->getUnsafeBodiesGrid().sizeInCentimeters();
+	double damp = 0.75;
+
+	if (this->position.x() < 0)
+	{
+		this->positionVector -= this->_velocity * (1 - damp) * (this->position.x()/this->_velocity.x());
+		this->positionVector.setX(-this->positionVector.x());
+
+		this->_velocity.setX(-this->_velocity.x());
+		this->_velocity *= damp;
+
+		this->setPosition(this->positionVector.toPointF());
+	}
+	
+	if (this->position.x() > size.width())
+	{
+		this->positionVector -= this->_velocity * (1 - damp) * ((this->position.x()  - size.width())/ this->_velocity.x());
+		this->positionVector.setX((2*size.width())-this->positionVector.x());
+
+		this->_velocity.setX(-this->_velocity.x());
+		this->_velocity *= damp;
+
+		this->setPosition(this->positionVector.toPointF());
+	}
+	if (this->position.y() < 0)
+	{	
+		this->positionVector -= this->_velocity * (1 - damp) * ((this->position.y()) / this->_velocity.y());
+		this->positionVector.setY( -this->positionVector.y());
+
+		this->_velocity.setY(-this->_velocity.y());
+		this->_velocity *= damp;
+
+		this->setPosition(this->positionVector.toPointF());
+	}
+	if (this->position.y() > size.height())
+	{
+		this->positionVector -= this->_velocity * (1 - damp) * ((this->position.y() - size.height()) / this->_velocity.y());
+		this->positionVector.setY((2*size.height())-this->positionVector.y());
+
+		this->_velocity.setY(-this->_velocity.y());
+		this->_velocity *= damp;
+
+		this->setPosition(this->positionVector.toPointF());
+	}
 }
 
 
