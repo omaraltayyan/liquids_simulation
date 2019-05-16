@@ -9,8 +9,9 @@ SimulationCanvasGLWidget::SimulationCanvasGLWidget(QWidget *parent) : QOpenGLWid
 
 	background = QBrush(QColor(0, 0, 0));
 	circlePen = QPen(QColor(173, 216, 230));
-	circlePen.setWidth(0);
+	circlePen.setWidth(5);
 	circleBrush = QBrush(circlePen.color());
+	circlePen.setCapStyle(Qt::RoundCap);
 }
 
 
@@ -59,7 +60,7 @@ void SimulationCanvasGLWidget::paintEvent(QPaintEvent *event)
 {
 	QPainter painter;
 	painter.begin(this);
-	painter.setRenderHint(QPainter::Antialiasing);
+	painter.setRenderHint(QPainter::Antialiasing, true);
 
     painter.fillRect(event->rect(), background);
 	painter.setPen(circlePen);
@@ -85,8 +86,9 @@ void SimulationCanvasGLWidget::paintEvent(QPaintEvent *event)
 	{
 		points[i].rx() *= xscaleFactor;
 		points[i].ry() *= yscaleFactor;
-		painter.drawEllipse(points[i], 3, 3);
 	}
+
+	painter.drawPoints(points);
 
 	painter.end();
 }

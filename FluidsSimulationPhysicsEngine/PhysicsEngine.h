@@ -7,6 +7,7 @@
 #include <thread>
 #include <atomic>
 #include <mutex>
+#include <queue>
 using namespace std;
 
 class FLUIDSSIMULATIONPHYSICSENGINE_EXPORT PhysicsEngine
@@ -26,6 +27,9 @@ class FLUIDSSIMULATIONPHYSICSENGINE_EXPORT PhysicsEngine
 	const int constantBarriersBeforeCalculationsCount = 2;
 
 	const int constantBarriersCount = 3;
+	QVector<double> fpsAverage;
+
+	const int fpsAverageSamples = 60;
 
 	const int calculationOperationsCount = 2;
 

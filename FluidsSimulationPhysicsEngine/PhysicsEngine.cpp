@@ -218,7 +218,17 @@ void PhysicsEngine::engineUpdateLoop(int threadIndex) {
 			// than or equal to the engine's time delta
 			auto timeSinceLastLoop = chrono::duration_cast<chrono::milliseconds>(chrono::high_resolution_clock::now() - this->lastMomentProcessingStarted).count();
 			auto timeBetweenLoops = int(this->timeDelta * 1000 * speedSlownessScale);
-			this->fps = 1000.0 / max(timeSinceLastLoop, 1);
+			auto frameTime = 1000.0 / max(timeSinceLastLoop, 1);
+
+			fpsAverage.push_back(frameTime); //or push(param)
+			if (fpsAverage.length() > this->fpsAverageSamples)
+				fpsAverage.removeFirst();
+			double currentFPS = 0;
+			for (int i = 0; i < fpsAverage.length(); i++)
+			{
+				currentFPS += fpsAverage[i];
+			}
+			this->fps = currentFPS / fpsAverage.length();
 			if (timeSinceLastLoop < (timeBetweenLoops)) {
 				Sleep(timeBetweenLoops - timeSinceLastLoop);
 			}
