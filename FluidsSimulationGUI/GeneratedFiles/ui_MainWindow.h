@@ -204,9 +204,9 @@ public:
         ParticleMassText->setPlaceholderText(QApplication::translate("MainWindowClass", "Mass", nullptr));
         tabWidget->setTabText(tabWidget->indexOf(tab), QApplication::translate("MainWindowClass", "Tab 1", nullptr));
         tabWidget->setTabText(tabWidget->indexOf(tab_2), QApplication::translate("MainWindowClass", "Tab 2", nullptr));
-        ResumeButton->setText(QApplication::translate("MainWindowClass", "Pause", nullptr));
+        ResumeButton->setText(QApplication::translate("MainWindowClass", "Start", nullptr));
 #ifndef QT_NO_SHORTCUT
-        ResumeButton->setShortcut(QApplication::translate("MainWindowClass", "P", nullptr));
+        ResumeButton->setShortcut(QApplication::translate("MainWindowClass", "R", nullptr));
 #endif // QT_NO_SHORTCUT
         ClearButton->setText(QApplication::translate("MainWindowClass", "Clear", nullptr));
 #ifndef QT_NO_SHORTCUT

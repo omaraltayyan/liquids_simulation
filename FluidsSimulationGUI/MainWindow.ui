@@ -236,10 +236,10 @@
         </rect>
        </property>
        <property name="text">
-        <string>Pause</string>
+        <string>Start</string>
        </property>
        <property name="shortcut">
-        <string>P</string>
+        <string>R</string>
        </property>
        <property name="checkable">
         <bool>false</bool>

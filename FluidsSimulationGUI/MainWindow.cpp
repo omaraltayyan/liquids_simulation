@@ -11,11 +11,6 @@ MainWindow::MainWindow(QWidget *parent)
 {
 	ui.setupUi(this);
 
-	//AllocConsole();
-	//freopen("conin$", "r", stdin);
-	//freopen("conout$", "w", stdout);
-	//freopen("conout$", "w", stderr);
-
 	QTimer *timer = new QTimer(this);
 	ui.openGLWidget->engine = &engine;
 	ui.openGLWidget->emitter = &emitter;
@@ -33,15 +28,15 @@ MainWindow::MainWindow(QWidget *parent)
 		engine.clearBodies();
 	});
 
-	ui.ResumeButton->setText("Start");
-
 	connect(ui.ResumeButton, &QPushButton::clicked, [=] {
 		if (engine.isPaused()) {
 			ui.ResumeButton->setText("Pause");
+			ui.ResumeButton->setShortcut(QKeySequence(Qt::Key_R));
 			engine.resumeEngine();
 		}
 		else {
 			ui.ResumeButton->setText("Resume");
+			ui.ResumeButton->setShortcut(QKeySequence(Qt::Key_R));
 			engine.pauseEngine();
 		}
 	});
