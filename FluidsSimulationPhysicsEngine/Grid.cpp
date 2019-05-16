@@ -60,7 +60,8 @@ void Grid::addBodiesToGrid(const BodiesVector& bodies) {
 		squaresBodies = QVector<BodiesVector*>(this->numSquares());
 		for (int i = 0; i < this->numSquares(); i++)
 		{
-			squaresBodies[i] = new BodiesVector(squaresBodiesCounts[i]);
+			squaresBodies[i] = new BodiesVector();
+			squaresBodies[i]->reserve(squaresBodiesCounts[i]);
 		}
 	}
 	else {
