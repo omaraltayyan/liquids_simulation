@@ -11,15 +11,15 @@ class RandomEmitter
 
 public:
 	void addRandomBodies(PhysicsEngine* engine, int bodiesCount, QPointF generationPosition = QPointF());
-	double emittedParticleRadius = 0.1;
-	double emittedParticleViscosity = 500;
-	double emittedParticleMass = 30;
+	double emittedParticleRadius = 1;
+	double emittedParticleViscosity = 400;
+	double emittedParticleMass = 65;
 	double emittedParticleGasConstant = 0.01;
-	double emittedParticleRestDensity = 4000;
+	double emittedParticleRestDensity = 1000;
 	double particlesPerEmission = 30;
 	
 	
-	qreal emissionAreaSquareRadius = 2;
+	qreal emissionAreaSquareRadius = 1;
 
 	RandomEmitter();
 	~RandomEmitter();

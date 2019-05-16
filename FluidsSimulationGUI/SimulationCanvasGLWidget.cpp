@@ -9,7 +9,6 @@ SimulationCanvasGLWidget::SimulationCanvasGLWidget(QWidget *parent) : QOpenGLWid
 
 	background = QBrush(QColor(0, 0, 0));
 	circlePen = QPen(QColor(173, 216, 230));
-	circlePen.setWidth(5);
 	circleBrush = QBrush(circlePen.color());
 	circlePen.setCapStyle(Qt::RoundCap);
 }
@@ -58,14 +57,6 @@ void SimulationCanvasGLWidget::addBodiesAtWidgetPosition(QPointF position) {
 
 void SimulationCanvasGLWidget::paintEvent(QPaintEvent *event)
 {
-	QPainter painter;
-	painter.begin(this);
-	painter.setRenderHint(QPainter::Antialiasing, true);
-
-    painter.fillRect(event->rect(), background);
-	painter.setPen(circlePen);
-	painter.setBrush(circleBrush);
-	
 	QVector<QPointF> points;
 	points.reserve(engine->getBodiesCount());
 	
@@ -81,12 +72,26 @@ void SimulationCanvasGLWidget::paintEvent(QPaintEvent *event)
 	
 	double xscaleFactor = this->width() / gridSize.width();
 	double yscaleFactor = this->height() / gridSize.height();
-
+	
+	double radiusScaleX = this->width() / gridSize.width();
+	radiusScaleX *= radiusScaleX;
+	double radiusScaleY = this->height() / gridSize.height();
+	radiusScaleY *= radiusScaleY;
+	double radiusScale = sqrt(radiusScaleX + radiusScaleY);
+	circlePen.setWidth(emitter->emittedParticleRadius * radiusScale);
 	for (int i = 0; i < points.length(); i++)
 	{
 		points[i].rx() *= xscaleFactor;
 		points[i].ry() *= yscaleFactor;
 	}
+
+	QPainter painter;
+	painter.begin(this);
+	painter.setRenderHint(QPainter::Antialiasing, true);
+
+	painter.fillRect(event->rect(), background);
+	painter.setPen(circlePen);
+	painter.setBrush(circleBrush);
 
 	painter.drawPoints(points);
 
