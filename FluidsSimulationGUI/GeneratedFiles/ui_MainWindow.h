@@ -48,6 +48,8 @@ public:
     QPushButton *ClearButton;
     QSlider *SlownessSlider;
     QLabel *label_5;
+    QSlider *emissionSlider;
+    QLabel *label_6;
     QStatusBar *statusBar;
     QMenuBar *menuBar;
     QToolBar *mainToolBar;
@@ -164,9 +166,22 @@ public:
         SlownessSlider->setOrientation(Qt::Horizontal);
         SlownessSlider->setInvertedAppearance(false);
         SlownessSlider->setTickPosition(QSlider::TicksAbove);
+        SlownessSlider->setTickInterval(5);
         label_5 = new QLabel(widget);
         label_5->setObjectName(QString::fromUtf8("label_5"));
         label_5->setGeometry(QRect(10, 410, 61, 21));
+        emissionSlider = new QSlider(widget);
+        emissionSlider->setObjectName(QString::fromUtf8("emissionSlider"));
+        emissionSlider->setGeometry(QRect(80, 460, 160, 22));
+        emissionSlider->setMinimum(5);
+        emissionSlider->setMaximum(80);
+        emissionSlider->setValue(30);
+        emissionSlider->setOrientation(Qt::Horizontal);
+        emissionSlider->setTickPosition(QSlider::TicksAbove);
+        emissionSlider->setTickInterval(5);
+        label_6 = new QLabel(widget);
+        label_6->setObjectName(QString::fromUtf8("label_6"));
+        label_6->setGeometry(QRect(10, 460, 61, 21));
 
         gridLayout->addWidget(widget, 0, 2, 2, 1);
 
@@ -213,6 +228,7 @@ public:
         ClearButton->setShortcut(QApplication::translate("MainWindowClass", "C", nullptr));
 #endif // QT_NO_SHORTCUT
         label_5->setText(QApplication::translate("MainWindowClass", "Slower", nullptr));
+        label_6->setText(QApplication::translate("MainWindowClass", "Emission", nullptr));
     } // retranslateUi
 
 };

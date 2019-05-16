@@ -20,6 +20,10 @@ MainWindow::MainWindow(QWidget *parent)
 		ui.statusBar->showMessage(QString::asprintf("FPS: %.1f Bodies: %d", engine.fps, engine.bodiesCount));
 	});
 
+	connect(ui.emissionSlider, &QSlider::valueChanged, [=] {
+		this->emitter.particlesPerEmission = ui.emissionSlider->value();
+	});
+
 	connect(ui.SlownessSlider, &QSlider::valueChanged, [=] {
 		this->engine.speedSlownessScale = ui.SlownessSlider->value();
 	});

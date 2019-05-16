@@ -9,7 +9,8 @@ SimulationCanvasGLWidget::SimulationCanvasGLWidget(QWidget *parent) : QOpenGLWid
 
 	background = QBrush(QColor(0, 0, 0));
 	circlePen = QPen(QColor(173, 216, 230));
-	circlePen.setWidth(2);
+	circlePen.setWidth(0);
+	circleBrush = QBrush(circlePen.color());
 }
 
 
@@ -51,7 +52,7 @@ void SimulationCanvasGLWidget::addBodiesAtWidgetPosition(QPointF position) {
 	position.rx() *= xscaleFactor;
 	position.ry() *= yscaleFactor;
 
-	emitter->addRandomBodies(engine, 50, position);
+	emitter->addRandomBodies(engine, emitter->particlesPerEmission, position);
 }
 
 void SimulationCanvasGLWidget::paintEvent(QPaintEvent *event)
@@ -61,8 +62,8 @@ void SimulationCanvasGLWidget::paintEvent(QPaintEvent *event)
 	painter.setRenderHint(QPainter::Antialiasing);
 
     painter.fillRect(event->rect(), background);
-    painter.setBrush(circleBrush);
-    painter.setPen(circlePen);
+	painter.setPen(circlePen);
+	painter.setBrush(circleBrush);
 	
 	QVector<QPointF> points;
 	points.reserve(engine->getBodiesCount());
@@ -84,9 +85,8 @@ void SimulationCanvasGLWidget::paintEvent(QPaintEvent *event)
 	{
 		points[i].rx() *= xscaleFactor;
 		points[i].ry() *= yscaleFactor;
+		painter.drawEllipse(points[i], 3, 3);
 	}
-
-	painter.drawPoints(points);
 
 	painter.end();
 }

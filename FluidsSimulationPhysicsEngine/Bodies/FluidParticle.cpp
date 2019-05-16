@@ -156,7 +156,7 @@ void FluidParticle::applyInteraction()
 	this->positionVector += (this->engine->timeDelta * this->_velocity);
 	this->setPosition(this->positionVector.toPointF());
 	auto size = this->engine->getUnsafeBodiesGrid().sizeInCentimeters();
-	double damp = 0.75;
+	double damp = 0.5;
 
 	if (this->position.x() < 0)
 	{
