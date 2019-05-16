@@ -45,7 +45,7 @@ double FluidParticle::computeDynsity(QVector<BodiesVector*> surroundingBodies,do
 			if (particle != NULL)
 			{				
 				double distance = this->positionVector.distanceToPoint(particle->positionVector);
-				if (distance < radius)
+				if (distance <= radius)
 				{
 					resultingDynsity += particle->_mass * this->applyKernal(distance, radius, poly6);
 				}
@@ -64,28 +64,32 @@ double FluidParticle::computePressure(double gasConstant, double restDynsity, do
 QVector2D FluidParticle::computePressureForce(QVector<BodiesVector*> surroundingBodies, double radius)
 {
 	QVector2D resultingPressureForce(0.0,0.0);
+	auto relativePressureTerm = this->_pressure / (this->_density * this->_density);
 	for (int i = 0; i < surroundingBodies.length(); i++)
 	{
 		auto bodyVector = surroundingBodies[i];
 		for (int j = 0; j < bodyVector->length(); j++)
 		{
 			auto body = bodyVector->at(j);
+			if (body == this)
+				continue;
 			FluidParticle* particle = dynamic_cast<FluidParticle*>(body);
 			if (particle != NULL)
 			{
-				auto vec = particle->positionVector - this->positionVector;
+				auto vec = this->positionVector - particle->positionVector;
+				vec.normalize();
 				double distance = this->positionVector.distanceToPoint(particle->positionVector);
 				
-				if (distance < radius)
+				if (distance <= radius)
 				{
-					resultingPressureForce += -vec.normalized() * particle->_mass * ((this->_pressure+particle->_pressure) / 2 * particle->_density)
-						* this->applyKernal(distance, radius, spiky);
+					auto leftTerm = (relativePressureTerm + (particle->_pressure / (particle->_density * particle->_density))) * particle->_mass;
+					resultingPressureForce += vec * leftTerm * this->applyKernal(distance, radius, spiky);
 				}
 
 			}
 		}
 	}
-	return  resultingPressureForce;
+	return (-this->_density) *  resultingPressureForce;
 }
 
 QVector2D FluidParticle::computeViscousForce(QVector<BodiesVector*> surroundingBodies, double radius)
@@ -97,11 +101,13 @@ QVector2D FluidParticle::computeViscousForce(QVector<BodiesVector*> surroundingB
 		for (int j = 0; j < bodyVector->length(); j++)
 		{
 			auto body = bodyVector->at(j);
+			if (body == this)
+				continue;
 			FluidParticle* particle = dynamic_cast<FluidParticle*>(body);
 			if (particle != NULL)
 			{				
 				double distance = this->positionVector.distanceToPoint(particle->positionVector);
-				if (distance < radius)
+				if (distance <= radius)
 				{
 					resultingVisousForce += particle->_mass * (((particle->_velocity) - (this->_velocity)) / particle->_density)
 						* this->applyKernal(distance, radius, visc);
