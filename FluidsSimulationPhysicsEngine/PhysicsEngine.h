@@ -7,7 +7,6 @@
 #include <thread>
 #include <atomic>
 #include <mutex>
-#include <queue>
 using namespace std;
 
 class FLUIDSSIMULATIONPHYSICSENGINE_EXPORT PhysicsEngine

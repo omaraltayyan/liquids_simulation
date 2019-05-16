@@ -16,7 +16,7 @@ public:
 	double emittedParticleMass = 65;
 	double emittedParticleGasConstant = 0.01;
 	double emittedParticleRestDensity = 1000;
-	double particlesPerEmission = 30;
+	double particlesPerEmission = 20;
 	
 	
 	qreal emissionAreaSquareRadius = 1;
