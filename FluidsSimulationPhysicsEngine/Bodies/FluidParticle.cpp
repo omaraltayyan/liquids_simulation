@@ -149,7 +149,6 @@ QVector2D FluidParticle::computeSurfaceNormal(QVector<BodiesVector*> surrounding
 			if (particle != NULL)
 			{
 				auto vec = this->positionVector - particle->positionVector;
-				vec.normalize();
 				double distance = this->positionVector.distanceToPoint(particle->positionVector);
 				if (distance <= radius)
 				{
@@ -157,8 +156,8 @@ QVector2D FluidParticle::computeSurfaceNormal(QVector<BodiesVector*> surrounding
 					if (useLaplacian)
 						kernel = this->applyKernal(distance, radius, lapPoly6);
 					else
-						kernel = this->applyKernal(distance, radius, gradPoly6);					
-					resultingSurfaceNormal += vec * (particle->_mass*particle->_density)*kernel;
+						kernel = this->applyKernal(distance, radius, gradPoly6);
+					resultingSurfaceNormal += vec * (particle->_mass/particle->_density)*kernel;
 				}
 			}
 
@@ -171,13 +170,12 @@ QVector2D FluidParticle::computeSurfaceTension(QVector<BodiesVector*> surroundin
 {
 	QVector2D resultingSurfaceTension(0.0, 0.0);
 	auto surfaceNormal = this->computeSurfaceNormal(surroundingBodies, radius, false);
-	double magnitude =qSqrt(surfaceNormal.x()*surfaceNormal.x() + surfaceNormal.y()*surfaceNormal.y());
+	double magnitude = surfaceNormal.length();
 	if ( magnitude >= this->_surfaceThreshold)
 	{
 		surfaceNormal.normalize();
 		resultingSurfaceTension = this->computeSurfaceNormal(surroundingBodies, radius, true) * surfaceNormal;
 	}
-	
 
 	return -1 * this->_tensionCoefcioant * resultingSurfaceTension;
 }
@@ -187,8 +185,8 @@ QVector2D FluidParticle::computeSumOfForces(QVector<BodiesVector*> surroundingBo
 	QVector2D pressureForce = this->computePressureForce(surroundingBodies, radius);
 	QVector2D viscousForce = this->computeViscousForce(surroundingBodies, radius);
 	QVector2D gravityForce = 0.1 * this->engine->gravity * this->_density;
-	//QVector2D surfaceTensionForce = this->computeSurfaceTension(surroundingBodies,radius);
-	return pressureForce + viscousForce + gravityForce;// +surfaceTensionForce;
+	QVector2D surfaceTensionForce = this->computeSurfaceTension(surroundingBodies,radius);
+	return pressureForce + viscousForce + gravityForce +surfaceTensionForce;
 }
 
 /*
