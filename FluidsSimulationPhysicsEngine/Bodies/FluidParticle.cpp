@@ -12,6 +12,10 @@ FluidParticle::FluidParticle(const QPointF& position, PhysicsEngine* engine, qre
 	_restDensity = restDesity;
 	_velocity.setX(0.0);
 	_velocity.setY(0.0);
+	_leapFrogPrevVelocity.setX(0);
+	_leapFrogPrevVelocity.setY(0);
+	_leapFrogNextVelocity.setX(0.0);
+	_leapFrogNextVelocity.setY(0.0);
 	_tensionCoefcioant = surfaceTension;
 	_surfaceThreshold = threshold;
 }
@@ -40,7 +44,7 @@ double FluidParticle::applyKernal(double distance, double radius, SmoothingKerna
 
 }
 
-double FluidParticle::computeDynsity(const QVector<FluidParticle*>& fuildParticles, double radius)
+double FluidParticle::computeDensity(const QVector<FluidParticle*>& fuildParticles, double radius)
 {
 	double resultingDynsity = 0.0;
 	for (int i = 0; i < fuildParticles.length(); i++)
@@ -57,7 +61,7 @@ double FluidParticle::computePressure(double gasConstant, double restDynsity, do
 	//if (density < restDynsity) {
 	//	return 0.01 * gasConstant * (density - restDynsity);
 	//}
-	return gasConstant * engine->timeDelta * (density - restDynsity);
+	return gasConstant /** engine->timeDelta*/ * (density - restDynsity);
 }
 
 QVector2D FluidParticle::computePressureForce(const QVector<FluidParticle*>& fuildParticles, double radius)
@@ -183,7 +187,7 @@ QVector2D FluidParticle::computeSumOfForces(const QVector<FluidParticle*>& fluid
 {
 	QVector2D pressureForce = this->computePressureForce(fluidParticles, radius);
 	QVector2D viscousForce = this->computeViscousForce(fluidParticles, radius);
-	QVector2D gravityForce = 0.1 * this->engine->gravity * this->_density;
+	QVector2D gravityForce = /*0.1 **/ this->engine->gravity * this->_density;
 	QVector2D surfaceTensionForce = this->computeSurfaceTension(fluidParticles, radius);
 	return pressureForce + viscousForce + gravityForce + surfaceTensionForce;
 }
@@ -203,21 +207,25 @@ void FluidParticle::calculateInteractionWithBodies(const QVector<BodiesVector*>&
 	auto fluidParticles = this->filterFuildParticles(surroundingBodies, radius);
 
 	if (calculationOperation == 0) {
-		this->_density = this->computeDynsity(fluidParticles, radius);
+		this->_density = this->computeDensity(fluidParticles, radius);
 		//here gas constant and rest density should variables taken from user input
 		this->_pressure = this->computePressure(this->_gasConstant, this->_restDensity, this->_density);
 	}
 	else if (calculationOperation == 1) {
 		//here gravity should also be taken from user input
 		this->_force = this->computeSumOfForces(fluidParticles, radius);
-		this->_velocity += engine->timeDelta*this->_force / this->_density;
+		auto acceleration = this->_force / this->_density;
+		
+		this->_leapFrogNextVelocity = _leapFrogPrevVelocity + engine->timeDelta * acceleration;
+		_leapFrogPrevVelocity = _leapFrogNextVelocity;
 	}
 }
 
 void FluidParticle::applyInteraction()
 {
-	this->positionVector += (this->engine->timeDelta * this->_velocity);
+	this->positionVector += (this->engine->timeDelta * _leapFrogNextVelocity);
 	this->setPosition(this->positionVector.toPointF());
+
 	auto size = this->engine->getUnsafeBodiesGrid().sizeInCentimeters();
 	double damp = 0.25;
 
@@ -264,6 +272,9 @@ void FluidParticle::applyInteraction()
 
 		this->setPosition(this->positionVector.toPointF());
 	}
+
+	this->_velocity = (_leapFrogPrevVelocity + _leapFrogNextVelocity) / 2.0;
+
 }
 
 

@@ -25,12 +25,11 @@ public:
 	void applyInteraction() override;
 
 private:
-	double _density, _viscosity, _pressure, _mass, _gasConstant, _restDensity, _tensionCoefcioant, _surfaceThreshold,_velocityHalfStep;
-	QVector2D _velocity, _force, _tempVelocity, _tempForce;
-
+	double _density, _viscosity, _pressure, _mass, _gasConstant, _restDensity, _tensionCoefcioant, _surfaceThreshold;
+	QVector2D _velocity, _leapFrogPrevVelocity, _leapFrogNextVelocity, _force;
 
 	double applyKernal(double distance, double radius, SmoothingKernals kernal);
-	double computeDynsity(const QVector<FluidParticle*>& fuildParticles, double radius);
+	double computeDensity(const QVector<FluidParticle*>& fuildParticles, double radius);
 	double computePressure(double gasConstant, double restDynsity, double density);
 	QVector2D computePressureForce(const QVector<FluidParticle*>& fuildParticles, double radius);
 	QVector2D computeViscousForce(const QVector<FluidParticle*>& fuildParticles, double radius);
