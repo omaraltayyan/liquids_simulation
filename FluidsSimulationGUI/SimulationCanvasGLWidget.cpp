@@ -45,7 +45,8 @@ void SimulationCanvasGLWidget::leaveEvent(QEvent *event)
 
 void SimulationCanvasGLWidget::addBodiesAtWidgetPosition(QPointF position) {
 
-	position -= QPoint(containerOffset, containerOffset);
+	auto offset = containerOffsetPixels();
+	position -= QPoint(offset.width(), offset.height());
 	if (position.x() > containerWidth()) {
 		return;
 	}
@@ -64,12 +65,23 @@ void SimulationCanvasGLWidget::addBodiesAtWidgetPosition(QPointF position) {
 
 int SimulationCanvasGLWidget::containerHeight()
 {
-	return this->height() - (containerOffset * 2);
+	return this->height() - (containerOffsetPixels().height() * 2);
 }
 
 int SimulationCanvasGLWidget::containerWidth()
 {
-	return this->width() - (containerOffset * 2);
+	return this->width() - (containerOffsetPixels().width() * 2);
+}
+
+const QSize SimulationCanvasGLWidget::containerOffsetPixels()
+{
+	auto gridSize = engine->getUnsafeBodiesGrid().sizeInCentimeters();
+
+	double xscaleFactor = this->width() / gridSize.width();
+	double yscaleFactor = this->height() / gridSize.height();
+
+	return QSize(xscaleFactor * containerOffsetMeters, yscaleFactor * containerOffsetMeters);
+
 }
 
 void SimulationCanvasGLWidget::paintEvent(QPaintEvent *event)
@@ -100,7 +112,7 @@ void SimulationCanvasGLWidget::paintEvent(QPaintEvent *event)
 		points[i].rx() *= xscaleFactor;
 		points[i].ry() *= yscaleFactor;
 	}
-
+	auto offset = containerOffsetPixels();
 	QPainter painter;
 	painter.begin(this);
 	painter.setRenderHint(QPainter::Antialiasing, true);
@@ -108,7 +120,7 @@ void SimulationCanvasGLWidget::paintEvent(QPaintEvent *event)
 	painter.fillRect(event->rect(), background);
 	painter.setPen(circlePen);
 	painter.setBrush(circleBrush);
-	painter.translate(containerOffset, containerOffset);
+	painter.translate(offset.width(), offset.height());
 	painter.drawPoints(points);
 
 	painter.end();

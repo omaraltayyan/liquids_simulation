@@ -189,10 +189,6 @@ QVector2D FluidParticle::computeSumOfForces(QVector<BodiesVector*> surroundingBo
 	return pressureForce + viscousForce + gravityForce;// +surfaceTensionForce;
 }
 
-QVector2D FluidParticle::computeVelocityChange(double deltaTime, QVector2D sumForces)
-{
-	return this->_velocity + (deltaTime*sumForces/this->_density);
-}
 /*
 important note about threading:
 	first density should computed for all particles
@@ -213,7 +209,7 @@ void FluidParticle::calculateInteractionWithBodies(QVector<BodiesVector*> surrou
 	else if (calculationOperation == 1) {
 		//here gravity should also be taken from user input
 		this->_force = this->computeSumOfForces(surroundingBodies, radius);
-		this->_velocity = this->computeVelocityChange(engine->timeDelta, this->_force);
+		this->_velocity += engine->timeDelta*this->_force / this->_density;
 	}
 }
 
