@@ -24,6 +24,11 @@ public:
 	QPen circlePen;
 
 protected:
+	int containerWidth();
+	int containerHeight();
+
+	const int containerOffset = 50;
+
 	void paintEvent(QPaintEvent *event) override;
 	void mousePressEvent(QMouseEvent *event) override;
 	void mouseMoveEvent(QMouseEvent *event) override;

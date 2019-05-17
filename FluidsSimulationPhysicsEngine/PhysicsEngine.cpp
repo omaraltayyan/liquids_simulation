@@ -37,7 +37,7 @@ Grid & PhysicsEngine::getUnsafeBodiesGrid()
 	return this->bodiesGrid;
 }
 
-PhysicsEngine::PhysicsEngine() : bodiesGrid(QSizeF(1.03125, 1.03125), 0.046875)
+PhysicsEngine::PhysicsEngine() : bodiesGrid(QSizeF(0.515625, 0.515625), 0.046875)
 {
 	this->lastMomentProcessingStarted = chrono::high_resolution_clock::now();
 	this->shouldStopEngine = false;

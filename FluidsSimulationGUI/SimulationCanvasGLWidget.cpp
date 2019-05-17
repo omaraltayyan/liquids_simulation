@@ -45,14 +45,31 @@ void SimulationCanvasGLWidget::leaveEvent(QEvent *event)
 
 void SimulationCanvasGLWidget::addBodiesAtWidgetPosition(QPointF position) {
 
+	position -= QPoint(containerOffset, containerOffset);
+	if (position.x() > containerWidth()) {
+		return;
+	}
+	if (position.y() > containerHeight()) {
+		return;
+	}
 	auto gridSize = engine->getUnsafeBodiesGrid().sizeInCentimeters();
 
-	double xscaleFactor = gridSize.width() / this->width();
-	double yscaleFactor = gridSize.height() / this->height();
+	double xscaleFactor = gridSize.width() / containerWidth();
+	double yscaleFactor = gridSize.height() / containerHeight();
 	position.rx() *= xscaleFactor;
 	position.ry() *= yscaleFactor;
 
 	emitter->addRandomBodies(engine, emitter->particlesPerEmission, position);
+}
+
+int SimulationCanvasGLWidget::containerHeight()
+{
+	return this->height() - (containerOffset * 2);
+}
+
+int SimulationCanvasGLWidget::containerWidth()
+{
+	return this->width() - (containerOffset * 2);
 }
 
 void SimulationCanvasGLWidget::paintEvent(QPaintEvent *event)
@@ -69,13 +86,12 @@ void SimulationCanvasGLWidget::paintEvent(QPaintEvent *event)
 			points.push_back(particle->position);
 		}
 	});
+	double xscaleFactor = containerWidth() / gridSize.width();
+	double yscaleFactor = containerHeight() / gridSize.height();
 	
-	double xscaleFactor = this->width() / gridSize.width();
-	double yscaleFactor = this->height() / gridSize.height();
-	
-	double radiusScaleX = this->width() / gridSize.width();
+	double radiusScaleX = containerWidth() / gridSize.width();
 	radiusScaleX *= radiusScaleX;
-	double radiusScaleY = this->height() / gridSize.height();
+	double radiusScaleY = containerHeight() / gridSize.height();
 	radiusScaleY *= radiusScaleY;
 	double radiusScale = sqrt(radiusScaleX + radiusScaleY);
 	circlePen.setWidth(emitter->emittedParticleRadius * radiusScale);
@@ -92,7 +108,7 @@ void SimulationCanvasGLWidget::paintEvent(QPaintEvent *event)
 	painter.fillRect(event->rect(), background);
 	painter.setPen(circlePen);
 	painter.setBrush(circleBrush);
-
+	painter.translate(containerOffset, containerOffset);
 	painter.drawPoints(points);
 
 	painter.end();

@@ -58,7 +58,10 @@ double FluidParticle::computeDynsity(QVector<BodiesVector*> surroundingBodies,do
 
 double FluidParticle::computePressure(double gasConstant, double restDynsity, double density)
 {
-	return gasConstant * (density - restDynsity);
+	//if (density < restDynsity) {
+	//	return 0.01 * gasConstant * (density - restDynsity);
+	//}
+	return gasConstant * engine->timeDelta * (density - restDynsity);
 }
 
 QVector2D FluidParticle::computePressureForce(QVector<BodiesVector*> surroundingBodies, double radius)
@@ -124,13 +127,12 @@ QVector2D FluidParticle::computeSumOfForces(QVector<BodiesVector*> surroundingBo
 {	
 	QVector2D pressureForce = this->computePressureForce(surroundingBodies, radius);
 	QVector2D viscousForce = this->computeViscousForce(surroundingBodies, radius);
-	QVector2D gravityForce = this->engine->gravity * this->_density;
+	QVector2D gravityForce = 0.1 * this->engine->gravity * this->_density;
 	return pressureForce + viscousForce + gravityForce;
 }
 
 QVector2D FluidParticle::computeVelocityChange(double deltaTime, QVector2D sumForces)
 {
-
 	return this->_velocity + (deltaTime*sumForces/this->_density);
 }
 /*
@@ -162,7 +164,7 @@ void FluidParticle::applyInteraction()
 	this->positionVector += (this->engine->timeDelta * this->_velocity);
 	this->setPosition(this->positionVector.toPointF());
 	auto size = this->engine->getUnsafeBodiesGrid().sizeInCentimeters();
-	double damp = 0.5;
+	double damp = 0.25;
 
 	if (this->position.x() < 0)
 	{
