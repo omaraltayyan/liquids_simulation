@@ -113,11 +113,13 @@ QVector2D FluidParticle::computeViscousForce(QVector<BodiesVector*> surroundingB
 				continue;
 			FluidParticle* particle = dynamic_cast<FluidParticle*>(body);
 			if (particle != NULL)
-			{				
+			{		
+				auto vec = this->positionVector - particle->positionVector;
+				vec.normalize();
 				double distance = this->positionVector.distanceToPoint(particle->positionVector);
 				if (distance <= radius)
 				{
-					resultingVisousForce += particle->_mass * (((particle->_velocity) - (this->_velocity)) / particle->_density)
+					resultingVisousForce += vec * particle->_mass * (((particle->_velocity) - (this->_velocity)) / particle->_density)
 						* this->applyKernal(distance, radius, visc);
 				}
 
@@ -136,6 +138,19 @@ QVector2D FluidParticle::computeSurfaceNormal(QVector<BodiesVector*> surrounding
 		auto bodyVector = surroundingBodies[i];
 		for (int j = 0; j < bodyVector->length(); j++)
 		{
+			auto body = bodyVector->at(j);
+			if (body == this)
+				continue;
+			FluidParticle* particle = dynamic_cast<FluidParticle*>(body);
+			if (particle != NULL)
+			{
+				double distance = this->positionVector.distanceToPoint(particle->positionVector);
+				if (distance <= radius)
+				{
+					resultingSurfaceNormal += (particle->_mass*particle->_density)*this->applyKernal(distance, radius, gradPoly6);
+				}
+			}
+
 		}
 	}
 	return resultingSurfaceNormal;
