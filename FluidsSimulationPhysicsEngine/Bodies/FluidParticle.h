@@ -18,7 +18,7 @@ class FluidParticle : public Particle
 public:
 
 	FluidParticle(const QPointF& position, PhysicsEngine* engine, qreal sizeRadius,
-		double viscosity, double mass, double gasConstant, double restDesity,
+		double viscosity, double mass, double gasConstant, double restDesity,double _velocityHalfStep,
 		double surfaceTension, double threshold);
 
 	void calculateInteractionWithBodies(const QVector<BodiesVector*>& surroundingBodies, int calculationOperation) override;
