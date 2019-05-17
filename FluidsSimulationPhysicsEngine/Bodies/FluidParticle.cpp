@@ -17,17 +17,22 @@ FluidParticle::FluidParticle(const QPointF& position, PhysicsEngine* engine, qre
 double FluidParticle::applyKernal(double distance, double radius, SmoothingKernals kernal)
 {
 	
-		switch (kernal)
-		{
-		case poly6:
-			return (315 / (64*M_PI*qPow(radius,9))) * qPow(((radius*radius) - (distance*distance)),3);			
-		case spiky:
-			return (-45 / (M_PI*qPow(radius, 6))) * qPow((radius - distance), 2);
-		case visc:
-			return (45 / (M_PI*qPow(radius, 6))) * (radius - distance);
-		default:
-			return 0.0;
-		}		
+	double holder = (radius * radius) - (distance * distance);
+	switch (kernal)
+	{
+	case poly6:
+		return (315 / (64 * M_PI*qPow(radius, 9))) * (holder*holder*holder);
+	case gradPoly6:
+		return -1 * distance * (945 / (32 * M_PI * qPow(radius, 9))) * (holder*holder);
+	case lapPoly6:
+		return (945 / (8 * M_PI * qPow(radius, 9))) * holder * ((distance*distance) - (3/4 * holder));
+	case spiky:
+		return (-45 / (M_PI*qPow(radius, 6))) * qPow((radius - distance), 2);
+	case visc:
+		return (45 / (M_PI*qPow(radius, 6))) * (radius - distance);
+	default:
+		return 0.0;
+	}
 	
 
 }
@@ -121,6 +126,33 @@ QVector2D FluidParticle::computeViscousForce(QVector<BodiesVector*> surroundingB
 	}
 	
 	return this->_viscosity * resultingVisousForce;
+}
+
+QVector2D FluidParticle::computeSurfaceNormal(QVector<BodiesVector*> surroundingBodies, double radius)
+{
+	QVector2D resultingSurfaceNormal(0.0, 0.0);
+	for (int i = 0; i < surroundingBodies.length(); i++)
+	{
+		auto bodyVector = surroundingBodies[i];
+		for (int j = 0; j < bodyVector->length(); j++)
+		{
+		}
+	}
+	return resultingSurfaceNormal;
+}
+
+QVector2D FluidParticle::computeSurfaceTension(QVector<BodiesVector*> surroundingBodies, double radius)
+{
+	QVector2D resultingSurfaceTension(0.0, 0.0);
+	for (int i = 0; i < surroundingBodies.length(); i++)
+	{
+		auto bodyVector = surroundingBodies[i];
+		for (int j = 0; j < bodyVector->length(); j++)
+		{
+		}
+	}
+
+	return QVector2D();
 }
 
 QVector2D FluidParticle::computeSumOfForces(QVector<BodiesVector*> surroundingBodies, double radius)

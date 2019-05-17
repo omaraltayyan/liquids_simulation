@@ -8,6 +8,8 @@
 enum SmoothingKernals
 {
 	poly6,
+	gradPoly6,
+	lapPoly6,
 	spiky,
 	visc
 };
@@ -27,6 +29,8 @@ private:
 	double computePressure(double gasConstant, double restDynsity, double density);
 	QVector2D computePressureForce(QVector<BodiesVector*> surroundingBodies, double radius);
 	QVector2D computeViscousForce(QVector<BodiesVector*> surroundingBodies, double radius);
+	QVector2D computeSurfaceNormal(QVector<BodiesVector*> surroundingBodies, double radius);
+	QVector2D computeSurfaceTension(QVector<BodiesVector*> surroundingBodies, double radius);
 	QVector2D computeSumOfForces(QVector<BodiesVector*> surroundingBodies, double radius);
 	QVector2D computeVelocityChange(double deltaTime,QVector2D sumForces);
 
