@@ -22,23 +22,24 @@ public:
 		double surfaceTension, double threshold);
 
 private:
-	double _density, _viscosity, _pressure, _mass, _gasConstant, _restDensity,_tensionCoefcioant,_surfaceThreshold;
+	double _density, _viscosity, _pressure, _mass, _gasConstant, _restDensity, _tensionCoefcioant, _surfaceThreshold;
 	QVector2D _velocity, _force, _tempVelocity, _tempForce;
-	
+
 
 	double applyKernal(double distance, double radius, SmoothingKernals kernal);
 	double computeDynsity(QVector<BodiesVector*> surroundingBodies, double radius);
 	double computePressure(double gasConstant, double restDynsity, double density);
 	QVector2D computePressureForce(QVector<BodiesVector*> surroundingBodies, double radius);
 	QVector2D computeViscousForce(QVector<BodiesVector*> surroundingBodies, double radius);
-	QVector2D computeSurfaceNormal(QVector<BodiesVector*> surroundingBodies, double radius,bool useLaplacian);
+	QVector2D computeSurfaceNormal(QVector<BodiesVector*> surroundingBodies, double radius);
+	double computeLaplacianSurfaceNormal(QVector<BodiesVector*> surroundingBodies, double radius);
 	QVector2D computeSurfaceTension(QVector<BodiesVector*> surroundingBodies, double radius);
 	QVector2D computeSumOfForces(QVector<BodiesVector*> surroundingBodies, double radius);
-	QVector2D computeVelocityChange(double deltaTime,QVector2D sumForces);
+	QVector2D computeVelocityChange(double deltaTime, QVector2D sumForces);
 
 	void calculateInteractionWithBodies(QVector<BodiesVector*> surroundingBodies, int calculationOperation);
 	void applyInteraction();
-	
-	 
+
+
 };
 
