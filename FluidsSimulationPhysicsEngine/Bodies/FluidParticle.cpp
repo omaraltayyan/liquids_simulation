@@ -11,6 +11,8 @@ FluidParticle::FluidParticle(const QPointF& position, PhysicsEngine* engine, qre
 	_restDensity = restDesity;
 	_velocity.setX(0.0); 
 	_velocity.setY(0.0);
+	_tensionCoefcioant = 0.728;
+	_surfaceThreshold = 0.007;
 }
 
 
@@ -113,13 +115,11 @@ QVector2D FluidParticle::computeViscousForce(QVector<BodiesVector*> surroundingB
 				continue;
 			FluidParticle* particle = dynamic_cast<FluidParticle*>(body);
 			if (particle != NULL)
-			{		
-				auto vec = this->positionVector - particle->positionVector;
-				vec.normalize();
+			{						
 				double distance = this->positionVector.distanceToPoint(particle->positionVector);
 				if (distance <= radius)
 				{
-					resultingVisousForce += vec * particle->_mass * (((particle->_velocity) - (this->_velocity)) / particle->_density)
+					resultingVisousForce +=  particle->_mass * (((particle->_velocity) - (this->_velocity)) / particle->_density)
 						* this->applyKernal(distance, radius, visc);
 				}
 
@@ -130,7 +130,10 @@ QVector2D FluidParticle::computeViscousForce(QVector<BodiesVector*> surroundingB
 	return this->_viscosity * resultingVisousForce;
 }
 
-QVector2D FluidParticle::computeSurfaceNormal(QVector<BodiesVector*> surroundingBodies, double radius)
+//important note : 
+//when useLaplacian equlas false this method will compute the surface normal (whiche is the gradient to the color feild)
+//when useLaplaican equals true this method wii compute the laplacian of the color feild to use it to compute the surfacetension
+QVector2D FluidParticle::computeSurfaceNormal(QVector<BodiesVector*> surroundingBodies, double radius, bool useLaplacian)
 {
 	QVector2D resultingSurfaceNormal(0.0, 0.0);
 	for (int i = 0; i < surroundingBodies.length(); i++)
@@ -144,10 +147,17 @@ QVector2D FluidParticle::computeSurfaceNormal(QVector<BodiesVector*> surrounding
 			FluidParticle* particle = dynamic_cast<FluidParticle*>(body);
 			if (particle != NULL)
 			{
+				auto vec = this->positionVector - particle->positionVector;
+				vec.normalize();
 				double distance = this->positionVector.distanceToPoint(particle->positionVector);
 				if (distance <= radius)
 				{
-					resultingSurfaceNormal += (particle->_mass*particle->_density)*this->applyKernal(distance, radius, gradPoly6);
+					double kernel = 0.0;
+					if (useLaplacian)
+						kernel = this->applyKernal(distance, radius, lapPoly6);
+					else
+						kernel = this->applyKernal(distance, radius, gradPoly6);					
+					resultingSurfaceNormal += vec * (particle->_mass*particle->_density)*kernel;
 				}
 			}
 
@@ -159,15 +169,15 @@ QVector2D FluidParticle::computeSurfaceNormal(QVector<BodiesVector*> surrounding
 QVector2D FluidParticle::computeSurfaceTension(QVector<BodiesVector*> surroundingBodies, double radius)
 {
 	QVector2D resultingSurfaceTension(0.0, 0.0);
-	for (int i = 0; i < surroundingBodies.length(); i++)
+	auto surfaceNormal = this->computeSurfaceNormal(surroundingBodies, radius, false);
+	double magnitude =qSqrt(surfaceNormal.x()*surfaceNormal.x() + surfaceNormal.y()*surfaceNormal.y());
+	if ( magnitude > this->_surfaceThreshold)
 	{
-		auto bodyVector = surroundingBodies[i];
-		for (int j = 0; j < bodyVector->length(); j++)
-		{
-		}
+		resultingSurfaceTension = this->computeSurfaceNormal(surroundingBodies, radius, true) * (surfaceNormal/magnitude);
 	}
+	
 
-	return QVector2D();
+	return -1 * this->_tensionCoefcioant * resultingSurfaceTension;
 }
 
 QVector2D FluidParticle::computeSumOfForces(QVector<BodiesVector*> surroundingBodies, double radius)
@@ -175,7 +185,8 @@ QVector2D FluidParticle::computeSumOfForces(QVector<BodiesVector*> surroundingBo
 	QVector2D pressureForce = this->computePressureForce(surroundingBodies, radius);
 	QVector2D viscousForce = this->computeViscousForce(surroundingBodies, radius);
 	QVector2D gravityForce = 0.1 * this->engine->gravity * this->_density;
-	return pressureForce + viscousForce + gravityForce;
+	//QVector2D surfaceTensionForce = this->computeSurfaceTension(surroundingBodies,radius);
+	return pressureForce + viscousForce + gravityForce;// +surfaceTensionForce;
 }
 
 QVector2D FluidParticle::computeVelocityChange(double deltaTime, QVector2D sumForces)
