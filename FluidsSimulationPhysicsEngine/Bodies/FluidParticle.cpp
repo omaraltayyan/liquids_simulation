@@ -171,9 +171,10 @@ QVector2D FluidParticle::computeSurfaceTension(QVector<BodiesVector*> surroundin
 	QVector2D resultingSurfaceTension(0.0, 0.0);
 	auto surfaceNormal = this->computeSurfaceNormal(surroundingBodies, radius, false);
 	double magnitude =qSqrt(surfaceNormal.x()*surfaceNormal.x() + surfaceNormal.y()*surfaceNormal.y());
-	if ( magnitude > this->_surfaceThreshold)
+	if ( magnitude >= this->_surfaceThreshold)
 	{
-		resultingSurfaceTension = this->computeSurfaceNormal(surroundingBodies, radius, true) * (surfaceNormal/magnitude);
+		surfaceNormal.normalize();
+		resultingSurfaceTension = this->computeSurfaceNormal(surroundingBodies, radius, true) * surfaceNormal;
 	}
 	
 
@@ -233,6 +234,8 @@ void FluidParticle::applyInteraction()
 		this->_velocity *= damp;
 
 		this->setPosition(this->positionVector.toPointF());
+		
+
 	}
 	
 	if (this->position.x() > size.width())
