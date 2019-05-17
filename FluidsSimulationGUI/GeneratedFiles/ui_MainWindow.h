@@ -31,7 +31,6 @@ class Ui_MainWindowClass
 public:
     QWidget *centralWidget;
     QGridLayout *gridLayout;
-    SimulationCanvasGLWidget *openGLWidget;
     QTabWidget *tabWidget;
     QWidget *tab;
     QLineEdit *GasConstantText;
@@ -42,7 +41,12 @@ public:
     QLineEdit *ViscosityText;
     QLabel *label_2;
     QLineEdit *ParticleMassText;
+    QLineEdit *surfaceTensionText;
+    QLabel *label_8;
+    QLabel *label_9;
+    QLineEdit *thresholdText;
     QWidget *tab_2;
+    SimulationCanvasGLWidget *openGLWidget;
     QWidget *widget;
     QPushButton *ResumeButton;
     QPushButton *ClearButton;
@@ -50,6 +54,8 @@ public:
     QLabel *label_5;
     QSlider *emissionSlider;
     QLabel *label_6;
+    QSlider *gravitySlider;
+    QLabel *label_7;
     QStatusBar *statusBar;
     QMenuBar *menuBar;
     QToolBar *mainToolBar;
@@ -58,33 +64,20 @@ public:
     {
         if (MainWindowClass->objectName().isEmpty())
             MainWindowClass->setObjectName(QString::fromUtf8("MainWindowClass"));
-        MainWindowClass->resize(742, 697);
+        MainWindowClass->resize(788, 691);
         centralWidget = new QWidget(MainWindowClass);
         centralWidget->setObjectName(QString::fromUtf8("centralWidget"));
         gridLayout = new QGridLayout(centralWidget);
         gridLayout->setSpacing(20);
         gridLayout->setContentsMargins(11, 11, 11, 11);
         gridLayout->setObjectName(QString::fromUtf8("gridLayout"));
-        openGLWidget = new SimulationCanvasGLWidget(centralWidget);
-        openGLWidget->setObjectName(QString::fromUtf8("openGLWidget"));
-        QSizePolicy sizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-        sizePolicy.setHorizontalStretch(0);
-        sizePolicy.setVerticalStretch(0);
-        sizePolicy.setHeightForWidth(openGLWidget->sizePolicy().hasHeightForWidth());
-        openGLWidget->setSizePolicy(sizePolicy);
-        openGLWidget->setMinimumSize(QSize(400, 300));
-        openGLWidget->setCursor(QCursor(Qt::PointingHandCursor));
-        openGLWidget->setMouseTracking(false);
-
-        gridLayout->addWidget(openGLWidget, 0, 0, 1, 1);
-
         tabWidget = new QTabWidget(centralWidget);
         tabWidget->setObjectName(QString::fromUtf8("tabWidget"));
-        QSizePolicy sizePolicy1(QSizePolicy::Preferred, QSizePolicy::Fixed);
-        sizePolicy1.setHorizontalStretch(0);
-        sizePolicy1.setVerticalStretch(0);
-        sizePolicy1.setHeightForWidth(tabWidget->sizePolicy().hasHeightForWidth());
-        tabWidget->setSizePolicy(sizePolicy1);
+        QSizePolicy sizePolicy(QSizePolicy::Preferred, QSizePolicy::Fixed);
+        sizePolicy.setHorizontalStretch(0);
+        sizePolicy.setVerticalStretch(0);
+        sizePolicy.setHeightForWidth(tabWidget->sizePolicy().hasHeightForWidth());
+        tabWidget->setSizePolicy(sizePolicy);
         tabWidget->setMinimumSize(QSize(0, 200));
         tab = new QWidget();
         tab->setObjectName(QString::fromUtf8("tab"));
@@ -97,43 +90,69 @@ public:
         label = new QLabel(tab);
         label->setObjectName(QString::fromUtf8("label"));
         label->setGeometry(QRect(10, 10, 81, 21));
-        QSizePolicy sizePolicy2(QSizePolicy::Fixed, QSizePolicy::Fixed);
-        sizePolicy2.setHorizontalStretch(0);
-        sizePolicy2.setVerticalStretch(0);
-        sizePolicy2.setHeightForWidth(label->sizePolicy().hasHeightForWidth());
-        label->setSizePolicy(sizePolicy2);
+        QSizePolicy sizePolicy1(QSizePolicy::Fixed, QSizePolicy::Fixed);
+        sizePolicy1.setHorizontalStretch(0);
+        sizePolicy1.setVerticalStretch(0);
+        sizePolicy1.setHeightForWidth(label->sizePolicy().hasHeightForWidth());
+        label->setSizePolicy(sizePolicy1);
         label_3 = new QLabel(tab);
         label_3->setObjectName(QString::fromUtf8("label_3"));
         label_3->setGeometry(QRect(10, 70, 81, 21));
-        sizePolicy2.setHeightForWidth(label_3->sizePolicy().hasHeightForWidth());
-        label_3->setSizePolicy(sizePolicy2);
+        sizePolicy1.setHeightForWidth(label_3->sizePolicy().hasHeightForWidth());
+        label_3->setSizePolicy(sizePolicy1);
         label_4 = new QLabel(tab);
         label_4->setObjectName(QString::fromUtf8("label_4"));
         label_4->setGeometry(QRect(10, 100, 81, 21));
-        sizePolicy2.setHeightForWidth(label_4->sizePolicy().hasHeightForWidth());
-        label_4->setSizePolicy(sizePolicy2);
+        sizePolicy1.setHeightForWidth(label_4->sizePolicy().hasHeightForWidth());
+        label_4->setSizePolicy(sizePolicy1);
         ViscosityText = new QLineEdit(tab);
         ViscosityText->setObjectName(QString::fromUtf8("ViscosityText"));
         ViscosityText->setGeometry(QRect(100, 40, 141, 20));
         label_2 = new QLabel(tab);
         label_2->setObjectName(QString::fromUtf8("label_2"));
         label_2->setGeometry(QRect(10, 40, 81, 21));
-        sizePolicy2.setHeightForWidth(label_2->sizePolicy().hasHeightForWidth());
-        label_2->setSizePolicy(sizePolicy2);
+        sizePolicy1.setHeightForWidth(label_2->sizePolicy().hasHeightForWidth());
+        label_2->setSizePolicy(sizePolicy1);
         ParticleMassText = new QLineEdit(tab);
         ParticleMassText->setObjectName(QString::fromUtf8("ParticleMassText"));
         ParticleMassText->setGeometry(QRect(100, 10, 141, 20));
-        QSizePolicy sizePolicy3(QSizePolicy::Expanding, QSizePolicy::Fixed);
-        sizePolicy3.setHorizontalStretch(0);
-        sizePolicy3.setVerticalStretch(0);
-        sizePolicy3.setHeightForWidth(ParticleMassText->sizePolicy().hasHeightForWidth());
-        ParticleMassText->setSizePolicy(sizePolicy3);
+        QSizePolicy sizePolicy2(QSizePolicy::Expanding, QSizePolicy::Fixed);
+        sizePolicy2.setHorizontalStretch(0);
+        sizePolicy2.setVerticalStretch(0);
+        sizePolicy2.setHeightForWidth(ParticleMassText->sizePolicy().hasHeightForWidth());
+        ParticleMassText->setSizePolicy(sizePolicy2);
+        surfaceTensionText = new QLineEdit(tab);
+        surfaceTensionText->setObjectName(QString::fromUtf8("surfaceTensionText"));
+        surfaceTensionText->setGeometry(QRect(352, 10, 131, 20));
+        label_8 = new QLabel(tab);
+        label_8->setObjectName(QString::fromUtf8("label_8"));
+        label_8->setGeometry(QRect(260, 10, 81, 21));
+        label_9 = new QLabel(tab);
+        label_9->setObjectName(QString::fromUtf8("label_9"));
+        label_9->setGeometry(QRect(260, 50, 81, 21));
+        thresholdText = new QLineEdit(tab);
+        thresholdText->setObjectName(QString::fromUtf8("thresholdText"));
+        thresholdText->setGeometry(QRect(352, 50, 131, 20));
+        thresholdText->setReadOnly(false);
         tabWidget->addTab(tab, QString());
         tab_2 = new QWidget();
         tab_2->setObjectName(QString::fromUtf8("tab_2"));
         tabWidget->addTab(tab_2, QString());
 
         gridLayout->addWidget(tabWidget, 1, 0, 1, 1);
+
+        openGLWidget = new SimulationCanvasGLWidget(centralWidget);
+        openGLWidget->setObjectName(QString::fromUtf8("openGLWidget"));
+        QSizePolicy sizePolicy3(QSizePolicy::Expanding, QSizePolicy::Expanding);
+        sizePolicy3.setHorizontalStretch(0);
+        sizePolicy3.setVerticalStretch(0);
+        sizePolicy3.setHeightForWidth(openGLWidget->sizePolicy().hasHeightForWidth());
+        openGLWidget->setSizePolicy(sizePolicy3);
+        openGLWidget->setMinimumSize(QSize(500, 400));
+        openGLWidget->setCursor(QCursor(Qt::PointingHandCursor));
+        openGLWidget->setMouseTracking(false);
+
+        gridLayout->addWidget(openGLWidget, 0, 0, 1, 1);
 
         widget = new QWidget(centralWidget);
         widget->setObjectName(QString::fromUtf8("widget"));
@@ -182,6 +201,15 @@ public:
         label_6 = new QLabel(widget);
         label_6->setObjectName(QString::fromUtf8("label_6"));
         label_6->setGeometry(QRect(10, 460, 61, 21));
+        gravitySlider = new QSlider(widget);
+        gravitySlider->setObjectName(QString::fromUtf8("gravitySlider"));
+        gravitySlider->setGeometry(QRect(80, 350, 160, 22));
+        gravitySlider->setMaximum(20);
+        gravitySlider->setOrientation(Qt::Horizontal);
+        gravitySlider->setTickPosition(QSlider::TicksAbove);
+        label_7 = new QLabel(widget);
+        label_7->setObjectName(QString::fromUtf8("label_7"));
+        label_7->setGeometry(QRect(10, 350, 61, 21));
 
         gridLayout->addWidget(widget, 0, 2, 2, 1);
 
@@ -191,7 +219,7 @@ public:
         MainWindowClass->setStatusBar(statusBar);
         menuBar = new QMenuBar(MainWindowClass);
         menuBar->setObjectName(QString::fromUtf8("menuBar"));
-        menuBar->setGeometry(QRect(0, 0, 742, 21));
+        menuBar->setGeometry(QRect(0, 0, 788, 21));
         MainWindowClass->setMenuBar(menuBar);
         mainToolBar = new QToolBar(MainWindowClass);
         mainToolBar->setObjectName(QString::fromUtf8("mainToolBar"));
@@ -217,6 +245,11 @@ public:
         ViscosityText->setPlaceholderText(QApplication::translate("MainWindowClass", "Viscosity", nullptr));
         label_2->setText(QApplication::translate("MainWindowClass", "Viscosity", nullptr));
         ParticleMassText->setPlaceholderText(QApplication::translate("MainWindowClass", "Mass", nullptr));
+        surfaceTensionText->setText(QString());
+        surfaceTensionText->setPlaceholderText(QApplication::translate("MainWindowClass", "Surface Tension", nullptr));
+        label_8->setText(QApplication::translate("MainWindowClass", "Surface Tension", nullptr));
+        label_9->setText(QApplication::translate("MainWindowClass", "Threshold", nullptr));
+        thresholdText->setPlaceholderText(QApplication::translate("MainWindowClass", "Threshold", nullptr));
         tabWidget->setTabText(tabWidget->indexOf(tab), QApplication::translate("MainWindowClass", "Tab 1", nullptr));
         tabWidget->setTabText(tabWidget->indexOf(tab_2), QApplication::translate("MainWindowClass", "Tab 2", nullptr));
         ResumeButton->setText(QApplication::translate("MainWindowClass", "Start", nullptr));
@@ -229,6 +262,7 @@ public:
 #endif // QT_NO_SHORTCUT
         label_5->setText(QApplication::translate("MainWindowClass", "Slower", nullptr));
         label_6->setText(QApplication::translate("MainWindowClass", "Emission", nullptr));
+        label_7->setText(QApplication::translate("MainWindowClass", "Gravity", nullptr));
     } // retranslateUi
 
 };

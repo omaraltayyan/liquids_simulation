@@ -3,7 +3,8 @@
 #include <qmath.h>
 
 FluidParticle::FluidParticle(const QPointF& position, PhysicsEngine* engine, qreal sizeRadius,
-	double viscosity, double mass, double gasConstant, double restDesity) : Particle(position, engine, sizeRadius)
+	double viscosity, double mass, double gasConstant, double restDesity,
+	double surfaceTension, double threshold) : Particle(position, engine, sizeRadius)
 {	
 	_viscosity = viscosity;
 	_mass = mass;
@@ -11,8 +12,8 @@ FluidParticle::FluidParticle(const QPointF& position, PhysicsEngine* engine, qre
 	_restDensity = restDesity;
 	_velocity.setX(0.0); 
 	_velocity.setY(0.0);
-	_tensionCoefcioant = 0.728;
-	_surfaceThreshold = 0.007;
+	_tensionCoefcioant = surfaceTension;
+	_surfaceThreshold = threshold;
 }
 
 
