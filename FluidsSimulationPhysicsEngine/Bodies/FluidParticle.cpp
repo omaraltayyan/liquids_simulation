@@ -40,26 +40,14 @@ double FluidParticle::applyKernal(double distance, double radius, SmoothingKerna
 
 }
 
-double FluidParticle::computeDynsity(QVector<BodiesVector*> surroundingBodies, double radius)
+double FluidParticle::computeDynsity(const QVector<FluidParticle*>& fuildParticles, double radius)
 {
 	double resultingDynsity = 0.0;
-	for (int i = 0; i < surroundingBodies.length(); i++)
+	for (int i = 0; i < fuildParticles.length(); i++)
 	{
-		auto bodyVector = surroundingBodies[i];
-		for (int j = 0; j < bodyVector->length(); j++)
-		{
-			auto body = bodyVector->at(j);
-			FluidParticle* particle = dynamic_cast<FluidParticle*>(body);
-			if (particle != NULL)
-			{
-				double distance = this->positionVector.distanceToPoint(particle->positionVector);
-				if (distance <= radius)
-				{
-					resultingDynsity += particle->_mass * this->applyKernal(distance, radius, poly6);
-				}
-
-			}
-		}
+		auto particle = fuildParticles[i];
+		double distance = this->positionVector.distanceToPoint(particle->positionVector);
+		resultingDynsity += particle->_mass * this->applyKernal(distance, radius, poly6);
 	}
 	return resultingDynsity;
 }
@@ -72,60 +60,38 @@ double FluidParticle::computePressure(double gasConstant, double restDynsity, do
 	return gasConstant * engine->timeDelta * (density - restDynsity);
 }
 
-QVector2D FluidParticle::computePressureForce(QVector<BodiesVector*> surroundingBodies, double radius)
+QVector2D FluidParticle::computePressureForce(const QVector<FluidParticle*>& fuildParticles, double radius)
 {
 	QVector2D resultingPressureForce(0.0, 0.0);
 	auto relativePressureTerm = this->_pressure / (this->_density * this->_density);
-	for (int i = 0; i < surroundingBodies.length(); i++)
+	for (int i = 0; i < fuildParticles.length(); i++)
 	{
-		auto bodyVector = surroundingBodies[i];
-		for (int j = 0; j < bodyVector->length(); j++)
-		{
-			auto body = bodyVector->at(j);
-			if (body == this)
-				continue;
-			FluidParticle* particle = dynamic_cast<FluidParticle*>(body);
-			if (particle != NULL)
-			{
-				auto vec = this->positionVector - particle->positionVector;
-				vec.normalize();
-				double distance = this->positionVector.distanceToPoint(particle->positionVector);
+		auto particle = fuildParticles[i];
 
-				if (distance <= radius)
-				{
-					auto leftTerm = (relativePressureTerm + (particle->_pressure / (particle->_density * particle->_density))) * particle->_mass;
-					resultingPressureForce += vec * leftTerm * this->applyKernal(distance, radius, spiky);
-				}
+		if (particle == this)
+			continue;
+		auto vec = this->positionVector - particle->positionVector;
+		vec.normalize();
+		double distance = this->positionVector.distanceToPoint(particle->positionVector);
 
-			}
-		}
+		auto leftTerm = (relativePressureTerm + (particle->_pressure / (particle->_density * particle->_density))) * particle->_mass;
+		resultingPressureForce += vec * leftTerm * this->applyKernal(distance, radius, spiky);
 	}
 	return (-this->_density) *  resultingPressureForce;
 }
 
-QVector2D FluidParticle::computeViscousForce(QVector<BodiesVector*> surroundingBodies, double radius)
+QVector2D FluidParticle::computeViscousForce(const QVector<FluidParticle*>& fuildParticles, double radius)
 {
 	QVector2D resultingVisousForce(0, 0);
-	for (int i = 0; i < surroundingBodies.length(); i++)
+	for (int i = 0; i < fuildParticles.length(); i++)
 	{
-		auto bodyVector = surroundingBodies[i];
-		for (int j = 0; j < bodyVector->length(); j++)
-		{
-			auto body = bodyVector->at(j);
-			if (body == this)
-				continue;
-			FluidParticle* particle = dynamic_cast<FluidParticle*>(body);
-			if (particle != NULL)
-			{
-				double distance = this->positionVector.distanceToPoint(particle->positionVector);
-				if (distance <= radius)
-				{
-					resultingVisousForce += particle->_mass * (((particle->_velocity) - (this->_velocity)) / particle->_density)
-						* this->applyKernal(distance, radius, visc);
-				}
+		auto particle = fuildParticles[i];
 
-			}
-		}
+		if (particle == this)
+			continue;
+		double distance = this->positionVector.distanceToPoint(particle->positionVector);
+		resultingVisousForce += particle->_mass * (((particle->_velocity) - (this->_velocity)) / particle->_density)
+			* this->applyKernal(distance, radius, visc);
 	}
 
 	return this->_viscosity * resultingVisousForce;
@@ -134,30 +100,18 @@ QVector2D FluidParticle::computeViscousForce(QVector<BodiesVector*> surroundingB
 //important note : 
 //when useLaplacian equlas false this method will compute the surface normal (whiche is the gradient to the color feild)
 //when useLaplaican equals true this method wii compute the laplacian of the color feild to use it to compute the surfacetension
-QVector2D FluidParticle::computeSurfaceNormal(QVector<BodiesVector*> surroundingBodies, double radius)
+QVector2D FluidParticle::computeSurfaceNormal(const QVector<FluidParticle*>& fuildParticles, double radius)
 {
 	QVector2D resultingSurfaceNormal(0.0, 0.0);
-	for (int i = 0; i < surroundingBodies.length(); i++)
+	for (int i = 0; i < fuildParticles.length(); i++)
 	{
-		auto bodyVector = surroundingBodies[i];
-		for (int j = 0; j < bodyVector->length(); j++)
-		{
-			auto body = bodyVector->at(j);
-			if (body == this)
-				continue;
-			FluidParticle* particle = dynamic_cast<FluidParticle*>(body);
-			if (particle != NULL)
-			{
-				auto vec = this->positionVector - particle->positionVector;
-				double distance = this->positionVector.distanceToPoint(particle->positionVector);
-				if (distance <= radius)
-				{
-					double kernel = this->applyKernal(distance, radius, gradPoly6);
-					resultingSurfaceNormal += vec * (particle->_mass / particle->_density)*kernel;
-				}
-			}
-
-		}
+		auto particle = fuildParticles[i];
+		if (particle == this)
+			continue;
+		auto vec = this->positionVector - particle->positionVector;
+		double distance = this->positionVector.distanceToPoint(particle->positionVector);
+		double kernel = this->applyKernal(distance, radius, gradPoly6);
+		resultingSurfaceNormal += vec * (particle->_mass / particle->_density)*kernel;
 	}
 	return resultingSurfaceNormal;
 }
@@ -166,56 +120,71 @@ QVector2D FluidParticle::computeSurfaceNormal(QVector<BodiesVector*> surrounding
 //important note : 
 //when useLaplacian equlas false this method will compute the surface normal (whiche is the gradient to the color feild)
 //when useLaplaican equals true this method wii compute the laplacian of the color feild to use it to compute the surfacetension
-double FluidParticle::computeLaplacianSurfaceNormal(QVector<BodiesVector*> surroundingBodies, double radius)
+double FluidParticle::computeLaplacianSurfaceNormal(const QVector<FluidParticle*>& fuildParticles, double radius)
 {
 	double resultingSurfaceNormal = 0.0;
+	for (int i = 0; i < fuildParticles.length(); i++)
+	{
+		auto particle = fuildParticles[i];
+		if (particle == this)
+			continue;
+		auto vec = this->positionVector - particle->positionVector;
+		double distance = this->positionVector.distanceToPoint(particle->positionVector);
+		double kernel = this->applyKernal(distance, radius, lapPoly6);
+		resultingSurfaceNormal += (particle->_mass / particle->_density)*kernel;
+	}
+	return resultingSurfaceNormal;
+}
+
+QVector2D FluidParticle::computeSurfaceTension(const QVector<FluidParticle*>& fuildParticles, double radius)
+{
+	QVector2D resultingSurfaceTension(0.0, 0.0);
+	auto surfaceNormal = this->computeSurfaceNormal(fuildParticles, radius);
+	double magnitude = surfaceNormal.length();
+	if (magnitude >= this->_surfaceThreshold)
+	{
+		surfaceNormal.normalize();
+		resultingSurfaceTension = this->computeLaplacianSurfaceNormal(fuildParticles, radius) * surfaceNormal;
+	}
+
+	return -1 * this->_tensionCoefcioant * resultingSurfaceTension;
+}
+
+QVector<FluidParticle*> FluidParticle::filterFuildParticles(const QVector<BodiesVector*>& surroundingBodies, double radius)
+{
+	int bodiesCount = 0;
+	for (int i = 0; i < surroundingBodies.length(); i++)
+	{
+		bodiesCount += surroundingBodies[i]->length();
+	}
+	QVector<FluidParticle*> fluidParticles;
+	fluidParticles.reserve(bodiesCount);
+
 	for (int i = 0; i < surroundingBodies.length(); i++)
 	{
 		auto bodyVector = surroundingBodies[i];
 		for (int j = 0; j < bodyVector->length(); j++)
 		{
 			auto body = bodyVector->at(j);
-			if (body == this)
-				continue;
 			FluidParticle* particle = dynamic_cast<FluidParticle*>(body);
 			if (particle != NULL)
 			{
-				auto vec = this->positionVector - particle->positionVector;
 				double distance = this->positionVector.distanceToPoint(particle->positionVector);
-				if (distance <= radius)
-				{
-					double kernel = this->applyKernal(distance, radius, lapPoly6);
-					resultingSurfaceNormal += (particle->_mass / particle->_density)*kernel;
+				if (distance <= radius) {
+					fluidParticles.push_back(particle);
 				}
 			}
-
 		}
 	}
-	return resultingSurfaceNormal;
+	return fluidParticles;
 }
 
-
-
-QVector2D FluidParticle::computeSurfaceTension(QVector<BodiesVector*> surroundingBodies, double radius)
+QVector2D FluidParticle::computeSumOfForces(const QVector<FluidParticle*>& fluidParticles, double radius)
 {
-	QVector2D resultingSurfaceTension(0.0, 0.0);
-	auto surfaceNormal = this->computeSurfaceNormal(surroundingBodies, radius);
-	double magnitude = surfaceNormal.length();
-	if (magnitude >= this->_surfaceThreshold)
-	{
-		surfaceNormal.normalize();
-		resultingSurfaceTension = this->computeLaplacianSurfaceNormal(surroundingBodies, radius) * surfaceNormal;
-	}
-
-	return -1 * this->_tensionCoefcioant * resultingSurfaceTension;
-}
-
-QVector2D FluidParticle::computeSumOfForces(QVector<BodiesVector*> surroundingBodies, double radius)
-{
-	QVector2D pressureForce = this->computePressureForce(surroundingBodies, radius);
-	QVector2D viscousForce = this->computeViscousForce(surroundingBodies, radius);
+	QVector2D pressureForce = this->computePressureForce(fluidParticles, radius);
+	QVector2D viscousForce = this->computeViscousForce(fluidParticles, radius);
 	QVector2D gravityForce = 0.1 * this->engine->gravity * this->_density;
-	QVector2D surfaceTensionForce = this->computeSurfaceTension(surroundingBodies, radius);
+	QVector2D surfaceTensionForce = this->computeSurfaceTension(fluidParticles, radius);
 	return pressureForce + viscousForce + gravityForce + surfaceTensionForce;
 }
 
@@ -225,20 +194,22 @@ first density should computed for all particles
 second pressure should be computed for all particles
 then the rest can work simultaneously
 */
-void FluidParticle::calculateInteractionWithBodies(QVector<BodiesVector*> surroundingBodies, int calculationOperation)
+void FluidParticle::calculateInteractionWithBodies(const QVector<BodiesVector*>& surroundingBodies, int calculationOperation)
 {
 	// note that density and pressure needs to be computed here
 	// because their values are important in the other methods
 	auto engine = PhysicsEngine::shared();
 	double radius = engine->getUnsafeBodiesGrid().squareSideInCentimeters();
+	auto fluidParticles = this->filterFuildParticles(surroundingBodies, radius);
+
 	if (calculationOperation == 0) {
-		this->_density = this->computeDynsity(surroundingBodies, radius);
+		this->_density = this->computeDynsity(fluidParticles, radius);
 		//here gas constant and rest density should variables taken from user input
 		this->_pressure = this->computePressure(this->_gasConstant, this->_restDensity, this->_density);
 	}
 	else if (calculationOperation == 1) {
 		//here gravity should also be taken from user input
-		this->_force = this->computeSumOfForces(surroundingBodies, radius);
+		this->_force = this->computeSumOfForces(fluidParticles, radius);
 		this->_velocity += engine->timeDelta*this->_force / this->_density;
 	}
 }

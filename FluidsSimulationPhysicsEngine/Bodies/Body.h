@@ -14,7 +14,7 @@ public:
 	
 	PhysicsEngine* engine;
 
-	virtual void calculateInteractionWithBodies(QVector<BodiesVector*> surroundingBodies, int calculationOperation) {}
+	virtual void calculateInteractionWithBodies(const QVector<BodiesVector*>& surroundingBodies, int calculationOperation) {}
 	virtual void applyInteraction() {}
 
 	QRectF boundingRect;
