@@ -3,7 +3,8 @@
 #include <qmath.h>
 
 FluidParticle::FluidParticle(const QPointF& position, PhysicsEngine* engine, qreal sizeRadius,
-	double viscosity, double mass, double gasConstant, double restDesity) : Particle(position, engine, sizeRadius)
+	double viscosity, double mass, double gasConstant, double restDesity,
+	double surfaceTension, double threshold) : Particle(position, engine, sizeRadius)
 {	
 	_viscosity = viscosity;
 	_mass = mass;
@@ -11,8 +12,8 @@ FluidParticle::FluidParticle(const QPointF& position, PhysicsEngine* engine, qre
 	_restDensity = restDesity;
 	_velocity.setX(0.0); 
 	_velocity.setY(0.0);
-	_tensionCoefcioant = 0.728;
-	_surfaceThreshold = 0.007;
+	_tensionCoefcioant = surfaceTension;
+	_surfaceThreshold = threshold;
 }
 
 
@@ -190,10 +191,6 @@ QVector2D FluidParticle::computeSumOfForces(QVector<BodiesVector*> surroundingBo
 	return pressureForce + viscousForce + gravityForce;// +surfaceTensionForce;
 }
 
-QVector2D FluidParticle::computeVelocityChange(double deltaTime, QVector2D sumForces)
-{
-	return this->_velocity + (deltaTime*sumForces/this->_density);
-}
 /*
 important note about threading:
 	first density should computed for all particles
@@ -214,7 +211,7 @@ void FluidParticle::calculateInteractionWithBodies(QVector<BodiesVector*> surrou
 	else if (calculationOperation == 1) {
 		//here gravity should also be taken from user input
 		this->_force = this->computeSumOfForces(surroundingBodies, radius);
-		this->_velocity = this->computeVelocityChange(engine->timeDelta, this->_force);
+		this->_velocity += engine->timeDelta*this->_force / this->_density;
 	}
 }
 

@@ -20,8 +20,13 @@ MainWindow::MainWindow(QWidget *parent)
 		ui.statusBar->showMessage(QString::asprintf("FPS: %.1f Bodies: %d", engine.fps, engine.bodiesCount));
 	});
 
+	ui.gravitySlider->setValue(this->engine.gravity.y());
 	ui.SlownessSlider->setValue(this->engine.speedSlownessScale);
 	ui.emissionSlider->setValue(this->emitter.particlesPerEmission);
+
+	connect(ui.gravitySlider, &QSlider::valueChanged, [=] {
+		this->engine.gravity.setY(ui.gravitySlider->value());
+	});
 
 	connect(ui.emissionSlider, &QSlider::valueChanged, [=] {
 		this->emitter.particlesPerEmission = ui.emissionSlider->value();
@@ -48,6 +53,8 @@ MainWindow::MainWindow(QWidget *parent)
 		}
 	});
 
+	linkLineEditWithValue(ui.surfaceTensionText, &emitter.emittedParticleSurfaceTension);
+	linkLineEditWithValue(ui.thresholdText, &emitter.emittedParticleThreshold);
 	linkLineEditWithValue(ui.ParticleMassText, &emitter.emittedParticleMass);
 	linkLineEditWithValue(ui.ViscosityText, &emitter.emittedParticleViscosity);
 	linkLineEditWithValue(ui.RestDensityText, &emitter.emittedParticleRestDensity);

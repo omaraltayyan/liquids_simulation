@@ -17,7 +17,9 @@ class FluidParticle : public Particle
 {
 public:
 
-	FluidParticle(const QPointF& position, PhysicsEngine* engine, qreal sizeRadius, double viscosity, double mass, double gasConstant, double restDesity);
+	FluidParticle(const QPointF& position, PhysicsEngine* engine, qreal sizeRadius,
+		double viscosity, double mass, double gasConstant, double restDesity,
+		double surfaceTension, double threshold);
 
 private:
 	double _density, _viscosity, _pressure, _mass, _gasConstant, _restDensity,_tensionCoefcioant,_surfaceThreshold;

@@ -14,6 +14,8 @@ public:
 	double emittedParticleRadius = 0.01;
 	double emittedParticleViscosity = 3.5;
 	double emittedParticleMass = 0.02;
+	double emittedParticleSurfaceTension = 0.0728;
+	double emittedParticleThreshold = 7.065;
 	double emittedParticleGasConstant = 3;
 	double emittedParticleRestDensity = 998.29;
 	double particlesPerEmission = 4;
