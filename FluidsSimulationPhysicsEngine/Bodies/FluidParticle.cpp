@@ -228,6 +228,30 @@ void FluidParticle::applyLeapFrogTimeStepIntegration()
 
 void FluidParticle::detectCollision(double Xmin, double Xmax, double Ymin, double Ymax)
 {
+	QPointF centerPoint((Xmin+Xmax)/2,(Ymin+Ymax)/2);
+	QPointF particleLocalPosition = this->position - centerPoint;
+	QVector2D particleLocalPostionVector = QVector2D(particleLocalPosition);
+	QVector2D extentVector = QVector2D(centerPoint);
+	QVector2D evaluationVector = particleLocalPostionVector - extentVector;
+	double evaluationfunction = qMax(evaluationVector.x(), evaluationVector.y());
+	auto localContactPoint = qMin(extentVector, qMax(-extentVector, particleLocalPostionVector));
+	auto contactPoint = extentVector + localContactPoint;
+	auto penterationDepth = this->positionVector.distanceToPoint(contactPoint);
+	QVector2D vec = localContactPoint - particleLocalPostionVector;
+	vec.setX(this->signumFunction(vec.x()));
+	vec.setY(this->signumFunction(vec.y()));
+	auto normal = vec / vec.length();
+	
+	
+}
+
+int FluidParticle::signumFunction(double x)
+{
+	if (MathUtilities::isEqual(x, 0.0))
+		return 0;
+	if (x < 0.0)
+		return -1;
+	return 1;
 }
 
 /*

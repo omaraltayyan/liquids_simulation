@@ -4,6 +4,7 @@
 #include <QVector2D>
 #include <qmath.h>
 #include "Grid.h"
+#include "Utilities\MathUtilities.h"
 
 enum SmoothingKernals
 {
@@ -41,6 +42,7 @@ private:
 	QVector2D computeSumOfForces(const QVector<FluidParticle*>& fluidParticles, double radius);
 	void applyLeapFrogTimeStepIntegration();
 	void detectCollision(double Xmin,double Xmax,double Ymin,double Ymax);
+	int signumFunction(double x);
 
 
 };
