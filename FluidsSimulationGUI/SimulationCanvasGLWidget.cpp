@@ -92,9 +92,10 @@ void SimulationCanvasGLWidget::paintEvent(QPaintEvent *event)
 	auto gridSize = engine->getUnsafeBodiesGrid().sizeInCentimeters();
 
 	engine->runFunctionOverBodies([&](Body* body) {
-		FluidParticle* particle = dynamic_cast<FluidParticle*>(body);
-		if (particle != NULL)
+		//FluidParticle* particle = dynamic_cast<FluidParticle*>(body);
+		if (body->bodyType == fluid)
 		{
+			auto particle = (FluidParticle*)body;
 			points.push_back(particle->position);
 		}
 	});

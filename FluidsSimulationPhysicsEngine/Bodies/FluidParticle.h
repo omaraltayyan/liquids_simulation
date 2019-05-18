@@ -26,7 +26,7 @@ public:
 
 private:
 	bool _isFirstIteration;
-	double _density, _viscosity, _pressure, _mass, _gasConstant, _restDensity, _tensionCoefcioant, _surfaceThreshold;
+	double _density, _viscosity, _pressure, _mass, _gasConstant, _restDensity, _tensionCoefcioant, _surfaceThreshold,radius_2,radius_4;
 	QVector2D _velocity,_accelration, _velocityHalfStep, _force;
 
 	double applyKernal(double distance, double radius, SmoothingKernals kernal);

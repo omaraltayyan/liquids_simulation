@@ -6,6 +6,8 @@ FluidParticle::FluidParticle(const QPointF& position, PhysicsEngine* engine, qre
 	double viscosity, double mass, double gasConstant, double restDesity,
 	double surfaceTension, double threshold) : Particle(position, engine, sizeRadius)
 {
+	this->radius_2 = -100.0;
+	this->radius_4 = -100.0;
 	_viscosity = viscosity;
 	_mass = mass;
 	_gasConstant = gasConstant;
@@ -22,25 +24,31 @@ FluidParticle::FluidParticle(const QPointF& position, PhysicsEngine* engine, qre
 	_tensionCoefcioant = surfaceTension;
 	_surfaceThreshold = threshold;
 	_isFirstIteration = true;
+	this->bodyType = fluid;
 }
 
 
 double FluidParticle::applyKernal(double distance, double radius, SmoothingKernals kernal)
 {
+	if (radius_2 < 0.0)
+	{
+		radius_2 = radius * radius;
+		radius_4 = radius_2 * radius_2;
+	}
 
-	double holder = (radius * radius) - (distance * distance);
+	double holder = radius_2 - (distance * distance);
 	switch (kernal)
 	{
 	case poly6:
-		return (315 / (64 * M_PI*qPow(radius, 9))) * (holder*holder*holder);
+		return (315 / (64 * M_PI*radius_4*radius_4*radius)) * (holder*holder*holder);
 	case gradPoly6:
-		return -1 * (945 / (32 * M_PI * qPow(radius, 9))) * (holder*holder);
+		return -1 * (945 / (32 * M_PI * radius_4*radius_4*radius)) * (holder*holder);
 	case lapPoly6:
-		return ((-1 * 945) / (32 * M_PI * qPow(radius, 9))) * holder * ((3 * radius*radius) - (7 * distance*distance));
+		return ((-1 * 945) / (32 * M_PI * radius_4*radius_4*radius)) * holder * ((3 * radius*radius) - (7 * distance*distance));
 	case spiky:
-		return (-45 / (M_PI*qPow(radius, 6))) * qPow((radius - distance), 2);
+		return (-45 / (radius_4*radius_2)) * ((radius - distance) * (radius - distance));
 	case visc:
-		return (45 / (M_PI*qPow(radius, 6))) * (radius - distance);
+		return (45 / (radius_4*radius_2)) * (radius - distance);
 	default:
 		return 0.0;
 	}
@@ -174,9 +182,10 @@ QVector<FluidParticle*> FluidParticle::filterFuildParticles(const QVector<Bodies
 		for (int j = 0; j < bodyVector->length(); j++)
 		{
 			auto body = bodyVector->at(j);
-			FluidParticle* particle = dynamic_cast<FluidParticle*>(body);
-			if (particle != NULL)
+			//FluidParticle* particle = dynamic_cast<FluidParticle*>(body);
+			if (body->bodyType == fluid)
 			{
+				auto particle = (FluidParticle*)body;
 				double distance = this->positionVector.distanceToPoint(particle->positionVector);
 				if (distance <= radius) {
 					fluidParticles.push_back(particle);
