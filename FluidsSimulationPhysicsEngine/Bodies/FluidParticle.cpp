@@ -66,9 +66,9 @@ double FluidParticle::computeDensity(const QVector<BodiesVector*>& surroundingBo
 	return resultingDynsity;
 }
 
-double FluidParticle::computePressure(double gasConstant, double restDynsity, double density)
+double FluidParticle::computePressure()
 {
-	return gasConstant  * (density - restDynsity);
+	return _gasConstant  * (_density - _restDensity);
 }
 
 QVector2D FluidParticle::computePressureForce(const QVector<BodiesVector*>& surroundingBodies, double radius)
@@ -92,7 +92,7 @@ QVector2D FluidParticle::computeViscousForce(const QVector<BodiesVector*>& surro
 	this->runFunctionOverFluidParicles(surroundingBodies, radius, [&](FluidParticle* particle, double distance) {
 		if (particle == this)
 			return;
-		resultingVisousForce += particle->_mass * (((particle->_velocity) - (this->_velocity)) / particle->_density)
+		resultingVisousForce +=  (particle->_velocity - this->_velocity) * (particle->_mass / particle->_density)
 			* this->applyKernal(distance, visc);
 	});
 
@@ -120,9 +120,6 @@ double FluidParticle::computeLaplacianSurfaceNormal(const QVector<BodiesVector*>
 	double resultingSurfaceNormal = 0.0;
 
 	this->runFunctionOverFluidParicles(surroundingBodies, radius, [&](FluidParticle* particle, double distance) {
-		if (particle == this)
-			return;
-		auto vec = this->positionVector - particle->positionVector;
 		double kernel = this->applyKernal(distance, lapPoly6);
 		resultingSurfaceNormal += (particle->_mass / particle->_density)*kernel;
 	});
@@ -249,7 +246,7 @@ void FluidParticle::calculateInteractionWithBodies(const QVector<BodiesVector*>&
 	if (calculationOperation == 0) {
 		this->_density = this->computeDensity(surroundingBodies, radius);
 		//here gas constant and rest density should variables taken from user input
-		this->_pressure = this->computePressure(this->_gasConstant, this->_restDensity, this->_density);
+		this->_pressure = this->computePressure();
 	}
 	else if (calculationOperation == 1) {
 		//here gravity should also be taken from user input

@@ -33,7 +33,7 @@ private:
 
 	double applyKernal(double distance, SmoothingKernals kernal);
 	double computeDensity(const QVector<BodiesVector*>& surroundingBodies, double radius);
-	double computePressure(double gasConstant, double restDynsity, double density);
+	double computePressure();
 	QVector2D computePressureForce(const QVector<BodiesVector*>& surroundingBodies, double radius);
 	QVector2D computeViscousForce(const QVector<BodiesVector*>& surroundingBodies, double radius);
 	QVector2D computeSurfaceNormal(const QVector<BodiesVector*>& surroundingBodies, double radius);
