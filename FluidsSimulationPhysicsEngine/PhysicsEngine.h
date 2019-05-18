@@ -61,6 +61,9 @@ class FLUIDSSIMULATIONPHYSICSENGINE_EXPORT PhysicsEngine
 	static PhysicsEngine* sharedEngine;
 
 	atomic<bool> clearBoddies = false;
+	atomic<QVector2D*> newGravity;
+	QVector2D gravity = QVector2D(0.0, 9.8);
+
 	void perfromClearBoddies();
 
 public:
@@ -84,9 +87,10 @@ public:
 
 	void addBodiesToGrid(BodiesVector);
 
-	void runFunctionOverBodies(const function <void(Body*)>&& func);
+	void runFunctionOverBodies(const std::function <void(Body*)>&& func);
 	
-	QVector2D gravity = QVector2D(0.0, 9.8);
+	void setGravity(const QVector2D& newGravity);
+	const QVector2D& getGravity();
 
 	// WARNING: not thread safe, don't access the bodies or 
 	// add bodies them to the grid, use runFunctionOverBodies

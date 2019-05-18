@@ -5,6 +5,7 @@
 #include <qmath.h>
 #include "Grid.h"
 #include "Utilities\MathUtilities.h"
+#include <functional>
 
 enum SmoothingKernals
 {
@@ -31,17 +32,19 @@ private:
 	QVector2D _velocity,_accelration, _velocityHalfStep, _force;
 
 	double applyKernal(double distance, double radius, SmoothingKernals kernal);
-	double computeDensity(const QVector<FluidParticle*>& fuildParticles, double radius);
+	double computeDensity(const QVector<BodiesVector*>& surroundingBodies, double radius);
 	double computePressure(double gasConstant, double restDynsity, double density);
-	QVector2D computePressureForce(const QVector<FluidParticle*>& fuildParticles, double radius);
-	QVector2D computeViscousForce(const QVector<FluidParticle*>& fuildParticles, double radius);
-	QVector2D computeSurfaceNormal(const QVector<FluidParticle*>& fuildParticles, double radius);
-	double computeLaplacianSurfaceNormal(const QVector<FluidParticle*>& fuildParticles, double radius);
-	QVector2D computeSurfaceTension(const QVector<FluidParticle*>& fuildParticles, double radius);
-	QVector<FluidParticle*> filterFuildParticles(const QVector<BodiesVector*>& surroundingBodies, double radius);
-	QVector2D computeSumOfForces(const QVector<FluidParticle*>& fluidParticles, double radius);
+	QVector2D computePressureForce(const QVector<BodiesVector*>& surroundingBodies, double radius);
+	QVector2D computeViscousForce(const QVector<BodiesVector*>& surroundingBodies, double radius);
+	QVector2D computeSurfaceNormal(const QVector<BodiesVector*>& surroundingBodies, double radius);
+	double computeLaplacianSurfaceNormal(const QVector<BodiesVector*>& surroundingBodies, double radius);
+	QVector2D computeSurfaceTension(const QVector<BodiesVector*>& surroundingBodies, double radius);
+
+	void runFunctionOverFluidParicles(const QVector<BodiesVector*>& surroundingBodies, double radius, const std::function <void(FluidParticle*, double)>&& func);
+	QVector2D computeSumOfForces(const QVector<BodiesVector*>& surroundingBodies, double radius);
+
 	void applyLeapFrogTimeStepIntegration();
-	void detectCollision(double Xmin,double Xmax,double Ymin,double Ymax);
+	void detectCollision(const QRectF& boundingBox);
 	int signumFunction(double x);
 
 

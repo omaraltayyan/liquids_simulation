@@ -39,10 +39,11 @@ Grid & PhysicsEngine::getUnsafeBodiesGrid()
 
 PhysicsEngine::PhysicsEngine() : bodiesGrid(QSizeF(0.515625, 0.515625), 0.046875)
 {
+	this->newGravity = new QVector2D(this->gravity);
 	this->lastMomentProcessingStarted = chrono::high_resolution_clock::now();
 	this->shouldStopEngine = false;
 	this->shouldRunLoop = false;
-	this->runningThreads = max(1, thread::hardware_concurrency());
+	this->runningThreads = 1; // max(1, thread::hardware_concurrency());
 	this->totalBarriers = this->constantBarriersCount + this->calculationOperationsCount;
 	this->synchronizationBarriers = new ThreadsBarrier*[this->totalBarriers];
 	for (int i = 0; i < this->totalBarriers; i++)
@@ -155,6 +156,7 @@ void PhysicsEngine::engineUpdateLoop(int threadIndex) {
 				performAddCurrentBodiesToGrid();
 				this->totalBodiesForProcessingLoop = this->bodiesGrid.bodiesCount();
 			}
+			this->gravity = *newGravity;
 			this->lastMomentProcessingStarted = chrono::high_resolution_clock::now();
 		}
 
@@ -271,6 +273,17 @@ void PhysicsEngine::runFunctionOverBodies(const function <void(Body*)>&& func) {
 	{
 		func(this->bodiesGrid.getBodyAtIndex(i));
 	}
+}
+
+void PhysicsEngine::setGravity(const QVector2D& newGravity)
+{
+	delete static_cast<void*>(this->newGravity);
+	this->newGravity = new QVector2D(newGravity);
+}
+
+const QVector2D& PhysicsEngine::getGravity()
+{
+	return gravity;
 }
 
 void PhysicsEngine::runFunctionOverThreadBodies(int threadIndex, const function <void(Body*, int)>&& func) {

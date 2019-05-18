@@ -20,12 +20,12 @@ MainWindow::MainWindow(QWidget *parent)
 		ui.statusBar->showMessage(QString::asprintf("FPS: %.1f Bodies: %d", engine.fps, engine.bodiesCount));
 	});
 
-	ui.gravitySlider->setValue(this->engine.gravity.y());
+	ui.gravitySlider->setValue(this->engine.getGravity().y());
 	ui.SlownessSlider->setValue(this->engine.speedSlownessScale);
 	ui.emissionSlider->setValue(this->emitter.particlesPerEmission);
 
 	connect(ui.gravitySlider, &QSlider::valueChanged, [=] {
-		this->engine.gravity.setY(ui.gravitySlider->value());
+		this->engine.setGravity(QVector2D(0, ui.gravitySlider->value()));
 	});
 
 	connect(ui.emissionSlider, &QSlider::valueChanged, [=] {
