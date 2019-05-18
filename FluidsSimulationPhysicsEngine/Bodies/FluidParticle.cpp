@@ -234,13 +234,28 @@ void FluidParticle::detectCollision(double Xmin, double Xmax, double Ymin, doubl
 	QVector2D extentVector = QVector2D(centerPoint);
 	QVector2D evaluationVector = particleLocalPostionVector - extentVector;
 	double evaluationfunction = qMax(evaluationVector.x(), evaluationVector.y());
-	auto localContactPoint = qMin(extentVector, qMax(-extentVector, particleLocalPostionVector));
+
+	auto rightSide = QVector2D(qMax((-extentVector).x(), particleLocalPostionVector.x()), qMax((-extentVector).y(), particleLocalPostionVector.y()));
+	auto localContactPoint = QVector2D(qMin(extentVector.x(),rightSide.x()), qMin(extentVector.y(), rightSide.y()));
+
 	auto contactPoint = extentVector + localContactPoint;
+
 	auto penterationDepth = this->positionVector.distanceToPoint(contactPoint);
 	QVector2D vec = localContactPoint - particleLocalPostionVector;
 	vec.setX(this->signumFunction(vec.x()));
 	vec.setY(this->signumFunction(vec.y()));
 	auto normal = vec / vec.length();
+	if (evaluationfunction > 0)
+	{
+		this->position = contactPoint.toPointF();
+		this->positionVector = contactPoint;
+		double restitutionCoeficcciant = 0.35;
+		this->_velocity -= (1 + restitutionCoeficcciant*(penterationDepth / (engine->timeDelta*this->_velocity.length())))
+			* (this->_velocity.dotProduct(this->_velocity,normal))*normal;
+
+		this->_velocityHalfStep -= (1 + restitutionCoeficcciant*(penterationDepth / (engine->timeDelta*this->_velocityHalfStep.length())))
+			* (this->_velocityHalfStep.dotProduct(this->_velocityHalfStep, normal))*normal;
+	}
 	
 	
 }
@@ -284,6 +299,10 @@ void FluidParticle::applyInteraction()
 	
 	this->applyLeapFrogTimeStepIntegration();
 	auto size = this->engine->getUnsafeBodiesGrid().sizeInCentimeters();
+	/*this->detectCollision(0.0, size.width(), 0.0, 0.0);
+	this->detectCollision(0.0, size.width(), size.height(), size.height());
+	this->detectCollision(0.0, 0.0, 0.0, size.height());
+	this->detectCollision(size.width(),size.width(), 0.0, size.height());*/
 	double damp = 0.25;
 
 	if (this->position.x() < 0)
