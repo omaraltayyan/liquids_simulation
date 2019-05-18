@@ -226,6 +226,10 @@ void FluidParticle::applyLeapFrogTimeStepIntegration()
 	
 }
 
+void FluidParticle::detectCollision(double Xmin, double Xmax, double Ymin, double Ymax)
+{
+}
+
 /*
 important note about threading:
 first density should computed for all particles

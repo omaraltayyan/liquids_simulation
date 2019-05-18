@@ -40,6 +40,7 @@ private:
 	QVector<FluidParticle*> filterFuildParticles(const QVector<BodiesVector*>& surroundingBodies, double radius);
 	QVector2D computeSumOfForces(const QVector<FluidParticle*>& fluidParticles, double radius);
 	void applyLeapFrogTimeStepIntegration();
+	void detectCollision(double Xmin,double Xmax,double Ymin,double Ymax);
 
 
 };
