@@ -16,7 +16,7 @@ public:
 	double emittedParticleMass = 0.02;
 	double emittedParticleSurfaceTension = 0.0728;
 	double emittedParticleThreshold = 7.065;
-	double emittedParticleGasConstant = 3;
+	double emittedParticleGasConstant = 0.03;
 	double emittedParticleRestDensity = 998.29;
 	double particlesPerEmission = 4;
 	

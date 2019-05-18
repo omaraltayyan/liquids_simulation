@@ -12,12 +12,16 @@ FluidParticle::FluidParticle(const QPointF& position, PhysicsEngine* engine, qre
 	_restDensity = restDesity;
 	_velocity.setX(0.0);
 	_velocity.setY(0.0);
-	_leapFrogPrevVelocity.setX(0);
-	_leapFrogPrevVelocity.setY(0);
-	_leapFrogNextVelocity.setX(0.0);
-	_leapFrogNextVelocity.setY(0.0);
+
+	_accelration.setX(0.0);
+	_accelration.setY(0.0);
+
+	_velocityHalfStep.setX(0);
+	_velocityHalfStep.setY(0);
+
 	_tensionCoefcioant = surfaceTension;
 	_surfaceThreshold = threshold;
+	_isFirstIteration = true;
 }
 
 
@@ -61,7 +65,7 @@ double FluidParticle::computePressure(double gasConstant, double restDynsity, do
 	//if (density < restDynsity) {
 	//	return 0.01 * gasConstant * (density - restDynsity);
 	//}
-	return gasConstant /** engine->timeDelta*/ * (density - restDynsity);
+	return gasConstant  * (density - restDynsity);
 }
 
 QVector2D FluidParticle::computePressureForce(const QVector<FluidParticle*>& fuildParticles, double radius)
@@ -187,9 +191,30 @@ QVector2D FluidParticle::computeSumOfForces(const QVector<FluidParticle*>& fluid
 {
 	QVector2D pressureForce = this->computePressureForce(fluidParticles, radius);
 	QVector2D viscousForce = this->computeViscousForce(fluidParticles, radius);
-	QVector2D gravityForce = /*0.1 **/ this->engine->gravity * this->_density;
+	QVector2D gravityForce =  this->engine->gravity * this->_density;
 	QVector2D surfaceTensionForce = this->computeSurfaceTension(fluidParticles, radius);
 	return pressureForce + viscousForce + gravityForce + surfaceTensionForce;
+}
+
+void FluidParticle::applyLeapFrogTimeStepIntegration()
+{
+	auto accelration = this->_force / this->_density;
+	if (!this->_isFirstIteration)
+	{
+		
+		this->_velocityHalfStep += engine->timeDelta * accelration;
+		this->_velocity = this->_velocityHalfStep + (accelration * (engine->timeDelta / 2));
+		
+	}
+	else
+	{
+		this->_velocityHalfStep = this->_velocity + (accelration * (engine->timeDelta / 2));
+		this->_velocity += accelration * engine->timeDelta;
+		this->_isFirstIteration = false;
+	}
+	this->positionVector += this->_velocityHalfStep * engine->timeDelta;
+	this->setPosition(this->positionVector.toPointF());
+	
 }
 
 /*
@@ -211,21 +236,16 @@ void FluidParticle::calculateInteractionWithBodies(const QVector<BodiesVector*>&
 		//here gas constant and rest density should variables taken from user input
 		this->_pressure = this->computePressure(this->_gasConstant, this->_restDensity, this->_density);
 	}
-	else if (calculationOperation == 1) {
+	else if (calculationOperation == 1) {		
 		//here gravity should also be taken from user input
 		this->_force = this->computeSumOfForces(fluidParticles, radius);
-		auto acceleration = this->_force / this->_density;
-		
-		this->_leapFrogNextVelocity = _leapFrogPrevVelocity + engine->timeDelta * acceleration;
-		_leapFrogPrevVelocity = _leapFrogNextVelocity;
 	}
 }
 
 void FluidParticle::applyInteraction()
 {
-	this->positionVector += (this->engine->timeDelta * _leapFrogNextVelocity);
-	this->setPosition(this->positionVector.toPointF());
-
+	
+	this->applyLeapFrogTimeStepIntegration();
 	auto size = this->engine->getUnsafeBodiesGrid().sizeInCentimeters();
 	double damp = 0.25;
 
@@ -236,6 +256,9 @@ void FluidParticle::applyInteraction()
 
 		this->_velocity.setX(-this->_velocity.x());
 		this->_velocity *= damp;
+
+		this->_velocityHalfStep.setX(-this->_velocityHalfStep.x());
+		this->_velocityHalfStep *= damp;
 
 		this->setPosition(this->positionVector.toPointF());
 
@@ -250,6 +273,9 @@ void FluidParticle::applyInteraction()
 		this->_velocity.setX(-this->_velocity.x());
 		this->_velocity *= damp;
 
+		this->_velocityHalfStep.setX(-this->_velocityHalfStep.x());
+		this->_velocityHalfStep *= damp;
+
 		this->setPosition(this->positionVector.toPointF());
 	}
 	if (this->position.y() < 0)
@@ -259,6 +285,9 @@ void FluidParticle::applyInteraction()
 
 		this->_velocity.setY(-this->_velocity.y());
 		this->_velocity *= damp;
+
+		this->_velocityHalfStep.setY(-this->_velocityHalfStep.y());
+		this->_velocityHalfStep *= damp;
 
 		this->setPosition(this->positionVector.toPointF());
 	}
@@ -270,10 +299,11 @@ void FluidParticle::applyInteraction()
 		this->_velocity.setY(-this->_velocity.y());
 		this->_velocity *= damp;
 
-		this->setPosition(this->positionVector.toPointF());
-	}
+		this->_velocityHalfStep.setY(-this->_velocityHalfStep.y());
+		this->_velocityHalfStep *= damp;
 
-	this->_velocity = (_leapFrogPrevVelocity + _leapFrogNextVelocity) / 2.0;
+		this->setPosition(this->positionVector.toPointF());
+	}	
 
 }
 

@@ -25,8 +25,9 @@ public:
 	void applyInteraction() override;
 
 private:
+	bool _isFirstIteration;
 	double _density, _viscosity, _pressure, _mass, _gasConstant, _restDensity, _tensionCoefcioant, _surfaceThreshold;
-	QVector2D _velocity, _leapFrogPrevVelocity, _leapFrogNextVelocity, _force;
+	QVector2D _velocity,_accelration, _velocityHalfStep, _force;
 
 	double applyKernal(double distance, double radius, SmoothingKernals kernal);
 	double computeDensity(const QVector<FluidParticle*>& fuildParticles, double radius);
@@ -38,6 +39,7 @@ private:
 	QVector2D computeSurfaceTension(const QVector<FluidParticle*>& fuildParticles, double radius);
 	QVector<FluidParticle*> filterFuildParticles(const QVector<BodiesVector*>& surroundingBodies, double radius);
 	QVector2D computeSumOfForces(const QVector<FluidParticle*>& fluidParticles, double radius);
+	void applyLeapFrogTimeStepIntegration();
 
 
 };
