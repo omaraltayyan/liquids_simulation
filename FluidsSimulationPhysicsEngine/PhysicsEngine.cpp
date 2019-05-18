@@ -43,7 +43,7 @@ PhysicsEngine::PhysicsEngine() : bodiesGrid(QSizeF(0.515625, 0.515625), 0.046875
 	this->lastMomentProcessingStarted = chrono::high_resolution_clock::now();
 	this->shouldStopEngine = false;
 	this->shouldRunLoop = false;
-	this->runningThreads = 1; // max(1, thread::hardware_concurrency());
+	this->runningThreads = max(1, thread::hardware_concurrency());
 	this->totalBarriers = this->constantBarriersCount + this->calculationOperationsCount;
 	this->synchronizationBarriers = new ThreadsBarrier*[this->totalBarriers];
 	for (int i = 0; i < this->totalBarriers; i++)

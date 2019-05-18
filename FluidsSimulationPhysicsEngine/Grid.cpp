@@ -220,7 +220,13 @@ qreal Grid::squareSideInCentimeters() {
 
 void Grid::setSquareSideInCentimeters(qreal squareSideInCentimeters) {
 	_squareSideInCentimeters = squareSideInCentimeters;
+	kernelsInfo = KernelsInfo(_squareSideInCentimeters);
 	resetSquareCoordinates();
+}
+
+const KernelsInfo & Grid::getKernelsInfo()
+{
+	return this->kernelsInfo;
 }
 
 void Grid::resetSquareCoordinates() {

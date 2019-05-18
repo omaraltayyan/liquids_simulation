@@ -377,3 +377,6 @@ MigrationBackup/
 *.exe
 *.out
 *.app
+FluidsSimulationPhysicsEngine/DebugProfile/
+FluidsSimulationGUI/DebugProfile/
+FluidsSimulationGUI/GeneratedFiles/

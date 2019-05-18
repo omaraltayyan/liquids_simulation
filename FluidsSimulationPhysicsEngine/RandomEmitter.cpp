@@ -31,9 +31,9 @@ void RandomEmitter::addRandomBodies(PhysicsEngine* engine, int bodiesCount, QPoi
 	{
 		auto position = QPointF(XPositionDistribution(randomEngine), YPositionDistribution(randomEngine));
 		
-		auto body = new FluidParticle(position, engine, this->emittedParticleRadius, this->emittedParticleViscosity,
-			this->emittedParticleMass, this->emittedParticleGasConstant, this->emittedParticleRestDensity,
-			this->emittedParticleSurfaceTension, this->emittedParticleThreshold);
+		auto body = new FluidParticle(position, engine, emittedParticleRadius, emittedParticleViscosity,
+			emittedParticleMass, emittedParticleGasConstant, emittedParticleRestDensity,
+			emittedParticleSurfaceTension, emittedParticleThreshold, emittedParticleRestitution);
 
 		bodies.push_back(body);
 	}

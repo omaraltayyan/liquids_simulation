@@ -4,10 +4,9 @@
 
 FluidParticle::FluidParticle(const QPointF& position, PhysicsEngine* engine, qreal sizeRadius,
 	double viscosity, double mass, double gasConstant, double restDesity,
-	double surfaceTension, double threshold) : Particle(position, engine, sizeRadius)
+	double surfaceTension, double threshold, double restitution) : Particle(position, engine, sizeRadius)
 {
-	this->radius_2 = -100.0;
-	this->radius_4 = -100.0;
+	_restitution = restitution;
 	_viscosity = viscosity;
 	_mass = mass;
 	_gasConstant = gasConstant;
@@ -28,30 +27,32 @@ FluidParticle::FluidParticle(const QPointF& position, PhysicsEngine* engine, qre
 }
 
 
-double FluidParticle::applyKernal(double distance, double radius, SmoothingKernals kernal)
+double FluidParticle::applyKernal(double distance, SmoothingKernals kernal)
 {
-	if (radius_2 < 0.0)
-	{
-		radius_2 = radius * radius;
-		radius_4 = radius_2 * radius_2;
+	const KernelsInfo& kernelsInfo = this->engine->getUnsafeBodiesGrid().getKernelsInfo();
+
+	if (kernal == poly6 || kernal == gradPoly6 || kernal == lapPoly6) {
+		double holder = kernelsInfo.radius_2 - (distance * distance);
+		switch (kernal)
+		{
+		case poly6:
+			return kernelsInfo.poly6Left * (holder*holder*holder);
+		case gradPoly6:
+			return kernelsInfo.gradAndLapPoly6Left * (holder*holder);
+		case lapPoly6:
+			return kernelsInfo.gradAndLapPoly6Left * holder * ((3 * kernelsInfo.radius_2) - (7 * distance*distance));
+		}
 	}
 
-	double holder = radius_2 - (distance * distance);
 	switch (kernal)
 	{
-	case poly6:
-		return (315 / (64 * M_PI*radius_4*radius_4*radius)) * (holder*holder*holder);
-	case gradPoly6:
-		return -1 * (945 / (32 * M_PI * radius_4*radius_4*radius)) * (holder*holder);
-	case lapPoly6:
-		return ((-1 * 945) / (32 * M_PI * radius_4*radius_4*radius)) * holder * ((3 * radius*radius) - (7 * distance*distance));
 	case spiky:
-		return (-45 / (radius_4*radius_2)) * ((radius - distance) * (radius - distance));
+		return kernelsInfo.spikyLeft * ((kernelsInfo.radius - distance) * (kernelsInfo.radius - distance));
 	case visc:
-		return (45 / (radius_4*radius_2)) * (radius - distance);
-	default:
-		return 0.0;
+		return kernelsInfo.viscLeft * (kernelsInfo.radius - distance);
 	}
+
+	return 0.0;
 
 
 }
@@ -60,7 +61,7 @@ double FluidParticle::computeDensity(const QVector<BodiesVector*>& surroundingBo
 {
 	double resultingDynsity = 0.0;
 	this->runFunctionOverFluidParicles(surroundingBodies, radius, [&](FluidParticle* particle, double distance) {
-		resultingDynsity += particle->_mass * this->applyKernal(distance, radius, poly6);
+		resultingDynsity += particle->_mass * this->applyKernal(distance, poly6);
 	});
 	return resultingDynsity;
 }
@@ -80,7 +81,7 @@ QVector2D FluidParticle::computePressureForce(const QVector<BodiesVector*>& surr
 		auto vec = this->positionVector - particle->positionVector;
 		vec.normalize();
 		auto leftTerm = (relativePressureTerm + (particle->_pressure / (particle->_density * particle->_density))) * particle->_mass;
-		resultingPressureForce += vec * leftTerm * this->applyKernal(distance, radius, spiky);
+		resultingPressureForce += vec * leftTerm * this->applyKernal(distance, spiky);
 	});
 	return (-this->_density) *  resultingPressureForce;
 }
@@ -92,7 +93,7 @@ QVector2D FluidParticle::computeViscousForce(const QVector<BodiesVector*>& surro
 		if (particle == this)
 			return;
 		resultingVisousForce += particle->_mass * (((particle->_velocity) - (this->_velocity)) / particle->_density)
-			* this->applyKernal(distance, radius, visc);
+			* this->applyKernal(distance, visc);
 	});
 
 	return this->_viscosity * resultingVisousForce;
@@ -106,7 +107,7 @@ QVector2D FluidParticle::computeSurfaceNormal(const QVector<BodiesVector*>& surr
 		if (particle == this)
 			return;
 		auto vec = this->positionVector - particle->positionVector;
-		double kernel = this->applyKernal(distance, radius, gradPoly6);
+		double kernel = this->applyKernal(distance, gradPoly6);
 		resultingSurfaceNormal += vec * (particle->_mass / particle->_density)*kernel;
 	});
 	return resultingSurfaceNormal;
@@ -122,7 +123,7 @@ double FluidParticle::computeLaplacianSurfaceNormal(const QVector<BodiesVector*>
 		if (particle == this)
 			return;
 		auto vec = this->positionVector - particle->positionVector;
-		double kernel = this->applyKernal(distance, radius, lapPoly6);
+		double kernel = this->applyKernal(distance, lapPoly6);
 		resultingSurfaceNormal += (particle->_mass / particle->_density)*kernel;
 	});
 
@@ -200,7 +201,6 @@ void FluidParticle::detectCollision(const QRectF& boundingBox)
 		return;
 	}
 
-	// this code is correct
 	QPointF centerPoint = boundingBox.center();
 	QVector2D extentVector = QVector2D(boundingBox.width(), boundingBox.height());
 
@@ -217,14 +217,11 @@ void FluidParticle::detectCollision(const QRectF& boundingBox)
 	normal.normalize();
 
 	this->setPosition(contactPoint.toPointF());
-	double restitutionCoeficcciant = 0.35;
-	this->_velocity -= (1 + restitutionCoeficcciant*(penterationDepth / (engine->timeDelta*this->_velocity.length())))
+	this->_velocity -= (1 + this->_restitution*(penterationDepth / (engine->timeDelta*this->_velocity.length())))
 		* (this->_velocity.dotProduct(this->_velocity, normal))*normal;
 
-	this->_velocityHalfStep -= (1 + restitutionCoeficcciant*(penterationDepth / (engine->timeDelta*this->_velocityHalfStep.length())))
+	this->_velocityHalfStep -= (1 + this->_restitution*(penterationDepth / (engine->timeDelta*this->_velocityHalfStep.length())))
 		* (this->_velocityHalfStep.dotProduct(this->_velocityHalfStep, normal))*normal;
-
-
 }
 
 int FluidParticle::signumFunction(double x)
@@ -267,70 +264,6 @@ void FluidParticle::applyInteraction()
 	auto size = this->engine->getUnsafeBodiesGrid().sizeInCentimeters();
 
 	this->detectCollision(QRectF(0.0, 0.0, size.width(), size.height()));
-
-	/*
-	this->detectCollision(0.0, size.width(), 0.0, 0.0);
-	this->detectCollision(0.0, size.width(), size.height(), size.height());
-	this->detectCollision(0.0, 0.0, 0.0, size.height());
-	this->detectCollision(size.width(),size.width(), 0.0, size.height());*/
-	/*double damp = 0.25;
-
-	if (this->position.x() < 0)
-	{
-	this->positionVector -= this->_velocity * (1 - damp) * (this->position.x() / this->_velocity.x());
-	this->positionVector.setX(-this->positionVector.x());
-
-	this->_velocity.setX(-this->_velocity.x());
-	this->_velocity *= damp;
-
-	this->_velocityHalfStep.setX(-this->_velocityHalfStep.x());
-	this->_velocityHalfStep *= damp;
-
-	this->setPosition(this->positionVector.toPointF());
-
-
-	}
-
-	if (this->position.x() > size.width())
-	{
-	this->positionVector -= this->_velocity * (1 - damp) * ((this->position.x() - size.width()) / this->_velocity.x());
-	this->positionVector.setX((2 * size.width()) - this->positionVector.x());
-
-	this->_velocity.setX(-this->_velocity.x());
-	this->_velocity *= damp;
-
-	this->_velocityHalfStep.setX(-this->_velocityHalfStep.x());
-	this->_velocityHalfStep *= damp;
-
-	this->setPosition(this->positionVector.toPointF());
-	}
-	if (this->position.y() < 0)
-	{
-	this->positionVector -= this->_velocity * (1 - damp) * ((this->position.y()) / this->_velocity.y());
-	this->positionVector.setY(-this->positionVector.y());
-
-	this->_velocity.setY(-this->_velocity.y());
-	this->_velocity *= damp;
-
-	this->_velocityHalfStep.setY(-this->_velocityHalfStep.y());
-	this->_velocityHalfStep *= damp;
-
-	this->setPosition(this->positionVector.toPointF());
-	}
-	if (this->position.y() > size.height())
-	{
-	this->positionVector -= this->_velocity * (1 - damp) * ((this->position.y() - size.height()) / this->_velocity.y());
-	this->positionVector.setY((2 * size.height()) - this->positionVector.y());
-
-	this->_velocity.setY(-this->_velocity.y());
-	this->_velocity *= damp;
-
-	this->_velocityHalfStep.setY(-this->_velocityHalfStep.y());
-	this->_velocityHalfStep *= damp;
-
-	this->setPosition(this->positionVector.toPointF());
-	}	*/
-
 }
 
 

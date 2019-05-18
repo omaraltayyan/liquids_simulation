@@ -21,17 +21,17 @@ public:
 
 	FluidParticle(const QPointF& position, PhysicsEngine* engine, qreal sizeRadius,
 		double viscosity, double mass, double gasConstant, double restDesity,
-		double surfaceTension, double threshold);
+		double surfaceTension, double threshold, double restitution);
 
 	void calculateInteractionWithBodies(const QVector<BodiesVector*>& surroundingBodies, int calculationOperation) override;
 	void applyInteraction() override;
 
 private:
 	bool _isFirstIteration;
-	double _density, _viscosity, _pressure, _mass, _gasConstant, _restDensity, _tensionCoefcioant, _surfaceThreshold,radius_2,radius_4;
+	double _density, _viscosity, _pressure, _mass, _gasConstant, _restDensity, _tensionCoefcioant, _surfaceThreshold, _restitution;
 	QVector2D _velocity,_accelration, _velocityHalfStep, _force;
 
-	double applyKernal(double distance, double radius, SmoothingKernals kernal);
+	double applyKernal(double distance, SmoothingKernals kernal);
 	double computeDensity(const QVector<BodiesVector*>& surroundingBodies, double radius);
 	double computePressure(double gasConstant, double restDynsity, double density);
 	QVector2D computePressureForce(const QVector<BodiesVector*>& surroundingBodies, double radius);
