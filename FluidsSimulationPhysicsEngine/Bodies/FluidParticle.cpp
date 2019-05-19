@@ -17,8 +17,8 @@ FluidParticle::FluidParticle(const QPointF& position, PhysicsEngine* engine, qre
 	_accelration.setX(0.0);
 	_accelration.setY(0.0);
 
-	_velocityHalfStep.setX(0);
-	_velocityHalfStep.setY(0);
+	_leapFrogNextStep.setX(0);
+	_leapFrogNextStep.setY(0);
 
 	_tensionCoefcioant = surfaceTension;
 	_surfaceThreshold = threshold;
@@ -176,18 +176,15 @@ void FluidParticle::applyLeapFrogTimeStepIntegration()
 	auto accelration = this->_force / this->_restDensity;
 	if (!this->_isFirstIteration)
 	{
-
-		this->_velocityHalfStep += engine->timeDelta * accelration;
-		this->_velocity = this->_velocityHalfStep + (accelration * (engine->timeDelta / 2));
-
+		this->_leapFrogNextStep = this->_leapFrogPreviousStep + (engine->timeDelta * accelration);
 	}
 	else
 	{
-		this->_velocityHalfStep = this->_velocity + (accelration * (engine->timeDelta / 2));
-		this->_velocity += accelration * engine->timeDelta;
+		this->_leapFrogNextStep = QVector2D(0, 0);
+		this->_leapFrogPreviousStep = this->_velocity - (0.5 * engine->timeDelta * accelration);
 		this->_isFirstIteration = false;
 	}
-	this->positionVector += this->_velocityHalfStep * engine->timeDelta;
+	this->positionVector += this->_leapFrogNextStep * engine->timeDelta;
 	this->setPosition(this->positionVector.toPointF());
 
 }
@@ -215,11 +212,7 @@ void FluidParticle::detectCollision(const QRectF& boundingBox)
 	normal.normalize();
 
 	this->setPosition(contactPoint.toPointF());
-	this->_velocity -= (1 + this->_restitution*(penterationDepth / (engine->timeDelta*this->_velocity.length())))
-		* (this->_velocity.dotProduct(this->_velocity, normal))*normal;
-
-	this->_velocityHalfStep -= (1 + this->_restitution*(penterationDepth / (engine->timeDelta*this->_velocityHalfStep.length())))
-		* (this->_velocityHalfStep.dotProduct(this->_velocityHalfStep, normal))*normal;
+	this->_leapFrogNextStep -= (1 + this->_restitution)*(QVector2D::dotProduct(this->_leapFrogNextStep, normal)) * normal;
 }
 
 int FluidParticle::signumFunction(double x)
@@ -257,11 +250,15 @@ void FluidParticle::calculateInteractionWithBodies(const QVector<BodiesVector*>&
 
 void FluidParticle::applyInteraction()
 {
-
 	this->applyLeapFrogTimeStepIntegration();
 	auto size = this->engine->getUnsafeBodiesGrid().sizeInCentimeters();
 
 	this->detectCollision(QRectF(0.0, 0.0, size.width(), size.height()));
+
+	this->_velocity = (this->_leapFrogPreviousStep + this->_leapFrogNextStep) / 2.0;
+
+	this->_leapFrogPreviousStep = this->_leapFrogNextStep;
+
 }
 
 

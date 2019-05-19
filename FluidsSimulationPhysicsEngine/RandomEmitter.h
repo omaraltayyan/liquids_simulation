@@ -18,7 +18,7 @@ public:
 	double emittedParticleThreshold = 7.065;
 	double emittedParticleGasConstant = 3;
 	double emittedParticleRestDensity = 998.29;
-	double emittedParticleRestitution = 0.35;
+	double emittedParticleRestitution = 0;
 	double particlesPerEmission = 4;
 	
 	qreal emissionAreaSquareRadius = 0.01;
