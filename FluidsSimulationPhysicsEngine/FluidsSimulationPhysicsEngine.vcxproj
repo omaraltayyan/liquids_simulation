@@ -140,6 +140,7 @@
     <ClCompile Include="Grid.cpp" />
     <ClCompile Include="Bodies\MovingBody.cpp" />
     <ClCompile Include="Bodies\Particle.cpp" />
+    <ClCompile Include="QCPVector2D.cpp" />
     <ClCompile Include="RandomEmitter.cpp" />
     <ClCompile Include="Utilities\MathUtilities.cpp" />
     <ClCompile Include="UnitTests\UnitTestGrid.cpp" />
@@ -152,6 +153,7 @@
     <ClInclude Include="Grid.h" />
     <ClInclude Include="Bodies\MovingBody.h" />
     <ClInclude Include="Bodies\Particle.h" />
+    <ClInclude Include="QCPVector2D.h" />
     <ClInclude Include="RandomEmitter.h" />
     <ClInclude Include="ThreadsBarrier.h" />
     <ClInclude Include="Utilities\MathUtilities.h" />

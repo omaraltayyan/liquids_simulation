@@ -7,6 +7,8 @@
 #include <thread>
 #include <atomic>
 #include <mutex>
+#include "QCPVector2D.h"
+
 using namespace std;
 
 class FLUIDSSIMULATIONPHYSICSENGINE_EXPORT PhysicsEngine
@@ -61,8 +63,8 @@ class FLUIDSSIMULATIONPHYSICSENGINE_EXPORT PhysicsEngine
 	static PhysicsEngine* sharedEngine;
 
 	atomic<bool> clearBoddies = false;
-	atomic<QVector2D*> newGravity;
-	QVector2D gravity = QVector2D(0.0, 9.8);
+	atomic<QCPVector2D*> newGravity;
+	QCPVector2D gravity = QCPVector2D(0.0, 9.8);
 
 	void perfromClearBoddies();
 
@@ -89,8 +91,8 @@ public:
 
 	void runFunctionOverBodies(const std::function <void(Body*)>&& func);
 	
-	void setGravity(const QVector2D& newGravity);
-	const QVector2D& getGravity();
+	void setGravity(const QCPVector2D& newGravity);
+	const QCPVector2D& getGravity();
 
 	// WARNING: not thread safe, don't access the bodies or 
 	// add bodies them to the grid, use runFunctionOverBodies

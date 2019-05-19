@@ -20,5 +20,5 @@ void Particle::setPosition(qreal x, qreal y) {
 void Particle::updatePosition() {
 	this->sizeRadius = this->boundingRect.width() / SQUARE_ROOT_OF_2;
 	this->position = this->boundingRect.center();
-	this->positionVector = QVector2D(this->position);
+	this->positionVector = QCPVector2D(this->position);
 }

@@ -30,19 +30,19 @@ public:
 private:
 	bool _isFirstIteration;
 	double _density, _viscosity, _pressure, _mass, _gasConstant, _restDensity, _tensionCoefcioant, _surfaceThreshold, _restitution;
-	QVector2D _velocity,_accelration, _leapFrogNextStep, _force, _leapFrogPreviousStep;
+	QCPVector2D _velocity,_accelration, _leapFrogNextStep, _force, _leapFrogPreviousStep;
 
 	double applyKernal(double distance, SmoothingKernals kernal);
 	double computeDensity(const QVector<BodiesVector*>& surroundingBodies, double radius);
 	double computePressure();
-	QVector2D computePressureForce(const QVector<BodiesVector*>& surroundingBodies, double radius);
-	QVector2D computeViscousForce(const QVector<BodiesVector*>& surroundingBodies, double radius);
-	QVector2D computeSurfaceNormal(const QVector<BodiesVector*>& surroundingBodies, double radius);
+	QCPVector2D computePressureForce(const QVector<BodiesVector*>& surroundingBodies, double radius);
+	QCPVector2D computeViscousForce(const QVector<BodiesVector*>& surroundingBodies, double radius);
+	QCPVector2D computeSurfaceNormal(const QVector<BodiesVector*>& surroundingBodies, double radius);
 	double computeLaplacianSurfaceNormal(const QVector<BodiesVector*>& surroundingBodies, double radius);
-	QVector2D computeSurfaceTension(const QVector<BodiesVector*>& surroundingBodies, double radius);
+	QCPVector2D computeSurfaceTension(const QVector<BodiesVector*>& surroundingBodies, double radius);
 
 	void runFunctionOverFluidParicles(const QVector<BodiesVector*>& surroundingBodies, double radius, const std::function <void(FluidParticle*, double)>&& func);
-	QVector2D computeSumOfForces(const QVector<BodiesVector*>& surroundingBodies, double radius);
+	QCPVector2D computeSumOfForces(const QVector<BodiesVector*>& surroundingBodies, double radius);
 
 	void applyLeapFrogTimeStepIntegration();
 	void detectCollision(const QRectF& boundingBox);

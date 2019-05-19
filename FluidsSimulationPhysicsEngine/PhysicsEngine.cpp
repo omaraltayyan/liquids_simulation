@@ -39,7 +39,7 @@ Grid & PhysicsEngine::getUnsafeBodiesGrid()
 
 PhysicsEngine::PhysicsEngine() : bodiesGrid(QSizeF(0.515625 * 3, 0.515625 * 3), 0.046875)
 {
-	this->newGravity = new QVector2D(this->gravity);
+	this->newGravity = new QCPVector2D(this->gravity);
 	this->lastMomentProcessingStarted = chrono::high_resolution_clock::now();
 	this->shouldStopEngine = false;
 	this->shouldRunLoop = false;
@@ -275,13 +275,13 @@ void PhysicsEngine::runFunctionOverBodies(const function <void(Body*)>&& func) {
 	}
 }
 
-void PhysicsEngine::setGravity(const QVector2D& newGravity)
+void PhysicsEngine::setGravity(const QCPVector2D& newGravity)
 {
 	delete static_cast<void*>(this->newGravity);
-	this->newGravity = new QVector2D(newGravity);
+	this->newGravity = new QCPVector2D(newGravity);
 }
 
-const QVector2D& PhysicsEngine::getGravity()
+const QCPVector2D& PhysicsEngine::getGravity()
 {
 	return gravity;
 }

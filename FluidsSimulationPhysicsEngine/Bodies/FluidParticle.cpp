@@ -17,9 +17,6 @@ FluidParticle::FluidParticle(const QPointF& position, PhysicsEngine* engine, qre
 	_accelration.setX(0.0);
 	_accelration.setY(0.0);
 
-	_leapFrogNextStep.setX(0);
-	_leapFrogNextStep.setY(0);
-
 	_tensionCoefcioant = surfaceTension;
 	_surfaceThreshold = threshold;
 	_isFirstIteration = true;
@@ -72,9 +69,9 @@ double FluidParticle::computePressure()
 	return _gasConstant  * (_density - _restDensity);
 }
 
-QVector2D FluidParticle::computePressureForce(const QVector<BodiesVector*>& surroundingBodies, double radius)
+QCPVector2D FluidParticle::computePressureForce(const QVector<BodiesVector*>& surroundingBodies, double radius)
 {
-	QVector2D resultingPressureForce(0.0, 0.0);
+	QCPVector2D resultingPressureForce(0.0, 0.0);
 	auto relativePressureTerm = this->_pressure / (this->_density * this->_density);
 	this->runFunctionOverFluidParicles(surroundingBodies, radius, [&](FluidParticle* particle, double distance) {
 		if (particle == this || MathUtilities::isEqual(distance, 0))
@@ -87,9 +84,9 @@ QVector2D FluidParticle::computePressureForce(const QVector<BodiesVector*>& surr
 	return (-this->_density) *  resultingPressureForce;
 }
 
-QVector2D FluidParticle::computeViscousForce(const QVector<BodiesVector*>& surroundingBodies, double radius)
+QCPVector2D FluidParticle::computeViscousForce(const QVector<BodiesVector*>& surroundingBodies, double radius)
 {
-	QVector2D resultingVisousForce(0, 0);
+	QCPVector2D resultingVisousForce(0, 0);
 	this->runFunctionOverFluidParicles(surroundingBodies, radius, [&](FluidParticle* particle, double distance) {
 		if (particle == this || MathUtilities::isEqual(distance, 0))
 			return;
@@ -101,9 +98,9 @@ QVector2D FluidParticle::computeViscousForce(const QVector<BodiesVector*>& surro
 }
 
 //this method will compute the surface normal(which is the gradient to the color field)
-QVector2D FluidParticle::computeSurfaceNormal(const QVector<BodiesVector*>& surroundingBodies, double radius)
+QCPVector2D FluidParticle::computeSurfaceNormal(const QVector<BodiesVector*>& surroundingBodies, double radius)
 {
-	QVector2D resultingSurfaceNormal(0.0, 0.0);
+	QCPVector2D resultingSurfaceNormal(0.0, 0.0);
 	this->runFunctionOverFluidParicles(surroundingBodies, radius, [&](FluidParticle* particle, double distance) {
 		if (particle == this || MathUtilities::isEqual(distance, 0))
 			return;
@@ -128,9 +125,9 @@ double FluidParticle::computeLaplacianSurfaceNormal(const QVector<BodiesVector*>
 	return resultingSurfaceNormal;
 }
 
-QVector2D FluidParticle::computeSurfaceTension(const QVector<BodiesVector*>& surroundingBodies, double radius)
+QCPVector2D FluidParticle::computeSurfaceTension(const QVector<BodiesVector*>& surroundingBodies, double radius)
 {
-	QVector2D resultingSurfaceTension(0.0, 0.0);
+	QCPVector2D resultingSurfaceTension(0.0, 0.0);
 	auto surfaceNormal = this->computeSurfaceNormal(surroundingBodies, radius);
 	double magnitude = surfaceNormal.length();
 	if (magnitude >= this->_surfaceThreshold)
@@ -162,12 +159,12 @@ void FluidParticle::runFunctionOverFluidParicles(const QVector<BodiesVector*>& s
 	}
 }
 
-QVector2D FluidParticle::computeSumOfForces(const QVector<BodiesVector*>& surroundingBodies, double radius)
+QCPVector2D FluidParticle::computeSumOfForces(const QVector<BodiesVector*>& surroundingBodies, double radius)
 {
-	QVector2D pressureForce = this->computePressureForce(surroundingBodies, radius);
-	QVector2D viscousForce = this->computeViscousForce(surroundingBodies, radius);
-	QVector2D gravityForce = this->engine->getGravity() * this->_restDensity;
-	QVector2D surfaceTensionForce = this->computeSurfaceTension(surroundingBodies, radius);
+	QCPVector2D pressureForce = this->computePressureForce(surroundingBodies, radius);
+	QCPVector2D viscousForce = this->computeViscousForce(surroundingBodies, radius);
+	QCPVector2D gravityForce = this->engine->getGravity() * this->_restDensity;
+	QCPVector2D surfaceTensionForce = this->computeSurfaceTension(surroundingBodies, radius);
 	return pressureForce + viscousForce + gravityForce + surfaceTensionForce;
 }
 
@@ -180,7 +177,7 @@ void FluidParticle::applyLeapFrogTimeStepIntegration()
 	}
 	else
 	{
-		this->_leapFrogNextStep = QVector2D(0, 0);
+		this->_leapFrogNextStep = QCPVector2D(0, 0);
 		this->_leapFrogPreviousStep = this->_velocity - (0.5 * engine->timeDelta * accelration);
 		this->_isFirstIteration = false;
 	}
@@ -197,22 +194,19 @@ void FluidParticle::detectCollision(const QRectF& boundingBox)
 	}
 
 	QPointF centerPoint = boundingBox.center();
-	QVector2D extentVector = QVector2D(boundingBox.width(), boundingBox.height());
+	QCPVector2D extentVector = QCPVector2D(boundingBox.width(), boundingBox.height());
 
-	auto rightSide = QVector2D(qMax(0.0f, this->positionVector.x()), qMax(0.0f, this->positionVector.y()));
+	auto rightSide = QCPVector2D(qMax(0.0, this->positionVector.x()), qMax(0.0, this->positionVector.y()));
 
-	auto contactPoint = QVector2D(qMin((extentVector).x(), rightSide.x()), qMin((extentVector).y(), rightSide.y()));
+	auto contactPoint = QCPVector2D(qMin((extentVector).x(), rightSide.x()), qMin((extentVector).y(), rightSide.y()));
 
-	if (contactPoint.x() < 0 || contactPoint.y() < 0) {
-		printf("test");
-	}
 	auto penterationDepth = this->positionVector.distanceToPoint(contactPoint);
 
-	QVector2D normal = this->positionVector - contactPoint;
+	QCPVector2D normal = this->positionVector - contactPoint;
 	normal.normalize();
 
 	this->setPosition(contactPoint.toPointF());
-	this->_leapFrogNextStep -= (1 + this->_restitution)*(QVector2D::dotProduct(this->_leapFrogNextStep, normal)) * normal;
+	this->_leapFrogNextStep -= (1 + this->_restitution) * this->_leapFrogNextStep.dot(normal) * normal;
 }
 
 int FluidParticle::signumFunction(double x)

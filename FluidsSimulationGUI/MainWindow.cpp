@@ -30,7 +30,7 @@ MainWindow::MainWindow(QWidget *parent)
 	ui.emissionSlider->setValue(this->emitter.particlesPerEmission);
 
 	connect(ui.gravitySlider, &QSlider::valueChanged, [=] {
-		this->engine.setGravity(QVector2D(0, ui.gravitySlider->value()));
+		this->engine.setGravity(QCPVector2D(0, ui.gravitySlider->value()));
 	});
 
 	connect(ui.emissionSlider, &QSlider::valueChanged, [=] {
