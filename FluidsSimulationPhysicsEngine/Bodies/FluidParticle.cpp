@@ -77,7 +77,7 @@ QVector2D FluidParticle::computePressureForce(const QVector<BodiesVector*>& surr
 	QVector2D resultingPressureForce(0.0, 0.0);
 	auto relativePressureTerm = this->_pressure / (this->_density * this->_density);
 	this->runFunctionOverFluidParicles(surroundingBodies, radius, [&](FluidParticle* particle, double distance) {
-		if (particle == this)
+		if (particle == this || MathUtilities::isEqual(distance, 0))
 			return;
 		auto vec = this->positionVector - particle->positionVector;
 		//vec.normalize();
@@ -91,7 +91,7 @@ QVector2D FluidParticle::computeViscousForce(const QVector<BodiesVector*>& surro
 {
 	QVector2D resultingVisousForce(0, 0);
 	this->runFunctionOverFluidParicles(surroundingBodies, radius, [&](FluidParticle* particle, double distance) {
-		if (particle == this)
+		if (particle == this || MathUtilities::isEqual(distance, 0))
 			return;
 		resultingVisousForce +=  (particle->_velocity - this->_velocity) * (particle->_mass / particle->_density)
 			* this->applyKernal(distance, visc);
@@ -105,7 +105,7 @@ QVector2D FluidParticle::computeSurfaceNormal(const QVector<BodiesVector*>& surr
 {
 	QVector2D resultingSurfaceNormal(0.0, 0.0);
 	this->runFunctionOverFluidParicles(surroundingBodies, radius, [&](FluidParticle* particle, double distance) {
-		if (particle == this)
+		if (particle == this || MathUtilities::isEqual(distance, 0))
 			return;
 		auto vec = this->positionVector - particle->positionVector;
 		double kernel = this->applyKernal(distance, gradPoly6);
