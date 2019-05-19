@@ -80,7 +80,7 @@ QVector2D FluidParticle::computePressureForce(const QVector<BodiesVector*>& surr
 		if (particle == this)
 			return;
 		auto vec = this->positionVector - particle->positionVector;
-		vec.normalize();
+		//vec.normalize();
 		auto leftTerm = (relativePressureTerm + (particle->_pressure / (particle->_density * particle->_density))) * particle->_mass;
 		resultingPressureForce += vec * leftTerm * this->applyKernal(distance, spiky);
 	});
