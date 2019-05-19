@@ -37,7 +37,7 @@ Grid & PhysicsEngine::getUnsafeBodiesGrid()
 	return this->bodiesGrid;
 }
 
-PhysicsEngine::PhysicsEngine() : bodiesGrid(QSizeF(0.515625, 0.515625), 0.046875)
+PhysicsEngine::PhysicsEngine() : bodiesGrid(QSizeF(0.515625 * 3, 0.515625 * 3), 0.046875)
 {
 	this->newGravity = new QVector2D(this->gravity);
 	this->lastMomentProcessingStarted = chrono::high_resolution_clock::now();
@@ -225,12 +225,12 @@ void PhysicsEngine::engineUpdateLoop(int threadIndex) {
 			fpsAverage.push_back(frameTime); //or push(param)
 			if (fpsAverage.length() > this->fpsAverageSamples)
 				fpsAverage.removeFirst();
-			double currentFPS = 0;
+			double totalFPS = 0;
 			for (int i = 0; i < fpsAverage.length(); i++)
 			{
-				currentFPS += fpsAverage[i];
+				totalFPS += fpsAverage[i];
 			}
-			this->fps = currentFPS / fpsAverage.length();
+			this->fps = totalFPS / fpsAverage.length();
 			if (timeSinceLastLoop < (timeBetweenLoops)) {
 				Sleep(timeBetweenLoops - timeSinceLastLoop);
 			}

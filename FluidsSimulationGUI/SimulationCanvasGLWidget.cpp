@@ -87,7 +87,9 @@ const QSize SimulationCanvasGLWidget::containerOffsetPixels()
 void SimulationCanvasGLWidget::paintEvent(QPaintEvent *event)
 {
 	QVector<QPointF> points;
+	QVector<double> pointsRadii;
 	points.reserve(engine->getBodiesCount());
+	pointsRadii.reserve(engine->getBodiesCount());
 	
 	auto gridSize = engine->getUnsafeBodiesGrid().sizeInCentimeters();
 
@@ -97,6 +99,7 @@ void SimulationCanvasGLWidget::paintEvent(QPaintEvent *event)
 		{
 			auto particle = (FluidParticle*)body;
 			points.push_back(particle->position);
+			pointsRadii.push_back(particle->displayRadius);
 		}
 	});
 	double xscaleFactor = containerWidth() / gridSize.width();
@@ -107,7 +110,6 @@ void SimulationCanvasGLWidget::paintEvent(QPaintEvent *event)
 	double radiusScaleY = containerHeight() / gridSize.height();
 	radiusScaleY *= radiusScaleY;
 	double radiusScale = sqrt(radiusScaleX + radiusScaleY);
-	circlePen.setWidth(emitter->emittedParticleRadius * radiusScale);
 	for (int i = 0; i < points.length(); i++)
 	{
 		points[i].rx() *= xscaleFactor;
@@ -119,10 +121,14 @@ void SimulationCanvasGLWidget::paintEvent(QPaintEvent *event)
 	painter.setRenderHint(QPainter::Antialiasing, true);
 
 	painter.fillRect(event->rect(), background);
-	painter.setPen(circlePen);
 	painter.setBrush(circleBrush);
 	painter.translate(offset.width(), offset.height());
-	painter.drawPoints(points);
 
+	for (int i = 0; i < points.length(); i++)
+	{
+		circlePen.setWidth(pointsRadii[i] * radiusScale);
+		painter.setPen(circlePen);
+		painter.drawPoint(points[i]);
+	}
 	painter.end();
 }

@@ -70,7 +70,7 @@ public:
 
 	static PhysicsEngine* shared();
 
-	qreal timeDelta = 1.0 / 64.0;
+	qreal timeDelta = 0.01;
 	atomic<int> bodiesCount = 0;
 	atomic<double> fps = 0;
 	void resumeEngine();

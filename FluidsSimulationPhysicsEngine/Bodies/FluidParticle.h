@@ -26,6 +26,7 @@ public:
 	void calculateInteractionWithBodies(const QVector<BodiesVector*>& surroundingBodies, int calculationOperation) override;
 	void applyInteraction() override;
 
+	double displayRadius;
 private:
 	bool _isFirstIteration;
 	double _density, _viscosity, _pressure, _mass, _gasConstant, _restDensity, _tensionCoefcioant, _surfaceThreshold, _restitution;
