@@ -225,7 +225,7 @@ void PhysicsEngine::engineUpdateLoop(int threadIndex) {
 			auto timeSinceLastLoop = chrono::duration_cast<chrono::milliseconds>(chrono::high_resolution_clock::now() - this->lastMomentProcessingStarted).count();
 			auto frameTime = timeSinceLastLoop / 1000.0;
 
-			frameTimeSamples.push_back(frameTime); //or push(param)
+			frameTimeSamples.push_back(frameTime);
 			if (frameTimeSamples.length() > this->fpsAverageSamples)
 				frameTimeSamples.removeFirst();
 			double totalFrameTimes = 0;
@@ -234,7 +234,8 @@ void PhysicsEngine::engineUpdateLoop(int threadIndex) {
 				totalFrameTimes += frameTimeSamples[i];
 			}
 			auto averageTimePerFrame = totalFrameTimes / frameTimeSamples.length();
-			this->fps = 1.0 / averageTimePerFrame;
+
+			this->fps = 1.0 / max(0.001, averageTimePerFrame);
 			if (timeSinceLastLoop < (timeBetweenLoops)) {
 				Sleep(timeBetweenLoops - timeSinceLastLoop);
 			}
