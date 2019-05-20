@@ -17,28 +17,42 @@ void RandomEmitter::addRandomBodies(PhysicsEngine* engine, int bodiesCount, QPoi
 		return;
 	}
 
-	std::uniform_real_distribution<> XPositionDistribution(
+	/*std::uniform_real_distribution<> XPositionDistribution(
 		generationPosition.x() - this->emissionAreaSquareRadius,
 		generationPosition.x() + this->emissionAreaSquareRadius);
 
 	std::uniform_real_distribution<> YPositionDistribution(
 		generationPosition.y() - this->emissionAreaSquareRadius,
-		generationPosition.y() + this->emissionAreaSquareRadius);
+		generationPosition.y() + this->emissionAreaSquareRadius);*/
 
 	if (bodiesCount == -1) {
 		bodiesCount = this->particlesPerEmission;
 	}
 	BodiesVector bodies;
 	bodies.reserve(bodiesCount);
+	int xMargin = 0; int yMargin = 0;
+	auto drawingPosition = generationPosition;
 	for (int i = 0; i < bodiesCount; i++)
 	{
-		auto position = QPointF(XPositionDistribution(randomEngine), YPositionDistribution(randomEngine));
+		
+		//auto position = QPointF(XPositionDistribution(randomEngine), YPositionDistribution(randomEngine));
+		
+
+		drawingPosition.setX(drawingPosition.x() - (xMargin*emissionAreaSquareRadius));
+		drawingPosition.setY(generationPosition.y() - (yMargin*emissionAreaSquareRadius));
+		yMargin = 1 - yMargin;
+		auto position = QPointF(drawingPosition.x(), drawingPosition.y());
+
 		
 		auto body = new FluidParticle(position, engine, emittedParticleRadius, emittedParticleViscosity,
 			emittedParticleMass, emittedParticleGasConstant, emittedParticleRestDensity,
 			emittedParticleSurfaceTension, emittedParticleThreshold, emittedParticleRestitution, emittedParticleBuoyancy);
 
 		bodies.push_back(body);
+		if (yMargin == 0)
+			xMargin = 1;
+		else
+			xMargin = 0;
 	}
 	engine->addBodiesToGrid(bodies);
 }

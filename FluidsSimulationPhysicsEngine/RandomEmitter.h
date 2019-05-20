@@ -13,7 +13,7 @@ public:
 	void addRandomBodies(PhysicsEngine* engine, int bodiesCount = -1, QPointF generationPosition = QPointF());
 	double emittedParticleRadius = 1e-10;
 	double particlesPerEmission = 4;
-	double emissionAreaSquareRadius = 0.01;
+	double emissionAreaSquareRadius = 0.03;
 
 	// water
 	double emittedParticleViscosity = 3.5;
