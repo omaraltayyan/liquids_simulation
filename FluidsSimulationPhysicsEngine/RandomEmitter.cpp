@@ -7,7 +7,7 @@
 
 void RandomEmitter::addRandomBodies(PhysicsEngine* engine, int bodiesCount, QPointF generationPosition) {
 
-	auto gridSize = engine->getUnsafeBodiesGrid().sizeInCentimeters();
+	auto gridSize = engine->getUnsafeBodiesGrid().sizeInMeters();
 
 	if (generationPosition.isNull()) {
 		generationPosition = QPointF(gridSize.width() / 2, gridSize.height() / 2);
@@ -36,7 +36,7 @@ void RandomEmitter::addRandomBodies(PhysicsEngine* engine, int bodiesCount, QPoi
 		
 		auto body = new FluidParticle(position, engine, emittedParticleRadius, emittedParticleViscosity,
 			emittedParticleMass, emittedParticleGasConstant, emittedParticleRestDensity,
-			emittedParticleSurfaceTension, emittedParticleThreshold, emittedParticleRestitution);
+			emittedParticleSurfaceTension, emittedParticleThreshold, emittedParticleRestitution, emittedParticleBuoyancy);
 
 		bodies.push_back(body);
 	}

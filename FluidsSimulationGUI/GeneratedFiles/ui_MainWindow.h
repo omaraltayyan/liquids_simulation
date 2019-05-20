@@ -234,8 +234,9 @@ public:
         timeDeltaSlider->setObjectName(QString::fromUtf8("timeDeltaSlider"));
         timeDeltaSlider->setGeometry(QRect(80, 510, 160, 22));
         timeDeltaSlider->setMinimum(1);
-        timeDeltaSlider->setMaximum(10);
-        timeDeltaSlider->setPageStep(3);
+        timeDeltaSlider->setMaximum(100);
+        timeDeltaSlider->setSingleStep(10);
+        timeDeltaSlider->setPageStep(10);
         timeDeltaSlider->setValue(10);
         timeDeltaSlider->setOrientation(Qt::Horizontal);
         timeDeltaSlider->setTickPosition(QSlider::TicksAbove);

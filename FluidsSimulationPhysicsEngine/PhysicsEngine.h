@@ -75,7 +75,7 @@ public:
 
 	static PhysicsEngine* shared();
 
-	void setTimeDelta(qreal newGravity);
+	void setTimeDelta(qreal newTimeDelta);
 	qreal getTimeDelta();
 
 	atomic<int> bodiesCount = 0;

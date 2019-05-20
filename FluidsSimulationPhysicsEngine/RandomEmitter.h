@@ -11,7 +11,11 @@ class RandomEmitter
 
 public:
 	void addRandomBodies(PhysicsEngine* engine, int bodiesCount = -1, QPointF generationPosition = QPointF());
-	double emittedParticleRadius = 0.01;
+	double emittedParticleRadius = 1e-10;
+	double particlesPerEmission = 4;
+	double emissionAreaSquareRadius = 0.01;
+
+	// water
 	double emittedParticleViscosity = 3.5;
 	double emittedParticleMass = 0.02;
 	double emittedParticleSurfaceTension = 0.0728;
@@ -19,9 +23,29 @@ public:
 	double emittedParticleGasConstant = 3;
 	double emittedParticleRestDensity = 998.29;
 	double emittedParticleRestitution = 0;
-	double particlesPerEmission = 4;
-	
-	qreal emissionAreaSquareRadius = 0.01;
+	double emittedParticleBuoyancy = 0;
+
+
+	// mucus
+	//double emittedParticleViscosity = 36;
+	//double emittedParticleMass = 0.04;
+	//double emittedParticleSurfaceTension = 6;
+	//double emittedParticleThreshold = 5;
+	//double emittedParticleGasConstant = 5;
+	//double emittedParticleRestDensity = 1000;
+	//double emittedParticleRestitution = 0.5;
+	//double emittedParticleBuoyancy = 0;
+
+
+	// steam
+	//double emittedParticleViscosity = 0.01;
+	//double emittedParticleMass = 5e-5;
+	//double emittedParticleSurfaceTension = 0;
+	//double emittedParticleThreshold = 1e300;
+	//double emittedParticleGasConstant = 4;
+	//double emittedParticleRestDensity = 0.59;
+	//double emittedParticleRestitution = 0;
+	//double emittedParticleBuoyancy = 5;
 
 	RandomEmitter();
 	~RandomEmitter();

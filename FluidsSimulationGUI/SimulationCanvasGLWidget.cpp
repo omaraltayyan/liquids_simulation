@@ -53,7 +53,7 @@ void SimulationCanvasGLWidget::addBodiesAtWidgetPosition(QPointF position) {
 	if (position.y() > containerHeight()) {
 		return;
 	}
-	auto gridSize = engine->getUnsafeBodiesGrid().sizeInCentimeters();
+	auto gridSize = engine->getUnsafeBodiesGrid().sizeInMeters();
 
 	double xscaleFactor = gridSize.width() / containerWidth();
 	double yscaleFactor = gridSize.height() / containerHeight();
@@ -75,7 +75,7 @@ int SimulationCanvasGLWidget::containerWidth()
 
 const QSize SimulationCanvasGLWidget::containerOffsetPixels()
 {
-	auto gridSize = engine->getUnsafeBodiesGrid().sizeInCentimeters();
+	auto gridSize = engine->getUnsafeBodiesGrid().sizeInMeters();
 
 	double xscaleFactor = this->width() / gridSize.width();
 	double yscaleFactor = this->height() / gridSize.height();
@@ -91,7 +91,7 @@ void SimulationCanvasGLWidget::paintEvent(QPaintEvent *event)
 	points.reserve(engine->getBodiesCount());
 	pointsRadii.reserve(engine->getBodiesCount());
 	
-	auto gridSize = engine->getUnsafeBodiesGrid().sizeInCentimeters();
+	auto gridSize = engine->getUnsafeBodiesGrid().sizeInMeters();
 
 	engine->runFunctionOverBodies([&](Body* body) {
 		//FluidParticle* particle = dynamic_cast<FluidParticle*>(body);

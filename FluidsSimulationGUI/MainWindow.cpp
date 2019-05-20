@@ -22,18 +22,19 @@ MainWindow::MainWindow(QWidget *parent)
 
 	connect(timer, &QTimer::timeout, [=] {
 		ui.openGLWidget->update();
-		ui.statusBar->showMessage(QString::asprintf("FPS: %.1f Bodies: %d", engine.fps, engine.bodiesCount));
+		ui.statusBar->showMessage(QString::asprintf("FPS: %.1f Bodies: %d timeDelta: %.2fms Gravity: %.1fm/s Speed: %.2fx",
+			engine.fps, engine.bodiesCount, engine.getTimeDelta() * 1000, engine.getGravity().y(), 1.0 / engine.speedSlownessScale));
 	});
 
-	const double TIMEDELTA_SLIDER_SCALE = 0.001;
-
-	ui.timeDeltaSlider->setValue(this->engine.getTimeDelta() / TIMEDELTA_SLIDER_SCALE);
+	const int engineDeltaValueOnSlider = 10;
+	const double engineDeltaScale = this->engine.getTimeDelta() * engineDeltaValueOnSlider;
+	ui.timeDeltaSlider->setValue(engineDeltaValueOnSlider);
 	ui.gravitySlider->setValue(this->engine.getGravity().y());
 	ui.SlownessSlider->setValue(this->engine.speedSlownessScale);
 	ui.emissionSlider->setValue(this->emitter.particlesPerEmission);
 
 	connect(ui.timeDeltaSlider, &QSlider::valueChanged, [=] {
-		this->engine.setTimeDelta(ui.timeDeltaSlider->value() * TIMEDELTA_SLIDER_SCALE);
+		this->engine.setTimeDelta(engineDeltaScale / ui.timeDeltaSlider->value());
 	});
 
 	connect(ui.gravitySlider, &QSlider::valueChanged, [=] {
@@ -72,8 +73,9 @@ MainWindow::MainWindow(QWidget *parent)
 	linkLineEditWithValue(ui.RestDensityText, &emitter.emittedParticleRestDensity);
 	linkLineEditWithValue(ui.GasConstantText, &emitter.emittedParticleGasConstant);
 	linkLineEditWithValue(ui.restitutionText, &emitter.emittedParticleRestitution);
+	linkLineEditWithValue(ui.BuoyancyText, &emitter.emittedParticleBuoyancy);
 
-
+	
 	timer->start(1000 / 60);
 }
 

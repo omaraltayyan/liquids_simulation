@@ -37,7 +37,7 @@ Grid & PhysicsEngine::getUnsafeBodiesGrid()
 	return this->bodiesGrid;
 }
 
-PhysicsEngine::PhysicsEngine() : bodiesGrid(QSizeF(0.515625 * 3, 0.515625 * 3), 0.046875)
+PhysicsEngine::PhysicsEngine() : bodiesGrid(QSizeF(1.5, 1.5), 0.0457 /*0.0726*/)
 {
 	this->newTimeDelta = timeDelta;
 	this->newGravity = new QCPVector2D(this->gravity);

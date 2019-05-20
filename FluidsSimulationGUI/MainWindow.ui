@@ -525,10 +525,13 @@
         <number>1</number>
        </property>
        <property name="maximum">
+        <number>100</number>
+       </property>
+       <property name="singleStep">
         <number>10</number>
        </property>
        <property name="pageStep">
-        <number>3</number>
+        <number>10</number>
        </property>
        <property name="value">
         <number>10</number>

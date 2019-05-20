@@ -4,8 +4,9 @@
 
 FluidParticle::FluidParticle(const QPointF& position, PhysicsEngine* engine, qreal sizeRadius,
 	double viscosity, double mass, double gasConstant, double restDesity,
-	double surfaceTension, double threshold, double restitution) : Particle(position, engine, sizeRadius)
+	double surfaceTension, double threshold, double restitution, double buoyancy) : Particle(position, engine, sizeRadius)
 {
+	_buoyancy = buoyancy;
 	_restitution = restitution;
 	_viscosity = viscosity;
 	_mass = mass;
@@ -90,7 +91,7 @@ QCPVector2D FluidParticle::computeViscousForce(const QVector<BodiesVector*>& sur
 	this->runFunctionOverFluidParicles(surroundingBodies, radius, [&](FluidParticle* particle, double distance) {
 		if (particle == this || MathUtilities::isEqual(distance, 0))
 			return;
-		resultingVisousForce +=  (particle->_velocity - this->_velocity) * (particle->_mass / particle->_density)
+		resultingVisousForce += (particle->_velocity - this->_velocity) * (particle->_mass / particle->_density)
 			* this->applyKernal(distance, visc);
 	});
 
@@ -164,8 +165,9 @@ QCPVector2D FluidParticle::computeSumOfForces(const QVector<BodiesVector*>& surr
 	QCPVector2D pressureForce = this->computePressureForce(surroundingBodies, radius);
 	QCPVector2D viscousForce = this->computeViscousForce(surroundingBodies, radius);
 	QCPVector2D gravityForce = this->engine->getGravity() * this->_density;
+	QCPVector2D buoyancyForce = this->engine->getGravity() * this->_buoyancy * (this->_density - this->_restDensity);
 	QCPVector2D surfaceTensionForce = this->computeSurfaceTension(surroundingBodies, radius);
-	return pressureForce + viscousForce + gravityForce + surfaceTensionForce;
+	return pressureForce + viscousForce + gravityForce + buoyancyForce + surfaceTensionForce;
 }
 
 void FluidParticle::applyLeapFrogTimeStepIntegration()
@@ -229,7 +231,7 @@ void FluidParticle::calculateInteractionWithBodies(const QVector<BodiesVector*>&
 	// note that density and pressure needs to be computed here
 	// because their values are important in the other methods
 	auto engine = PhysicsEngine::shared();
-	double radius = engine->getUnsafeBodiesGrid().squareSideInCentimeters();
+	double radius = engine->getUnsafeBodiesGrid().squareSideInMeters();
 
 	if (calculationOperation == 0) {
 		this->_density = this->computeDensity(surroundingBodies, radius);
@@ -245,7 +247,7 @@ void FluidParticle::calculateInteractionWithBodies(const QVector<BodiesVector*>&
 void FluidParticle::applyInteraction()
 {
 	this->applyLeapFrogTimeStepIntegration();
-	auto size = this->engine->getUnsafeBodiesGrid().sizeInCentimeters();
+	auto size = this->engine->getUnsafeBodiesGrid().sizeInMeters();
 
 	this->detectCollision(QRectF(0.0, 0.0, size.width(), size.height()));
 
