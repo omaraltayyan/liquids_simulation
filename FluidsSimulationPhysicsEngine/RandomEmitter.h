@@ -10,7 +10,7 @@ class RandomEmitter
 	std::mt19937 randomEngine;
 
 public:
-	void addRandomBodies(PhysicsEngine* engine, int bodiesCount, QPointF generationPosition = QPointF());
+	void addRandomBodies(PhysicsEngine* engine, int bodiesCount = -1, QPointF generationPosition = QPointF());
 	double emittedParticleRadius = 0.01;
 	double emittedParticleViscosity = 3.5;
 	double emittedParticleMass = 0.02;

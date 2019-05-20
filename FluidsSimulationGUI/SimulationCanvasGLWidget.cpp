@@ -60,7 +60,7 @@ void SimulationCanvasGLWidget::addBodiesAtWidgetPosition(QPointF position) {
 	position.rx() *= xscaleFactor;
 	position.ry() *= yscaleFactor;
 
-	emitter->addRandomBodies(engine, emitter->particlesPerEmission, position);
+	emitter->addRandomBodies(engine, -1, position);
 }
 
 int SimulationCanvasGLWidget::containerHeight()

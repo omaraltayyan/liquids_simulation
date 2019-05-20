@@ -28,7 +28,7 @@ class FLUIDSSIMULATIONPHYSICSENGINE_EXPORT PhysicsEngine
 	const int constantBarriersBeforeCalculationsCount = 2;
 
 	const int constantBarriersCount = 3;
-	QVector<double> fpsAverage;
+	QVector<double> frameTimeSamples;
 
 	const int fpsAverageSamples = 60;
 
@@ -67,12 +67,17 @@ class FLUIDSSIMULATIONPHYSICSENGINE_EXPORT PhysicsEngine
 	QCPVector2D gravity = QCPVector2D(0.0, 9.8);
 
 	void perfromClearBoddies();
+	
+	qreal timeDelta = 0.001;
+	atomic<qreal> newTimeDelta;
 
 public:
 
 	static PhysicsEngine* shared();
 
-	qreal timeDelta = 0.01;
+	void setTimeDelta(qreal newGravity);
+	qreal getTimeDelta();
+
 	atomic<int> bodiesCount = 0;
 	atomic<double> fps = 0;
 	void resumeEngine();

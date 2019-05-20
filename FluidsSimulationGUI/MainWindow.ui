@@ -206,7 +206,7 @@
         <property name="geometry">
          <rect>
           <x>260</x>
-          <y>50</y>
+          <y>40</y>
           <width>81</width>
           <height>21</height>
          </rect>
@@ -218,8 +218,8 @@
        <widget class="QLineEdit" name="thresholdText">
         <property name="geometry">
          <rect>
-          <x>352</x>
-          <y>50</y>
+          <x>350</x>
+          <y>40</y>
           <width>131</width>
           <height>20</height>
          </rect>
@@ -229,6 +229,64 @@
         </property>
         <property name="placeholderText">
          <string>Threshold</string>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_11">
+        <property name="geometry">
+         <rect>
+          <x>260</x>
+          <y>70</y>
+          <width>81</width>
+          <height>21</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Restitution</string>
+        </property>
+       </widget>
+       <widget class="QLineEdit" name="restitutionText">
+        <property name="geometry">
+         <rect>
+          <x>350</x>
+          <y>70</y>
+          <width>131</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="readOnly">
+         <bool>false</bool>
+        </property>
+        <property name="placeholderText">
+         <string>Restitution</string>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_12">
+        <property name="geometry">
+         <rect>
+          <x>260</x>
+          <y>100</y>
+          <width>81</width>
+          <height>21</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Buoyancy</string>
+        </property>
+       </widget>
+       <widget class="QLineEdit" name="BuoyancyText">
+        <property name="geometry">
+         <rect>
+          <x>350</x>
+          <y>100</y>
+          <width>131</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="readOnly">
+         <bool>false</bool>
+        </property>
+        <property name="placeholderText">
+         <string>Buoyancy</string>
         </property>
        </widget>
       </widget>
@@ -452,6 +510,50 @@
        </property>
        <property name="text">
         <string>Gravity</string>
+       </property>
+      </widget>
+      <widget class="QSlider" name="timeDeltaSlider">
+       <property name="geometry">
+        <rect>
+         <x>80</x>
+         <y>510</y>
+         <width>160</width>
+         <height>22</height>
+        </rect>
+       </property>
+       <property name="minimum">
+        <number>1</number>
+       </property>
+       <property name="maximum">
+        <number>10</number>
+       </property>
+       <property name="pageStep">
+        <number>3</number>
+       </property>
+       <property name="value">
+        <number>10</number>
+       </property>
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="tickPosition">
+        <enum>QSlider::TicksAbove</enum>
+       </property>
+       <property name="tickInterval">
+        <number>5</number>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_10">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>510</y>
+         <width>61</width>
+         <height>21</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Time Delta</string>
        </property>
       </widget>
      </widget>

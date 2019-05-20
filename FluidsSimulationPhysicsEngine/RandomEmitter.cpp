@@ -25,6 +25,9 @@ void RandomEmitter::addRandomBodies(PhysicsEngine* engine, int bodiesCount, QPoi
 		generationPosition.y() - this->emissionAreaSquareRadius,
 		generationPosition.y() + this->emissionAreaSquareRadius);
 
+	if (bodiesCount == -1) {
+		bodiesCount = this->particlesPerEmission;
+	}
 	BodiesVector bodies;
 	bodies.reserve(bodiesCount);
 	for (int i = 0; i < bodiesCount; i++)

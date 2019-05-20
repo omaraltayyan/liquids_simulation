@@ -25,9 +25,16 @@ MainWindow::MainWindow(QWidget *parent)
 		ui.statusBar->showMessage(QString::asprintf("FPS: %.1f Bodies: %d", engine.fps, engine.bodiesCount));
 	});
 
+	const double TIMEDELTA_SLIDER_SCALE = 0.001;
+
+	ui.timeDeltaSlider->setValue(this->engine.getTimeDelta() / TIMEDELTA_SLIDER_SCALE);
 	ui.gravitySlider->setValue(this->engine.getGravity().y());
 	ui.SlownessSlider->setValue(this->engine.speedSlownessScale);
 	ui.emissionSlider->setValue(this->emitter.particlesPerEmission);
+
+	connect(ui.timeDeltaSlider, &QSlider::valueChanged, [=] {
+		this->engine.setTimeDelta(ui.timeDeltaSlider->value() * TIMEDELTA_SLIDER_SCALE);
+	});
 
 	connect(ui.gravitySlider, &QSlider::valueChanged, [=] {
 		this->engine.setGravity(QCPVector2D(0, ui.gravitySlider->value()));
@@ -64,6 +71,7 @@ MainWindow::MainWindow(QWidget *parent)
 	linkLineEditWithValue(ui.ViscosityText, &emitter.emittedParticleViscosity);
 	linkLineEditWithValue(ui.RestDensityText, &emitter.emittedParticleRestDensity);
 	linkLineEditWithValue(ui.GasConstantText, &emitter.emittedParticleGasConstant);
+	linkLineEditWithValue(ui.restitutionText, &emitter.emittedParticleRestitution);
 
 
 	timer->start(1000 / 60);

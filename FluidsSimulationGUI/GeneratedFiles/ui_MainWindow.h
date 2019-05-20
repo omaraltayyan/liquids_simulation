@@ -45,6 +45,10 @@ public:
     QLabel *label_8;
     QLabel *label_9;
     QLineEdit *thresholdText;
+    QLabel *label_11;
+    QLineEdit *restitutionText;
+    QLabel *label_12;
+    QLineEdit *BuoyancyText;
     QWidget *tab_2;
     SimulationCanvasGLWidget *openGLWidget;
     QWidget *widget;
@@ -56,6 +60,8 @@ public:
     QLabel *label_6;
     QSlider *gravitySlider;
     QLabel *label_7;
+    QSlider *timeDeltaSlider;
+    QLabel *label_10;
     QStatusBar *statusBar;
     QMenuBar *menuBar;
     QToolBar *mainToolBar;
@@ -129,11 +135,25 @@ public:
         label_8->setGeometry(QRect(260, 10, 81, 21));
         label_9 = new QLabel(tab);
         label_9->setObjectName(QString::fromUtf8("label_9"));
-        label_9->setGeometry(QRect(260, 50, 81, 21));
+        label_9->setGeometry(QRect(260, 40, 81, 21));
         thresholdText = new QLineEdit(tab);
         thresholdText->setObjectName(QString::fromUtf8("thresholdText"));
-        thresholdText->setGeometry(QRect(352, 50, 131, 20));
+        thresholdText->setGeometry(QRect(350, 40, 131, 20));
         thresholdText->setReadOnly(false);
+        label_11 = new QLabel(tab);
+        label_11->setObjectName(QString::fromUtf8("label_11"));
+        label_11->setGeometry(QRect(260, 70, 81, 21));
+        restitutionText = new QLineEdit(tab);
+        restitutionText->setObjectName(QString::fromUtf8("restitutionText"));
+        restitutionText->setGeometry(QRect(350, 70, 131, 20));
+        restitutionText->setReadOnly(false);
+        label_12 = new QLabel(tab);
+        label_12->setObjectName(QString::fromUtf8("label_12"));
+        label_12->setGeometry(QRect(260, 100, 81, 21));
+        BuoyancyText = new QLineEdit(tab);
+        BuoyancyText->setObjectName(QString::fromUtf8("BuoyancyText"));
+        BuoyancyText->setGeometry(QRect(350, 100, 131, 20));
+        BuoyancyText->setReadOnly(false);
         tabWidget->addTab(tab, QString());
         tab_2 = new QWidget();
         tab_2->setObjectName(QString::fromUtf8("tab_2"));
@@ -210,6 +230,19 @@ public:
         label_7 = new QLabel(widget);
         label_7->setObjectName(QString::fromUtf8("label_7"));
         label_7->setGeometry(QRect(10, 350, 61, 21));
+        timeDeltaSlider = new QSlider(widget);
+        timeDeltaSlider->setObjectName(QString::fromUtf8("timeDeltaSlider"));
+        timeDeltaSlider->setGeometry(QRect(80, 510, 160, 22));
+        timeDeltaSlider->setMinimum(1);
+        timeDeltaSlider->setMaximum(10);
+        timeDeltaSlider->setPageStep(3);
+        timeDeltaSlider->setValue(10);
+        timeDeltaSlider->setOrientation(Qt::Horizontal);
+        timeDeltaSlider->setTickPosition(QSlider::TicksAbove);
+        timeDeltaSlider->setTickInterval(5);
+        label_10 = new QLabel(widget);
+        label_10->setObjectName(QString::fromUtf8("label_10"));
+        label_10->setGeometry(QRect(10, 510, 61, 21));
 
         gridLayout->addWidget(widget, 0, 2, 2, 1);
 
@@ -250,6 +283,10 @@ public:
         label_8->setText(QApplication::translate("MainWindowClass", "Surface Tension", nullptr));
         label_9->setText(QApplication::translate("MainWindowClass", "Threshold", nullptr));
         thresholdText->setPlaceholderText(QApplication::translate("MainWindowClass", "Threshold", nullptr));
+        label_11->setText(QApplication::translate("MainWindowClass", "Restitution", nullptr));
+        restitutionText->setPlaceholderText(QApplication::translate("MainWindowClass", "Restitution", nullptr));
+        label_12->setText(QApplication::translate("MainWindowClass", "Buoyancy", nullptr));
+        BuoyancyText->setPlaceholderText(QApplication::translate("MainWindowClass", "Buoyancy", nullptr));
         tabWidget->setTabText(tabWidget->indexOf(tab), QApplication::translate("MainWindowClass", "Tab 1", nullptr));
         tabWidget->setTabText(tabWidget->indexOf(tab_2), QApplication::translate("MainWindowClass", "Tab 2", nullptr));
         ResumeButton->setText(QApplication::translate("MainWindowClass", "Start", nullptr));
@@ -263,6 +300,7 @@ public:
         label_5->setText(QApplication::translate("MainWindowClass", "Slower", nullptr));
         label_6->setText(QApplication::translate("MainWindowClass", "Emission", nullptr));
         label_7->setText(QApplication::translate("MainWindowClass", "Gravity", nullptr));
+        label_10->setText(QApplication::translate("MainWindowClass", "Time Delta", nullptr));
     } // retranslateUi
 
 };

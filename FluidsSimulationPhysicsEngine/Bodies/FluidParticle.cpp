@@ -77,7 +77,7 @@ QCPVector2D FluidParticle::computePressureForce(const QVector<BodiesVector*>& su
 		if (particle == this || MathUtilities::isEqual(distance, 0))
 			return;
 		auto vec = this->positionVector - particle->positionVector;
-		//vec.normalize();
+		vec.normalize();
 		auto leftTerm = (relativePressureTerm + (particle->_pressure / (particle->_density * particle->_density))) * particle->_mass;
 		resultingPressureForce += vec * leftTerm * this->applyKernal(distance, spiky);
 	});
@@ -163,25 +163,25 @@ QCPVector2D FluidParticle::computeSumOfForces(const QVector<BodiesVector*>& surr
 {
 	QCPVector2D pressureForce = this->computePressureForce(surroundingBodies, radius);
 	QCPVector2D viscousForce = this->computeViscousForce(surroundingBodies, radius);
-	QCPVector2D gravityForce = this->engine->getGravity() * this->_restDensity;
+	QCPVector2D gravityForce = this->engine->getGravity() * this->_density;
 	QCPVector2D surfaceTensionForce = this->computeSurfaceTension(surroundingBodies, radius);
 	return pressureForce + viscousForce + gravityForce + surfaceTensionForce;
 }
 
 void FluidParticle::applyLeapFrogTimeStepIntegration()
 {
-	auto accelration = this->_force / this->_restDensity;
+	auto accelration = this->_force / this->_density;
 	if (!this->_isFirstIteration)
 	{
-		this->_leapFrogNextStep = this->_leapFrogPreviousStep + (engine->timeDelta * accelration);
+		this->_leapFrogNextStep = this->_leapFrogPreviousStep + (engine->getTimeDelta() * accelration);
 	}
 	else
 	{
 		this->_leapFrogNextStep = QCPVector2D(0, 0);
-		this->_leapFrogPreviousStep = this->_velocity - (0.5 * engine->timeDelta * accelration);
+		this->_leapFrogPreviousStep = this->_velocity - (0.5 * engine->getTimeDelta() * accelration);
 		this->_isFirstIteration = false;
 	}
-	this->positionVector += this->_leapFrogNextStep * engine->timeDelta;
+	this->positionVector += this->_leapFrogNextStep * engine->getTimeDelta();
 	this->setPosition(this->positionVector.toPointF());
 
 }

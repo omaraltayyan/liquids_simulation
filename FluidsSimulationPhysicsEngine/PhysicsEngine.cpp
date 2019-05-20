@@ -39,10 +39,12 @@ Grid & PhysicsEngine::getUnsafeBodiesGrid()
 
 PhysicsEngine::PhysicsEngine() : bodiesGrid(QSizeF(0.515625 * 3, 0.515625 * 3), 0.046875)
 {
+	this->newTimeDelta = timeDelta;
 	this->newGravity = new QCPVector2D(this->gravity);
 	this->lastMomentProcessingStarted = chrono::high_resolution_clock::now();
 	this->shouldStopEngine = false;
 	this->shouldRunLoop = false;
+	//this->runningThreads = 1;
 	this->runningThreads = max(1, thread::hardware_concurrency());
 	this->totalBarriers = this->constantBarriersCount + this->calculationOperationsCount;
 	this->synchronizationBarriers = new ThreadsBarrier*[this->totalBarriers];
@@ -157,6 +159,7 @@ void PhysicsEngine::engineUpdateLoop(int threadIndex) {
 				this->totalBodiesForProcessingLoop = this->bodiesGrid.bodiesCount();
 			}
 			this->gravity = *newGravity;
+			this->timeDelta = newTimeDelta;
 			this->lastMomentProcessingStarted = chrono::high_resolution_clock::now();
 		}
 
@@ -218,19 +221,20 @@ void PhysicsEngine::engineUpdateLoop(int threadIndex) {
 			// main thread stalls others by not reaching it's awake
 			// until the time since the last processing start is greater
 			// than or equal to the engine's time delta
+			auto timeBetweenLoops = this->timeDelta * 1000 * speedSlownessScale;
 			auto timeSinceLastLoop = chrono::duration_cast<chrono::milliseconds>(chrono::high_resolution_clock::now() - this->lastMomentProcessingStarted).count();
-			auto timeBetweenLoops = int(this->timeDelta * 1000 * speedSlownessScale);
-			auto frameTime = 1000.0 / max(timeSinceLastLoop, 1);
+			auto frameTime = timeSinceLastLoop / 1000.0;
 
-			fpsAverage.push_back(frameTime); //or push(param)
-			if (fpsAverage.length() > this->fpsAverageSamples)
-				fpsAverage.removeFirst();
-			double totalFPS = 0;
-			for (int i = 0; i < fpsAverage.length(); i++)
+			frameTimeSamples.push_back(frameTime); //or push(param)
+			if (frameTimeSamples.length() > this->fpsAverageSamples)
+				frameTimeSamples.removeFirst();
+			double totalFrameTimes = 0;
+			for (int i = 0; i < frameTimeSamples.length(); i++)
 			{
-				totalFPS += fpsAverage[i];
+				totalFrameTimes += frameTimeSamples[i];
 			}
-			this->fps = totalFPS / fpsAverage.length();
+			auto averageTimePerFrame = totalFrameTimes / frameTimeSamples.length();
+			this->fps = 1.0 / averageTimePerFrame;
 			if (timeSinceLastLoop < (timeBetweenLoops)) {
 				Sleep(timeBetweenLoops - timeSinceLastLoop);
 			}
@@ -273,6 +277,14 @@ void PhysicsEngine::runFunctionOverBodies(const function <void(Body*)>&& func) {
 	{
 		func(this->bodiesGrid.getBodyAtIndex(i));
 	}
+}
+
+void PhysicsEngine::setTimeDelta(qreal newTimeDelta) {
+	this->newTimeDelta = newTimeDelta;
+}
+
+qreal PhysicsEngine::getTimeDelta() {
+	return timeDelta;
 }
 
 void PhysicsEngine::setGravity(const QCPVector2D& newGravity)
