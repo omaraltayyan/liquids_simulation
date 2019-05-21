@@ -180,8 +180,8 @@ void FluidParticle::applyLeapFrogTimeStepIntegration()
 	}
 	else
 	{
-		this->_leapFrogNextStep = QCPVector2D(0, 0);
 		this->_leapFrogPreviousStep = this->_velocity - (0.5 * engine->getTimeDelta() * accelration);
+		this->_leapFrogNextStep = _leapFrogPreviousStep + (engine->getTimeDelta() * accelration);
 		this->_isFirstIteration = false;
 	}
 	this->positionVector += this->_leapFrogNextStep * engine->getTimeDelta();
