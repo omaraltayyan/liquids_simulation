@@ -62,6 +62,8 @@ public:
     QLabel *label_7;
     QSlider *timeDeltaSlider;
     QLabel *label_10;
+    QPushButton *colorSelectButton;
+    QLabel *label_13;
     QStatusBar *statusBar;
     QMenuBar *menuBar;
     QToolBar *mainToolBar;
@@ -244,6 +246,14 @@ public:
         label_10 = new QLabel(widget);
         label_10->setObjectName(QString::fromUtf8("label_10"));
         label_10->setGeometry(QRect(10, 510, 61, 21));
+        colorSelectButton = new QPushButton(widget);
+        colorSelectButton->setObjectName(QString::fromUtf8("colorSelectButton"));
+        colorSelectButton->setGeometry(QRect(130, 290, 75, 23));
+        colorSelectButton->setAutoFillBackground(false);
+        colorSelectButton->setAutoDefault(false);
+        label_13 = new QLabel(widget);
+        label_13->setObjectName(QString::fromUtf8("label_13"));
+        label_13->setGeometry(QRect(40, 290, 81, 16));
 
         gridLayout->addWidget(widget, 0, 2, 2, 1);
 
@@ -302,6 +312,8 @@ public:
         label_6->setText(QApplication::translate("MainWindowClass", "Emission", nullptr));
         label_7->setText(QApplication::translate("MainWindowClass", "Gravity", nullptr));
         label_10->setText(QApplication::translate("MainWindowClass", "Time Delta", nullptr));
+        colorSelectButton->setText(QString());
+        label_13->setText(QApplication::translate("MainWindowClass", "Choose Color:", nullptr));
     } // retranslateUi
 
 };

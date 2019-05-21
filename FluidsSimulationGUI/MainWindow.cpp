@@ -4,6 +4,7 @@
 #include <windows.h>
 #include <iostream>
 #include <stdio.h>
+#include<qcolordialog.h>
 using namespace std;
 
 MainWindow::MainWindow(QWidget *parent)
@@ -47,6 +48,18 @@ MainWindow::MainWindow(QWidget *parent)
 
 	connect(ui.SlownessSlider, &QSlider::valueChanged, [=] {
 		this->engine.speedSlownessScale = ui.SlownessSlider->value();
+	});
+	connect(ui.colorSelectButton, &QPushButton::clicked, [=] {
+		QColor color = QColorDialog::getColor(Qt::white, this,"Choose Particle Color");
+		if (color.isValid())
+		{			
+			
+			QPalette pallete = ui.colorSelectButton->palette();
+			pallete.setColor(QPalette::Button,color);
+			ui.colorSelectButton->setAutoFillBackground(true);
+			ui.colorSelectButton->setPalette(pallete);
+			ui.colorSelectButton->update();
+		}
 	});
 
 	connect(ui.ClearButton, &QPushButton::clicked, [=] {
