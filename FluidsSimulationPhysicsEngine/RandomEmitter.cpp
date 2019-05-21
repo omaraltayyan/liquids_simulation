@@ -46,7 +46,8 @@ void RandomEmitter::addRandomBodies(PhysicsEngine* engine, int bodiesCount, QPoi
 		
 		auto body = new FluidParticle(position, engine, emittedParticleRadius, emittedParticleViscosity,
 			emittedParticleMass, emittedParticleGasConstant, emittedParticleRestDensity,
-			emittedParticleSurfaceTension, emittedParticleThreshold, emittedParticleRestitution, emittedParticleBuoyancy);
+			emittedParticleSurfaceTension, emittedParticleThreshold, emittedParticleRestitution, emittedParticleBuoyancy,
+			emittedParticleColor);
 
 		bodies.push_back(body);
 		if (yMargin == 0)

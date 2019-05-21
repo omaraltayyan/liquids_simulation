@@ -24,9 +24,8 @@ MainWindow::MainWindow(QWidget *parent)
 	connect(timer, &QTimer::timeout, [=] {
 		ui.openGLWidget->update();
 		ui.statusBar->showMessage(QString::asprintf("FPS: %.1f Bodies: %d timeDelta: %.2fms Gravity: %.1fm/s Speed: %.2fx",
-			engine.fps, engine.bodiesCount, engine.getTimeDelta() * 1000, engine.getGravity().y(), 1.0 / engine.speedSlownessScale));
+			engine.fps, engine.bodiesCount, engine.getTimeDelta() * 1000, engine.getGravity().y(), 1.0 / engine.speedSlownessScale));		
 	});
-
 	const int engineDeltaValueOnSlider = 10;
 	const double engineDeltaScale = this->engine.getTimeDelta() * engineDeltaValueOnSlider;
 	ui.timeDeltaSlider->setValue(engineDeltaValueOnSlider);
@@ -49,8 +48,10 @@ MainWindow::MainWindow(QWidget *parent)
 	connect(ui.SlownessSlider, &QSlider::valueChanged, [=] {
 		this->engine.speedSlownessScale = ui.SlownessSlider->value();
 	});
+
 	connect(ui.colorSelectButton, &QPushButton::clicked, [=] {
-		QColor color = QColorDialog::getColor(Qt::white, this,"Choose Particle Color");
+		QColor color = QColorDialog::getColor(Qt::cyan, this,"Choose Particle Color");
+		
 		if (color.isValid())
 		{			
 			
@@ -58,7 +59,9 @@ MainWindow::MainWindow(QWidget *parent)
 			pallete.setColor(QPalette::Button,color);
 			ui.colorSelectButton->setAutoFillBackground(true);
 			ui.colorSelectButton->setPalette(pallete);
-			ui.colorSelectButton->update();
+			ui.colorSelectButton->update();		
+			emitter.emittedParticleColor = color;
+			
 		}
 	});
 
@@ -87,6 +90,7 @@ MainWindow::MainWindow(QWidget *parent)
 	linkLineEditWithValue(ui.GasConstantText, &emitter.emittedParticleGasConstant);
 	linkLineEditWithValue(ui.restitutionText, &emitter.emittedParticleRestitution);
 	linkLineEditWithValue(ui.BuoyancyText, &emitter.emittedParticleBuoyancy);
+	
 
 	
 	timer->start(1000 / 60);

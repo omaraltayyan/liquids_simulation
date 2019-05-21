@@ -2,6 +2,7 @@
 
 #include <random>
 #include "PhysicsEngine.h"
+#include <qcolor.h>
 
 
 class RandomEmitter
@@ -24,6 +25,7 @@ public:
 	double emittedParticleRestDensity = 998.29;
 	double emittedParticleRestitution = 0;
 	double emittedParticleBuoyancy = 0;
+	QColor emittedParticleColor = QColor(173, 216, 230);
 
 
 	// mucus

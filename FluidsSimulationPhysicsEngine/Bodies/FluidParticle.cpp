@@ -4,7 +4,7 @@
 
 FluidParticle::FluidParticle(const QPointF& position, PhysicsEngine* engine, qreal sizeRadius,
 	double viscosity, double mass, double gasConstant, double restDesity,
-	double surfaceTension, double threshold, double restitution, double buoyancy) : Particle(position, engine, sizeRadius)
+	double surfaceTension, double threshold, double restitution, double buoyancy,QColor color) : Particle(position, engine, sizeRadius)
 {
 	_buoyancy = buoyancy;
 	_restitution = restitution;
@@ -23,6 +23,7 @@ FluidParticle::FluidParticle(const QPointF& position, PhysicsEngine* engine, qre
 	_isFirstIteration = true;
 	this->bodyType = fluid;
 	this->displayRadius = cbrt(3 * this->_mass / (4 * M_PI * this->_restDensity));
+	this->particleColor = color;
 }
 
 
