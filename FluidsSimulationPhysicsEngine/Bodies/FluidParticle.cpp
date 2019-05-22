@@ -92,7 +92,7 @@ QCPVector2D FluidParticle::computeViscousForce(const QVector<BodiesVector*>& sur
 	this->runFunctionOverFluidParicles(surroundingBodies, radius, [&](FluidParticle* particle, double distance) {
 		if (particle == this || MathUtilities::isEqual(distance, 0))
 			return;
-		resultingVisousForce += (particle->_velocity - this->_velocity) * (particle->_mass / particle->_density)
+		resultingVisousForce += ((particle->_velocity - this->_velocity) / particle->_density) * particle->_mass
 			* this->applyKernal(distance, visc);
 	});
 

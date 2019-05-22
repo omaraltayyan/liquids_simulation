@@ -68,7 +68,7 @@ class FLUIDSSIMULATIONPHYSICSENGINE_EXPORT PhysicsEngine
 
 	void perfromClearBoddies();
 	
-	qreal timeDelta = 0.001;
+	qreal timeDelta = 0.01;
 	atomic<qreal> newTimeDelta;
 
 public:
