@@ -165,10 +165,15 @@ QCPVector2D FluidParticle::computeSumOfForces(const QVector<BodiesVector*>& surr
 {
 	QCPVector2D pressureForce = this->computePressureForce(surroundingBodies, radius);
 	QCPVector2D viscousForce = this->computeViscousForce(surroundingBodies, radius);
-	QCPVector2D gravityForce = this->engine->getGravity() * this->_density;
-	QCPVector2D buoyancyForce = this->engine->getGravity() * this->_buoyancy * (this->_density - this->_restDensity);
+	QCPVector2D gravityForce;
+	if (this->_buoyancy > 0) {
+		gravityForce = this->engine->getGravity() * this->_buoyancy * (this->_density - this->_restDensity);
+	}
+	else {
+		gravityForce = this->engine->getGravity() * this->_density;
+	}
 	QCPVector2D surfaceTensionForce = this->computeSurfaceTension(surroundingBodies, radius);
-	return pressureForce + viscousForce + gravityForce + buoyancyForce + surfaceTensionForce;
+	return pressureForce + viscousForce + gravityForce + surfaceTensionForce;
 }
 
 void FluidParticle::applyLeapFrogTimeStepIntegration()
