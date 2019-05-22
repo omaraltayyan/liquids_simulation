@@ -209,7 +209,10 @@ void FluidParticle::detectCollision(const QRectF& boundingBox)
 	normal.normalize();
 
 	this->setPosition(contactPoint.toPointF());
-	this->_leapFrogNextStep -= (1 + this->_restitution) * this->_leapFrogNextStep.dot(normal) * normal;
+
+	const double restitutionTerm = this->_restitution * penterationDepth / (this->engine->getTimeDelta() * this->_leapFrogNextStep.length());
+
+	this->_leapFrogNextStep -= (1 + restitutionTerm) * this->_leapFrogNextStep.dot(normal) * normal;
 }
 
 int FluidParticle::signumFunction(double x)
