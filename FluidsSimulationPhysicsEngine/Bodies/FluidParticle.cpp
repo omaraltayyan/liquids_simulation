@@ -104,8 +104,6 @@ QCPVector2D FluidParticle::computeSurfaceNormal(const QVector<BodiesVector*>& su
 {
 	QCPVector2D resultingSurfaceNormal(0.0, 0.0);
 	this->runFunctionOverFluidParicles(surroundingBodies, radius, [&](FluidParticle* particle, double distance) {
-		if (particle == this || MathUtilities::isEqual(distance, 0))
-			return;
 		auto vec = this->positionVector - particle->positionVector;
 		double kernel = this->applyKernal(distance, gradPoly6);
 		resultingSurfaceNormal += vec * (particle->_mass / particle->_density)*kernel;
@@ -260,7 +258,7 @@ void FluidParticle::applyInteraction()
 
 	this->detectCollision(QRectF(0.0, 0.0, size.width(), size.height()));
 
-	this->_velocity = (this->_leapFrogPreviousStep + this->_leapFrogNextStep) / 2.0;
+	this->_velocity = (this->_leapFrogPreviousStep + this->_leapFrogNextStep) * 0.5;
 
 	this->_leapFrogPreviousStep = this->_leapFrogNextStep;
 
