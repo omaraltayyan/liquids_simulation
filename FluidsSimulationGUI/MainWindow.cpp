@@ -12,11 +12,12 @@ MainWindow::MainWindow(QWidget *parent)
 {
 	ui.setupUi(this);
 
+#ifdef _DEBUG
 	AllocConsole();
 	freopen("conin$", "r", stdin);
 	freopen("conout$", "w", stdout);
 	freopen("conout$", "w", stderr);
-
+#endif
 	QTimer *timer = new QTimer(this);
 	ui.openGLWidget->engine = &engine;
 	ui.openGLWidget->emitter = &emitter;

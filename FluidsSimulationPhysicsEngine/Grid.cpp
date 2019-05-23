@@ -3,6 +3,7 @@
 using namespace std;
 #include <cmath>
 #include "Utilities\MathUtilities.h"
+#include "Bodies\Particle.h"
 #include <assert.h>     /* assert */
 
 Grid::Grid(const QSizeF& sizeInMeters, qreal squareSideInMeters)
@@ -112,7 +113,6 @@ void Grid::updateBodiesInGrid() {
 			bodiesSquareIndexs.removeAt(i);
 			delete allBodies.at(i);
 			allBodies.removeAt(i);
-
 			i--;
 			continue;
 		}
@@ -144,7 +144,28 @@ void Grid::updateBodiesInGrid() {
 				squaresBodies[squareIndex]->push_back(body);
 		}
 	}
-
+	/*int c = 0;
+	for (int i = 0; i < this->numSquares(); i++)
+	{
+		for (int j = 0; j < squaresBodies[i]->length(); j++)
+		{
+			for (int z = j + 1; z < squaresBodies[i]->length(); z++)
+			{
+				Body& body1 = *(squaresBodies[i]->at(j));
+				Body& body2 = *(squaresBodies[i]->at(z));
+				if (body1.bodyType == fluid && body2.bodyType == fluid) {
+					Particle& p1 = static_cast<Particle&>(body1);
+					Particle& p2 = static_cast<Particle&>(body2);
+					if (MathUtilities::isEqual(p1.position.x(), p2.position.x()) && 
+						MathUtilities::isEqual(p1.position.y(), p2.position.y())) {
+						c++;
+					}
+				}
+			}
+		}
+	}
+	printf("%d shared Positions found\n", c);
+*/
 	for (int i = 0; i < this->numSquares(); i++)
 	{
 		squaresBodies[i]->squeeze();

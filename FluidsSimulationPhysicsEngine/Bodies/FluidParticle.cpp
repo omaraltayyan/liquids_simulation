@@ -211,6 +211,31 @@ void FluidParticle::detectCollision(const QRectF& boundingBox)
 	QCPVector2D normal = this->positionVector - contactPoint;
 	normal.normalize();
 
+	int collisionSides = 0;
+
+	if (this->positionVector.x() < 0) {
+		collisionSides += 1;
+	}
+	if (this->positionVector.y() < 0) {
+		collisionSides += 1;
+	}
+	if (this->positionVector.x() >= extentVector.x()) {
+		collisionSides += 1;
+	}
+	if (this->positionVector.y() >= extentVector.y()) {
+		collisionSides += 1;
+	}
+
+
+	// two sides collided, add ad random translation toward the 
+	// center to avoid chaos in the simulation
+	if (collisionSides >= 2) {
+		float randomDistance = static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / 0.001));
+
+		QCPVector2D randomMovement = (-normal) * randomDistance;
+		contactPoint += randomMovement;
+	}
+
 	this->setPosition(contactPoint.toPointF());
 
 	const double restitutionTerm = this->_restitution * penterationDepth / (this->engine->getTimeDelta() * this->_leapFrogNextStep.length());
