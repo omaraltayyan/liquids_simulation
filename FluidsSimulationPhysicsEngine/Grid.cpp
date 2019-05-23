@@ -116,6 +116,35 @@ void Grid::addBodiesToGrid(const BodiesVector& bodies) {
 	}
 
 
+#ifdef _DEBUG
+	int c = 0;
+	for (int i = 0; i < this->numSquares(); i++)
+	{
+		for (int j = 0; j < squaresBodies[i]->length(); j++)
+		{
+			for (int z = j + 1; z < squaresBodies[i]->length(); z++)
+			{
+				Body& body1 = *(squaresBodies[i]->at(j));
+				Body& body2 = *(squaresBodies[i]->at(z));
+				if (body1.bodyType == fluid && body2.bodyType == fluid) {
+					Particle& p1 = static_cast<Particle&>(body1);
+					Particle& p2 = static_cast<Particle&>(body2);
+					if (MathUtilities::isEqual(p1.position.x(), p2.position.x()) &&
+						MathUtilities::isEqual(p1.position.y(), p2.position.y())) {
+						c++;
+					}
+				}
+			}
+		}
+	}
+	if (c > 0)
+	{
+		printf("%d shared Positions found\n", c);
+	}
+
+#endif
+
+
 	delete[] squaresBodiesCounts;
 }
 
@@ -181,7 +210,10 @@ void Grid::updateBodiesInGrid() {
 				squaresBodies[squareIndex]->push_back(body);
 		}
 	}
-	/*int c = 0;
+
+
+#ifdef _DEBUG
+	int c = 0;
 	for (int i = 0; i < this->numSquares(); i++)
 	{
 		for (int j = 0; j < squaresBodies[i]->length(); j++)
@@ -193,7 +225,7 @@ void Grid::updateBodiesInGrid() {
 				if (body1.bodyType == fluid && body2.bodyType == fluid) {
 					Particle& p1 = static_cast<Particle&>(body1);
 					Particle& p2 = static_cast<Particle&>(body2);
-					if (MathUtilities::isEqual(p1.position.x(), p2.position.x()) && 
+					if (MathUtilities::isEqual(p1.position.x(), p2.position.x()) &&
 						MathUtilities::isEqual(p1.position.y(), p2.position.y())) {
 						c++;
 					}
@@ -201,8 +233,26 @@ void Grid::updateBodiesInGrid() {
 			}
 		}
 	}
-	printf("%d shared Positions found\n", c);
-*/
+	if (c > 0)
+	{
+		printf("%d shared Positions found\n", c);
+	}
+
+	int bodiesInSquares = 0;
+	for (int i = 0; i < this->numSquares(); i++)
+	{
+		bodiesInSquares += squaresBodies[i]->length();
+	}
+
+	int bodiesInIndexes = 0;
+	for (int i = 0; i < bodiesSquareIndexs.length(); i++)
+	{
+		bodiesInIndexes += bodiesSquareIndexs[i].length();
+	}
+
+	assert(bodiesInIndexes == bodiesInSquares);
+#endif
+
 	for (int i = 0; i < this->numSquares(); i++)
 	{
 		squaresBodies[i]->squeeze();
@@ -347,6 +397,10 @@ inline QVector<int> Grid::squareDimensionsSquareIndexs(QRect const & squareDimen
 			}
 		}
 	}
+
+#ifdef _DEBUG
+	assert(!indexesArray.contains(this->numSquares()));
+#endif
 	return indexesArray;
 }
 
