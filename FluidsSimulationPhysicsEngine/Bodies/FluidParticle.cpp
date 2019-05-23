@@ -22,8 +22,8 @@ FluidParticle::FluidParticle(const QPointF& position, PhysicsEngine* engine, qre
 	_surfaceThreshold = threshold;
 	_isFirstIteration = true;
 	this->bodyType = fluid;
-	this->displayRadius = cbrt(3 * this->_mass / (4 * M_PI * this->_restDensity));
 	this->particleColor = color;
+	this->displayRadius = cbrt(3 * this->_mass / (4 * M_PI * this->_restDensity));
 }
 
 
@@ -287,6 +287,7 @@ void FluidParticle::applyInteraction()
 
 	this->_leapFrogPreviousStep = this->_leapFrogNextStep;
 
+	this->displayRadius = cbrt(3 * this->_mass / (4 * M_PI * this->_density));
 }
 
 

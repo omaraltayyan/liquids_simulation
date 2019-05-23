@@ -8,7 +8,7 @@ SimulationCanvasGLWidget::SimulationCanvasGLWidget(QWidget *parent) : QOpenGLWid
 	setAutoFillBackground(false);
 
 	background = QBrush(QColor(0, 0, 0));
-	circlePen = QPen(QColor(173, 216, 230));
+	circlePen = QPen(QColor(100, 149, 237));
 	circleBrush = QBrush(circlePen.color());
 	circlePen.setCapStyle(Qt::RoundCap);
 }
@@ -21,6 +21,13 @@ SimulationCanvasGLWidget::~SimulationCanvasGLWidget()
 void SimulationCanvasGLWidget::mousePressEvent(QMouseEvent *event) {
 	QOpenGLWidget::mousePressEvent(event);
 	addBodiesAtWidgetPosition(event->pos());
+	if (engine->isPaused()) {
+		this->resumeEngineOnRelease = false;
+	}
+	else {
+		engine->pauseEngine();
+		this->resumeEngineOnRelease = true;
+	}
 	// engine->pauseEngine();
 }
 
@@ -33,14 +40,19 @@ void SimulationCanvasGLWidget::mouseMoveEvent(QMouseEvent *event) {
 void SimulationCanvasGLWidget::mouseReleaseEvent(QMouseEvent * event)
 {
 	QOpenGLWidget::mouseReleaseEvent(event);
-	// engine->resumeEngine();
+	if (this->resumeEngineOnRelease) {
+		engine->resumeEngine();
+		this->resumeEngineOnRelease = false;
+	}
 }
 
 void SimulationCanvasGLWidget::leaveEvent(QEvent *event)
 {
 	QOpenGLWidget::leaveEvent(event);
-	// engine->resumeEngine();
-
+	if (this->resumeEngineOnRelease) {
+		engine->resumeEngine();
+		this->resumeEngineOnRelease = false;
+	}
 }
 
 void SimulationCanvasGLWidget::addBodiesAtWidgetPosition(QPointF position) {

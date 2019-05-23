@@ -3,12 +3,11 @@
 using namespace std;
 #include <cmath>
 #include "Utilities\MathUtilities.h"
-#include "Bodies\Particle.h"
+#include "Bodies\FluidParticle.h"
 #include <assert.h>     /* assert */
 
 Grid::Grid(const QSizeF& sizeInMeters, qreal squareSideInMeters)
 {
-	this->bodiesSquareIndexs = QVector<QVector<int>>();
 	this->sizeInMeters(sizeInMeters);
 	this->setSquareSideInMeters(squareSideInMeters);
 }
@@ -39,20 +38,54 @@ void Grid::addBodiesToGrid(const BodiesVector& bodies) {
 
 	auto squaresBodiesCounts = new int[this->numSquares()]();
 
-	this->bodiesSquareIndexs.reserve(this->bodiesSquareIndexs.length() + bodies.length());
+	QVector<QVector<int>> bodiesSquareIndexs;
+
+	bodiesSquareIndexs.reserve(bodies.length());
 	
 	for (int i = allBodies.length() - bodies.length(); i < allBodies.length(); i++)
 	{
 		auto body = allBodies[i];
 		bodiesSquareIndexs.push_back(this->getBodySquareIndexs(*body));
+		bool rejectBody = false;
+
 		if (bodiesSquareIndexs.last().length() == 0) {
+			rejectBody = true;
+		}
+		else {
+			if (body->bodyType == fluid && squaresBodies.length() > 0)
+			{
+				auto particle = static_cast<FluidParticle*>(body);
+				QVector<int>& indexes = this->getBodySquareIndexsWithSurroundingSquares(*body);
+				for (int i = 0; i < indexes.length(); i++)
+				{
+					int index = indexes[i];
+					for (int j = 0; j < squaresBodies[index]->length(); j++)
+					{
+						Body* otherBody = squaresBodies[index]->at(j);
+						if (otherBody->bodyType == fluid)
+						{
+							auto otherParticle = static_cast<FluidParticle*>(otherBody);
+							double minAllowedDistance = particle->displayRadius + otherParticle->displayRadius;
+							if (particle->positionVector.distanceToPoint(otherParticle->positionVector) < minAllowedDistance) {
+								rejectBody = true;
+								goto loopEnd;
+							}
+						}
+					}
+				}
+			}
+		loopEnd:;
+		}
+		if (rejectBody)
+		{
 			bodiesSquareIndexs.removeLast();
 			delete allBodies.at(i);
 			allBodies.removeAt(i);
 			i--;
 			continue;
 		}
-		for each(int squareIndex in bodiesSquareIndexs.at(i)) {
+
+		for each(int squareIndex in bodiesSquareIndexs.last()) {
 				squaresBodiesCounts[squareIndex]++;
 		}
 	}
@@ -72,13 +105,16 @@ void Grid::addBodiesToGrid(const BodiesVector& bodies) {
 		}
 	}
 
-	for (int i = allBodies.length() - bodies.length(); i < allBodies.length(); i++)
+	int squaresIndex = 0;
+	for (int i = allBodies.length() - bodiesSquareIndexs.length(); i < allBodies.length(); i++)
 	{
 		auto body = allBodies[i];
-		for each(int squareIndex in bodiesSquareIndexs[i]) {
+		for each(int squareIndex in bodiesSquareIndexs[squaresIndex]) {
 			squaresBodies[squareIndex]->push_back(body);
 		}
+		squaresIndex++;
 	}
+
 
 	delete[] squaresBodiesCounts;
 }
@@ -90,8 +126,6 @@ void Grid::clearBodies()
 	}
 	allBodies.clear();
 	allBodies.squeeze();
-	this->bodiesSquareIndexs.clear();
-	this->bodiesSquareIndexs.squeeze();
 	for (int i = 0; i < this->numSquares(); i++)
 	{
 		squaresBodies[i]->clear();
@@ -103,12 +137,14 @@ void Grid::updateBodiesInGrid() {
 
 	auto squaresBodiesCounts = new int[this->numSquares()]();
 
-	this->bodiesSquareIndexs = QVector<QVector<int>>(allBodies.length());
+	QVector<QVector<int>> bodiesSquareIndexs;
+
+	bodiesSquareIndexs.reserve(allBodies.length());
 
 	for (int i = 0; i < allBodies.length(); i++)
 	{
 		auto body = allBodies[i];
-		bodiesSquareIndexs[i] = this->getBodySquareIndexs(*body);
+		bodiesSquareIndexs.push_back(this->getBodySquareIndexs(*body));
 		if (bodiesSquareIndexs[i].length() == 0) {
 			bodiesSquareIndexs.removeAt(i);
 			delete allBodies.at(i);

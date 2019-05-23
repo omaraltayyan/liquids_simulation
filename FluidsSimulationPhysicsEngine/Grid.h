@@ -103,8 +103,6 @@ public:
 
 private:
 
-	QVector<QVector<int>> bodiesSquareIndexs;
-
 	void resetSquareCoordinates();
 	
 	KernelsInfo kernelsInfo;

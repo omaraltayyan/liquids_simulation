@@ -24,6 +24,7 @@ public:
 	QPen circlePen;
 
 protected:
+	bool resumeEngineOnRelease = false;
 	int containerWidth();
 	int containerHeight();
 
