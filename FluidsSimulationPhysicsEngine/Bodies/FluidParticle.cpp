@@ -230,9 +230,12 @@ void FluidParticle::detectCollision(const QRectF& boundingBox)
 	// two sides collided, add ad random translation toward the 
 	// center to avoid chaos in the simulation
 	if (collisionSides >= 2) {
-		float randomDistance = static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / 0.001));
+		float randomDistanceX = static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / 0.001));
+		float randomDistanceY = static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / 0.001));
 
-		QCPVector2D randomMovement = (-normal) * randomDistance;
+		QCPVector2D randomMovement = (-normal);
+		randomMovement.rx() *= randomDistanceX;
+		randomMovement.ry() *= randomDistanceY;
 		contactPoint += randomMovement;
 	}
 
