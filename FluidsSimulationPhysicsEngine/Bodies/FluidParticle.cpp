@@ -23,7 +23,7 @@ FluidParticle::FluidParticle(const QPointF& position, PhysicsEngine* engine, qre
 	_isFirstIteration = true;
 	this->bodyType = fluid;
 	this->particleColor = color;
-	this->displayRadius = cbrt(3 * this->_mass / (4 * M_PI * this->_restDensity));
+	this->displayRadius = cbrt(3 * this->_mass / (4 * M_PI * 2000));
 }
 
 
@@ -208,24 +208,28 @@ void FluidParticle::detectCollision(const QRectF& boundingBox)
 
 	auto penterationDepth = this->positionVector.distanceToPoint(contactPoint);
 
-	QCPVector2D normal = this->positionVector - contactPoint;
-	normal.normalize();
+	QCPVector2D normal;
 
 	int collisionSides = 0;
 
 	if (this->positionVector.x() < 0) {
 		collisionSides += 1;
+		normal.rx() += 1;
 	}
 	if (this->positionVector.y() < 0) {
 		collisionSides += 1;
+		normal.ry() += 1;
 	}
 	if (this->positionVector.x() >= extentVector.x()) {
 		collisionSides += 1;
+		normal.rx() -= 1;
 	}
 	if (this->positionVector.y() >= extentVector.y()) {
 		collisionSides += 1;
+		normal.ry() -= 1;
 	}
 
+	normal.normalize();
 
 	// two sides collided, add ad random translation toward the 
 	// center to avoid chaos in the simulation
@@ -233,7 +237,7 @@ void FluidParticle::detectCollision(const QRectF& boundingBox)
 		float randomDistanceX = static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / 0.001));
 		float randomDistanceY = static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / 0.001));
 
-		QCPVector2D randomMovement = (-normal);
+		QCPVector2D randomMovement = QCPVector2D(normal);
 		randomMovement.rx() *= randomDistanceX;
 		randomMovement.ry() *= randomDistanceY;
 		contactPoint += randomMovement;
@@ -241,7 +245,7 @@ void FluidParticle::detectCollision(const QRectF& boundingBox)
 
 	this->setPosition(contactPoint.toPointF());
 
-	const double restitutionTerm = this->_restitution * penterationDepth / (this->engine->getTimeDelta() * this->_leapFrogNextStep.length());
+	const double restitutionTerm = this->_restitution > 0 ? this->_restitution * (penterationDepth / (this->engine->getTimeDelta() * this->_leapFrogNextStep.length())) : 0;
 
 	this->_leapFrogNextStep -= (1 + restitutionTerm) * this->_leapFrogNextStep.dot(normal) * normal;
 }
