@@ -174,24 +174,6 @@ QCPVector2D FluidParticle::computeSumOfForces(const QVector<BodiesVector*>& surr
 	return pressureForce + viscousForce + gravityForce + surfaceTensionForce;
 }
 
-void FluidParticle::applyLeapFrogTimeStepIntegration()
-{
-	auto accelration = this->_force / this->_density;
-	if (!this->_isFirstIteration)
-	{
-		this->_leapFrogNextStep = this->_leapFrogPreviousStep + (engine->getTimeDelta() * accelration);
-	}
-	else
-	{
-		this->_leapFrogPreviousStep = this->_velocity - (0.5 * engine->getTimeDelta() * accelration);
-		this->_leapFrogNextStep = _leapFrogPreviousStep + (engine->getTimeDelta() * accelration);
-		this->_isFirstIteration = false;
-	}
-	this->positionVector += this->_leapFrogNextStep * engine->getTimeDelta();
-	this->setPosition(this->positionVector.toPointF());
-
-}
-
 void FluidParticle::detectCollision(const QRectF& boundingBox)
 {
 	if (boundingBox.contains(this->position))
@@ -285,17 +267,27 @@ void FluidParticle::calculateInteractionWithBodies(const QVector<BodiesVector*>&
 
 void FluidParticle::applyInteraction()
 {
-	this->applyLeapFrogTimeStepIntegration();
-	auto size = this->engine->getUnsafeBodiesGrid().sizeInMeters();
+	auto accelration = this->_force / this->_density;
+	if (!this->_isFirstIteration)
+	{
+		this->_leapFrogNextStep = this->_leapFrogPreviousStep + (engine->getTimeDelta() * accelration);
+		this->positionVector += this->_leapFrogNextStep * engine->getTimeDelta();
+		this->setPosition(this->positionVector.toPointF());
 
-	this->detectCollision(QRectF(0.0, 0.0, size.width(), size.height()));
+		auto size = this->engine->getUnsafeBodiesGrid().sizeInMeters();
 
-	this->_velocity = (this->_leapFrogPreviousStep + this->_leapFrogNextStep) * 0.5;
+		this->detectCollision(QRectF(0.0, 0.0, size.width(), size.height()));
 
-	this->_leapFrogPreviousStep = this->_leapFrogNextStep;
+		this->_velocity = (this->_leapFrogPreviousStep + this->_leapFrogNextStep) * 0.5;
 
+		this->_leapFrogPreviousStep = QCPVector2D(this->_leapFrogNextStep);
+	}
+	else
+	{
+		this->_leapFrogPreviousStep = this->_velocity - (0.5 * engine->getTimeDelta() * accelration);
+		this->_isFirstIteration = false;
+	}
 	this->displayRadius = cbrt(3 * this->_mass / (4 * M_PI * this->_density));
 }
-
 
 
