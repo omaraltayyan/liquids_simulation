@@ -47,7 +47,6 @@ private:
 	void runFunctionOverFluidParicles(const QVector<BodiesVector*>& surroundingBodies, double radius, const std::function <void(FluidParticle*, double)>&& func);
 	QCPVector2D computeSumOfForces(const QVector<BodiesVector*>& surroundingBodies, double radius);
 
-	void applyLeapFrogTimeStepIntegration();
 	void detectCollision(const QRectF& boundingBox);
 	int signumFunction(double x);
 
