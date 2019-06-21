@@ -23,7 +23,7 @@ FluidParticle::FluidParticle(const QPointF& position, PhysicsEngine* engine, qre
 	_isFirstIteration = true;
 	this->bodyType = fluid;
 	this->particleColor = color;
-	this->displayRadius = cbrt(3 * this->_mass / (4 * M_PI * 2000));
+	this->displayRadius = 1.5*cbrt(3.0 * this->_mass / (4.0 * M_PI * this->_restDensity));
 }
 
 
@@ -181,7 +181,6 @@ void FluidParticle::detectCollision(const QRectF& boundingBox)
 		return;
 	}
 
-	QPointF centerPoint = boundingBox.center();
 	QCPVector2D extentVector = QCPVector2D(boundingBox.width(), boundingBox.height());
 
 	auto rightSide = QCPVector2D(qMax(0.0, this->positionVector.x()), qMax(0.0, this->positionVector.y()));
@@ -189,7 +188,10 @@ void FluidParticle::detectCollision(const QRectF& boundingBox)
 	auto contactPoint = QCPVector2D(qMin((extentVector).x(), rightSide.x()), qMin((extentVector).y(), rightSide.y()));
 
 	auto penterationDepth = this->positionVector.distanceToPoint(contactPoint);
-
+	if (penterationDepth <= 0)
+	{
+		return;
+	}
 	QCPVector2D normal;
 
 	int collisionSides = 0;
@@ -216,8 +218,8 @@ void FluidParticle::detectCollision(const QRectF& boundingBox)
 	// two sides collided, add ad random translation toward the 
 	// center to avoid chaos in the simulation
 	if (collisionSides >= 2) {
-		float randomDistanceX = static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / 0.001));
-		float randomDistanceY = static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / 0.001));
+		float randomDistanceX = static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / 0.0001));
+		float randomDistanceY = static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / 0.0001));
 
 		QCPVector2D randomMovement = QCPVector2D(normal);
 		randomMovement.rx() *= randomDistanceX;
@@ -287,7 +289,7 @@ void FluidParticle::applyInteraction()
 		this->_leapFrogPreviousStep = this->_velocity - (0.5 * engine->getTimeDelta() * accelration);
 		this->_isFirstIteration = false;
 	}
-	this->displayRadius = cbrt(3 * this->_mass / (4 * M_PI * this->_density));
+	this->displayRadius = 1.5*cbrt(3.0 * this->_mass / (4.0 * M_PI * this->_density));
 }
 
 

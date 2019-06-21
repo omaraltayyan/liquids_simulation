@@ -27,15 +27,15 @@ MainWindow::MainWindow(QWidget *parent)
 		ui.statusBar->showMessage(QString::asprintf("FPS: %.1f Bodies: %d timeDelta: %.2fms Gravity: %.1fm/s Speed: %.2fx",
 			engine.fps, engine.bodiesCount, engine.getTimeDelta() * 1000, engine.getGravity().y(), 1.0 / engine.speedSlownessScale));		
 	});
-	const int engineDeltaValueOnSlider = 10;
-	const double engineDeltaScale = this->engine.getTimeDelta() * engineDeltaValueOnSlider;
-	ui.timeDeltaSlider->setValue(engineDeltaValueOnSlider);
+	const double valueOnSliderValueOfOne = 0.001;
+	const double newSliderValue = this->engine.getTimeDelta() / valueOnSliderValueOfOne;
+	ui.timeDeltaSlider->setValue(newSliderValue);
 	ui.gravitySlider->setValue(this->engine.getGravity().y());
 	ui.SlownessSlider->setValue(this->engine.speedSlownessScale);
 	ui.emissionSlider->setValue(this->emitter.particlesPerEmission);
 
 	connect(ui.timeDeltaSlider, &QSlider::valueChanged, [=] {
-		this->engine.setTimeDelta(engineDeltaScale / ui.timeDeltaSlider->value());
+		this->engine.setTimeDelta(valueOnSliderValueOfOne * ui.timeDeltaSlider->value());
 	});
 
 	connect(ui.gravitySlider, &QSlider::valueChanged, [=] {
