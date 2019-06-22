@@ -47,7 +47,11 @@ private:
 	void runFunctionOverFluidParicles(const QVector<BodiesVector*>& surroundingBodies, double radius, const std::function <void(FluidParticle*, double)>&& func);
 	QCPVector2D computeSumOfForces(const QVector<BodiesVector*>& surroundingBodies, double radius);
 
-	void detectCollision(const QRectF& boundingBox);
+	void detectCollisionWithASquare(const QRectF& boundingBox);
+	void detectCollisionWithACapsule(const QRectF& boundingBox, double cylinder_width);
+	
+	void applyCollision(const QCPVector2D & contactPoint, const QCPVector2D& collisionSurfaceNormal, double penterationDepth);
+
 	int signumFunction(double x);
 
 

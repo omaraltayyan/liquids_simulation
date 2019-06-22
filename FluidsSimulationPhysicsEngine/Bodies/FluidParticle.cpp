@@ -174,7 +174,7 @@ QCPVector2D FluidParticle::computeSumOfForces(const QVector<BodiesVector*>& surr
 	return pressureForce + viscousForce + gravityForce + surfaceTensionForce;
 }
 
-void FluidParticle::detectCollision(const QRectF& boundingBox)
+void FluidParticle::detectCollisionWithASquare(const QRectF& boundingBox)
 {
 	if (boundingBox.contains(this->position))
 	{
@@ -227,11 +227,54 @@ void FluidParticle::detectCollision(const QRectF& boundingBox)
 		contactPoint += randomMovement;
 	}
 
+	this->applyCollision(contactPoint, normal, penterationDepth);
+}
+
+void FluidParticle::detectCollisionWithACapsule(const QRectF& boundingBox, double cylinder_width) {
+
+	// the width (radius) of the capsule must never exceed half the 
+	// width nor the height of the bounding box
+	cylinder_width = min(cylinder_width, boundingBox.width() / 2.0);
+	cylinder_width = min(cylinder_width, boundingBox.height() / 2.0);
+	
+	auto capsule_p0 = QPointF(boundingBox.width() / 2.0, cylinder_width);
+	auto capsule_p1 = QPointF(boundingBox.width() / 2.0, boundingBox.height() - cylinder_width);
+
+	auto pointsDifference = capsule_p1 - capsule_p0;
+	auto pointsDifferenceVector = QCPVector2D(pointsDifference);
+	auto differenceLengthSquared = pointsDifferenceVector.lengthSquared();
+
+	// the innerMostValue in the capsule equation
+	auto innerValue = -1 * QCPVector2D(capsule_p0 - this->position).dot(pointsDifferenceVector) / differenceLengthSquared;
+
+	auto equationRightSide = min(1.0, max(0.0, innerValue)) * pointsDifference;
+
+	auto equationQValue = capsule_p0 + equationRightSide;
+
+	auto capsuleFunction = QCPVector2D(equationQValue - this->position).length() - cylinder_width;
+
+	if (capsuleFunction < 0) {
+		return;
+	}
+
+	auto normalizedQFromPosition = (this->position - equationQValue) / QCPVector2D(this->position - equationQValue).length();
+
+	auto contactPoint = equationQValue + (cylinder_width * (normalizedQFromPosition));
+
+	auto penetrationDepth = abs(capsuleFunction);
+
+	auto normal = signumFunction(capsuleFunction) * normalizedQFromPosition;
+
+	this->applyCollision(contactPoint, normal, penetrationDepth);
+}
+
+void FluidParticle::applyCollision(const QCPVector2D & contactPoint, const QCPVector2D& collisionSurfaceNormal, double penterationDepth) {
+
 	this->setPosition(contactPoint.toPointF());
 
 	const double restitutionTerm = this->_restitution > 0 ? this->_restitution * (penterationDepth / (this->engine->getTimeDelta() * this->_leapFrogNextStep.length())) : 0;
 
-	this->_leapFrogNextStep -= (1 + restitutionTerm) * this->_leapFrogNextStep.dot(normal) * normal;
+	this->_leapFrogNextStep -= (1 + restitutionTerm) * this->_leapFrogNextStep.dot(collisionSurfaceNormal) * collisionSurfaceNormal;
 }
 
 int FluidParticle::signumFunction(double x)
@@ -278,7 +321,8 @@ void FluidParticle::applyInteraction()
 
 		auto size = this->engine->getUnsafeBodiesGrid().sizeInMeters();
 
-		this->detectCollision(QRectF(0.0, 0.0, size.width(), size.height()));
+		// this->detectCollisionWithASquare(QRectF(0.0, 0.0, size.width(), size.height()));
+		this->detectCollisionWithACapsule(QRectF(0.0, 0.0, size.width(), size.height()), 0.5);
 
 		this->_velocity = (this->_leapFrogPreviousStep + this->_leapFrogNextStep) * 0.5;
 
