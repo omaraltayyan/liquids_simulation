@@ -29,7 +29,7 @@ protected:
 	int containerWidth();
 	int containerHeight();
 
-	const double containerOffsetMeters = 0.03;
+	const double containerOffsetMeters = 0.1;
 	const QSize containerOffsetPixels();
 
 	void paintEvent(QPaintEvent *event) override;
