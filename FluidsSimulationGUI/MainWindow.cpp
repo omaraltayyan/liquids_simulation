@@ -66,6 +66,10 @@ MainWindow::MainWindow(QWidget *parent)
 		}
 	});
 
+	connect(ui.pauseOnSpawnCheckbox, &QCheckBox::clicked, [=] {
+		ui.openGLWidget->pauseEngineOnSpawn = ui.pauseOnSpawnCheckbox->isChecked();
+	});
+
 	connect(ui.ClearButton, &QPushButton::clicked, [=] {
 		engine.clearBodies();
 	});

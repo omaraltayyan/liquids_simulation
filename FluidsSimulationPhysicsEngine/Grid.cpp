@@ -65,7 +65,7 @@ void Grid::addBodiesToGrid(const BodiesVector& bodies) {
 						if (otherBody->bodyType == fluid)
 						{
 							auto otherParticle = static_cast<FluidParticle*>(otherBody);
-							double minAllowedDistance = particle->displayRadius + otherParticle->displayRadius;
+							double minAllowedDistance = 0.005;
 							if (particle->positionVector.distanceToPoint(otherParticle->positionVector) < minAllowedDistance) {
 								rejectBody = true;
 								goto loopEnd;

@@ -24,7 +24,7 @@ void SimulationCanvasGLWidget::mousePressEvent(QMouseEvent *event) {
 	if (engine->isPaused()) {
 		this->resumeEngineOnRelease = false;
 	}
-	else {
+	else if (this->pauseEngineOnSpawn) {
 		engine->pauseEngine();
 		this->resumeEngineOnRelease = true;
 	}

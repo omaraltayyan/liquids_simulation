@@ -221,9 +221,9 @@ void FluidParticle::detectCollision(const QRectF& boundingBox)
 		float randomDistanceX = static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / 0.0001));
 		float randomDistanceY = static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / 0.0001));
 
-		QCPVector2D randomMovement = QCPVector2D(normal);
-		randomMovement.rx() *= randomDistanceX;
-		randomMovement.ry() *= randomDistanceY;
+		QCPVector2D randomMovement = QCPVector2D();
+		randomMovement.setX(normal.x() * randomDistanceX);
+		randomMovement.setY(normal.y() * randomDistanceY);
 		contactPoint += randomMovement;
 	}
 

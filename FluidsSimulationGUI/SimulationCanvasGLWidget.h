@@ -22,6 +22,7 @@ public:
 	QBrush background;
 	QBrush circleBrush;
 	QPen circlePen;
+	bool pauseEngineOnSpawn = true;
 
 protected:
 	bool resumeEngineOnRelease = false;
