@@ -163,15 +163,15 @@ QCPVector2D FluidParticle::computeSumOfForces(const QVector<BodiesVector*>& surr
 {
 	QCPVector2D pressureForce = this->computePressureForce(surroundingBodies, radius);
 	QCPVector2D viscousForce = this->computeViscousForce(surroundingBodies, radius);
-	QCPVector2D gravityForce;
+	QCPVector2D externalForce;
 	if (this->_buoyancy > 0) {
-		gravityForce = this->engine->getGravity() * this->_buoyancy * (this->_density - this->_restDensity);
+		externalForce = this->engine->getGravity() * this->_buoyancy * (this->_density - this->_restDensity);
 	}
 	else {
-		gravityForce = this->engine->getGravity() * this->_density;
+		externalForce = this->engine->getGravity() * this->_density;
+		externalForce += this->computeSurfaceTension(surroundingBodies, radius);
 	}
-	QCPVector2D surfaceTensionForce = this->computeSurfaceTension(surroundingBodies, radius);
-	return pressureForce + viscousForce + gravityForce + surfaceTensionForce;
+	return pressureForce + viscousForce + externalForce;
 }
 
 void FluidParticle::detectCollisionWithASquare(const QRectF& boundingBox)
