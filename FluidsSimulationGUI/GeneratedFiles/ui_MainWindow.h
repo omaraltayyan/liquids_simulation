@@ -12,6 +12,7 @@
 #include <QtCore/QVariant>
 #include <QtWidgets/QApplication>
 #include <QtWidgets/QCheckBox>
+#include <QtWidgets/QComboBox>
 #include <QtWidgets/QGridLayout>
 #include <QtWidgets/QLabel>
 #include <QtWidgets/QLineEdit>
@@ -63,6 +64,8 @@ public:
     QPushButton *colorSelectButton;
     QLabel *label_13;
     QCheckBox *pauseOnSpawnCheckbox;
+    QComboBox *CollisionObjectsComboBox;
+    QLabel *label_14;
     QStatusBar *statusBar;
     QMenuBar *menuBar;
     QToolBar *mainToolBar;
@@ -247,6 +250,13 @@ public:
         pauseOnSpawnCheckbox->setObjectName(QString::fromUtf8("pauseOnSpawnCheckbox"));
         pauseOnSpawnCheckbox->setGeometry(QRect(10, 260, 231, 17));
         pauseOnSpawnCheckbox->setChecked(true);
+        CollisionObjectsComboBox = new QComboBox(widget);
+        CollisionObjectsComboBox->setObjectName(QString::fromUtf8("CollisionObjectsComboBox"));
+        CollisionObjectsComboBox->setGeometry(QRect(88, 190, 101, 22));
+        CollisionObjectsComboBox->setEditable(false);
+        label_14 = new QLabel(widget);
+        label_14->setObjectName(QString::fromUtf8("label_14"));
+        label_14->setGeometry(QRect(10, 190, 71, 20));
 
         gridLayout->addWidget(widget, 0, 2, 3, 1);
 
@@ -305,6 +315,7 @@ public:
         colorSelectButton->setText(QString());
         label_13->setText(QApplication::translate("MainWindowClass", "Choose Color:", nullptr));
         pauseOnSpawnCheckbox->setText(QApplication::translate("MainWindowClass", "Pause on spawn", nullptr));
+        label_14->setText(QApplication::translate("MainWindowClass", "Collision", nullptr));
     } // retranslateUi
 
 };

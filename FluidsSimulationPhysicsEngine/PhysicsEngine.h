@@ -9,6 +9,12 @@
 #include <mutex>
 #include "QCPVector2D.h"
 
+enum CollisionObject {
+	COLLISION_OBJECT_SPHERE,
+	COLLISION_OBJECT_CAPSULE,
+	COLLISION_OBJECT_BOX,
+};
+
 using namespace std;
 
 class FLUIDSSIMULATIONPHYSICSENGINE_EXPORT PhysicsEngine
@@ -68,6 +74,10 @@ class FLUIDSSIMULATIONPHYSICSENGINE_EXPORT PhysicsEngine
 
 	void perfromClearBoddies();
 	
+	atomic<CollisionObject> newCollisionObject;
+	
+	CollisionObject collisionObject = COLLISION_OBJECT_BOX;
+
 	qreal timeDelta = 0.01;
 	atomic<qreal> newTimeDelta;
 
@@ -98,6 +108,10 @@ public:
 	
 	void setGravity(const QCPVector2D& newGravity);
 	const QCPVector2D& getGravity();
+
+	void setCollisionObject(const CollisionObject& newCollisionObject);
+	const CollisionObject& getCollisionObject();
+
 
 	// WARNING: not thread safe, don't access the bodies or 
 	// add bodies them to the grid, use runFunctionOverBodies

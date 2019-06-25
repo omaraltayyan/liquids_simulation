@@ -96,8 +96,16 @@ MainWindow::MainWindow(QWidget *parent)
 	linkLineEditWithValue(ui.restitutionText, &emitter.emittedParticleRestitution);
 	linkLineEditWithValue(ui.BuoyancyText, &emitter.emittedParticleBuoyancy);
 	
+	ui.CollisionObjectsComboBox->addItem("Box", COLLISION_OBJECT_BOX);
+	ui.CollisionObjectsComboBox->addItem("CAPSULE", COLLISION_OBJECT_CAPSULE);
+	ui.CollisionObjectsComboBox->addItem("SPHERE", COLLISION_OBJECT_SPHERE);
 
-	
+
+	connect(ui.CollisionObjectsComboBox, QOverload<int>::of(&QComboBox::currentIndexChanged), [=](int index) {
+		auto newObject = static_cast<CollisionObject>(ui.CollisionObjectsComboBox->itemData(index).toInt());
+		engine.setCollisionObject(newObject);
+	});
+
 	timer->start(1000 / 60);
 }
 

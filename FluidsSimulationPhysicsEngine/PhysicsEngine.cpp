@@ -40,6 +40,7 @@ Grid & PhysicsEngine::getUnsafeBodiesGrid()
 PhysicsEngine::PhysicsEngine() : bodiesGrid(QSizeF(2.9248, 2.9248), 0.0457 /*0.0726*/)
 {
 	this->newTimeDelta = timeDelta;
+	this->newCollisionObject = this->collisionObject;
 	this->newGravity = new QCPVector2D(this->gravity);
 	this->lastMomentProcessingStarted = chrono::high_resolution_clock::now();
 	this->shouldStopEngine = false;
@@ -160,6 +161,7 @@ void PhysicsEngine::engineUpdateLoop(int threadIndex) {
 			}
 			this->gravity = *newGravity;
 			this->timeDelta = newTimeDelta;
+			this->collisionObject = newCollisionObject;
 			this->lastMomentProcessingStarted = chrono::high_resolution_clock::now();
 		}
 
@@ -297,6 +299,17 @@ void PhysicsEngine::setGravity(const QCPVector2D& newGravity)
 const QCPVector2D& PhysicsEngine::getGravity()
 {
 	return gravity;
+}
+
+void PhysicsEngine::setCollisionObject(const CollisionObject & newCollisionObject)
+{
+	this->newCollisionObject = newCollisionObject;
+}
+
+const CollisionObject & PhysicsEngine::getCollisionObject()
+{
+	return collisionObject;
+	// TODO: insert return statement here
 }
 
 void PhysicsEngine::runFunctionOverThreadBodies(int threadIndex, const function <void(Body*, int)>&& func) {

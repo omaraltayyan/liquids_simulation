@@ -347,9 +347,18 @@ void FluidParticle::applyInteraction()
 
 		auto size = this->engine->getUnsafeBodiesGrid().sizeInMeters();
 		if (!MathUtilities::isEqual(this->_leapFrogNextStep.lengthSquared(), 0.0)) {
-			 //this->detectCollisionWithASquare(QRectF(0.0, 0.0, size.width(), size.height()));
-			//this->detectCollisionWithACapsule(QRectF(0.0, 0.0, size.width(), size.height()), 0.5);
-			this->detectCollisionWithASphere(QRectF(0.0, 0.0, size.width(), size.height()));
+			switch (engine->getCollisionObject())
+			{
+			case COLLISION_OBJECT_BOX:
+				this->detectCollisionWithASquare(QRectF(0.0, 0.0, size.width(), size.height()));
+				break;
+			case COLLISION_OBJECT_CAPSULE:
+				this->detectCollisionWithACapsule(QRectF(0.0, 0.0, size.width(), size.height()), 0.5);
+				break;
+			case COLLISION_OBJECT_SPHERE:
+				this->detectCollisionWithASphere(QRectF(0.0, 0.0, size.width(), size.height()));
+				break;
+			}
 		}
 		this->_velocity = (previousStep + this->_leapFrogNextStep) * 0.5;
 	}
