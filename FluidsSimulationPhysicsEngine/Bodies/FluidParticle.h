@@ -49,7 +49,8 @@ private:
 
 	void detectCollisionWithASquare(const QRectF& boundingBox);
 	void detectCollisionWithACapsule(const QRectF& boundingBox, double cylinder_width);
-	
+	void detectCollisionWithASphere(const QRectF& boundingBox);
+
 	void applyCollision(const QCPVector2D & contactPoint, const QCPVector2D& collisionSurfaceNormal, double penterationDepth);
 
 	int signumFunction(double x);

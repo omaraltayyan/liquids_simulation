@@ -268,6 +268,31 @@ void FluidParticle::detectCollisionWithACapsule(const QRectF& boundingBox, doubl
 	this->applyCollision(contactPoint, normal, penetrationDepth);
 }
 
+void FluidParticle::detectCollisionWithASphere(const QRectF& boundingBox) {
+	// the width (radius) of the capsule must never exceed half the 
+	// width nor the height of the bounding box
+	double radius = min(boundingBox.height() / 2.0, boundingBox.width() / 2.0);
+
+	auto circuleCenter = QPointF(boundingBox.width() / 2.0, boundingBox.height() / 2.0);
+
+	auto circleFunction = QCPVector2D(circuleCenter - this->position).length() - radius;
+
+	if (circleFunction < 0) {
+		return;
+	}
+
+	auto normalizedQFromPosition = (this->position - circuleCenter) / QCPVector2D(this->position - circuleCenter).length();
+
+	auto contactPoint = circuleCenter + (radius * (normalizedQFromPosition));
+
+	auto penetrationDepth = abs(circleFunction);
+
+	auto normal = signumFunction(circleFunction) * normalizedQFromPosition;
+
+	this->applyCollision(contactPoint, normal, penetrationDepth);
+
+}
+
 void FluidParticle::applyCollision(const QCPVector2D & contactPoint, const QCPVector2D& collisionSurfaceNormal, double penterationDepth) {
 
 	this->setPosition(contactPoint.toPointF());
@@ -323,7 +348,8 @@ void FluidParticle::applyInteraction()
 		auto size = this->engine->getUnsafeBodiesGrid().sizeInMeters();
 		if (!MathUtilities::isEqual(this->_leapFrogNextStep.lengthSquared(), 0.0)) {
 			 //this->detectCollisionWithASquare(QRectF(0.0, 0.0, size.width(), size.height()));
-			this->detectCollisionWithACapsule(QRectF(0.0, 0.0, size.width(), size.height()), 0.5);
+			//this->detectCollisionWithACapsule(QRectF(0.0, 0.0, size.width(), size.height()), 0.5);
+			this->detectCollisionWithASphere(QRectF(0.0, 0.0, size.width(), size.height()));
 		}
 		this->_velocity = (previousStep + this->_leapFrogNextStep) * 0.5;
 	}
