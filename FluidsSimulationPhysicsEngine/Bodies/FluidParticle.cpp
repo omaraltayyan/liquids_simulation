@@ -2,9 +2,9 @@
 #include "PhysicsEngine.h"
 #include <qmath.h>
 
-FluidParticle::FluidParticle(const QPointF& position, PhysicsEngine* engine, qreal sizeRadius,
+FluidParticle::FluidParticle(const QPointF& position, PhysicsEngine* engine,
 	double viscosity, double mass, double gasConstant, double restDesity,
-	double surfaceTension, double threshold, double restitution, double buoyancy,QColor color) : Particle(position, engine, sizeRadius)
+	double surfaceTension, double threshold, double restitution, double buoyancy,QColor color) : Particle(position, engine)
 {
 	_buoyancy = buoyancy;
 	_restitution = restitution;
@@ -315,22 +315,21 @@ void FluidParticle::applyInteraction()
 	auto accelration = this->_force / this->_density;
 	if (!this->_isFirstIteration)
 	{
-		this->_leapFrogNextStep = this->_leapFrogPreviousStep + (engine->getTimeDelta() * accelration);
+		auto previousStep = QCPVector2D(this->_leapFrogNextStep);
+		this->_leapFrogNextStep += engine->getTimeDelta() * accelration;
 		this->positionVector += this->_leapFrogNextStep * engine->getTimeDelta();
 		this->setPosition(this->positionVector.toPointF());
 
 		auto size = this->engine->getUnsafeBodiesGrid().sizeInMeters();
-
-		// this->detectCollisionWithASquare(QRectF(0.0, 0.0, size.width(), size.height()));
-		this->detectCollisionWithACapsule(QRectF(0.0, 0.0, size.width(), size.height()), 0.5);
-
-		this->_velocity = (this->_leapFrogPreviousStep + this->_leapFrogNextStep) * 0.5;
-
-		this->_leapFrogPreviousStep = QCPVector2D(this->_leapFrogNextStep);
+		if (!MathUtilities::isEqual(this->_leapFrogNextStep.lengthSquared(), 0.0)) {
+			 //this->detectCollisionWithASquare(QRectF(0.0, 0.0, size.width(), size.height()));
+			this->detectCollisionWithACapsule(QRectF(0.0, 0.0, size.width(), size.height()), 0.5);
+		}
+		this->_velocity = (previousStep + this->_leapFrogNextStep) * 0.5;
 	}
 	else
 	{
-		this->_leapFrogPreviousStep = this->_velocity - (0.5 * engine->getTimeDelta() * accelration);
+		this->_leapFrogNextStep = this->_velocity - (0.5 * engine->getTimeDelta() * accelration);
 		this->_isFirstIteration = false;
 	}
 	this->displayRadius = 1.5*cbrt(3.0 * this->_mass / (4.0 * M_PI * this->_density));

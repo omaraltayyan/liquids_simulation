@@ -20,7 +20,7 @@ class FluidParticle : public Particle
 {
 public:
 
-	FluidParticle(const QPointF& position, PhysicsEngine* engine, qreal sizeRadius,
+	FluidParticle(const QPointF& position, PhysicsEngine* engine,
 		double viscosity, double mass, double gasConstant, double restDesity,
 		double surfaceTension, double threshold, double restitution, double buoyancy,QColor color);
 
@@ -32,7 +32,7 @@ public:
 private:
 	bool _isFirstIteration;
 	double _density, _viscosity, _pressure, _mass, _gasConstant, _restDensity, _tensionCoefcioant, _surfaceThreshold, _restitution, _buoyancy;
-	QCPVector2D _velocity, _accelration, _leapFrogNextStep, _force, _leapFrogPreviousStep;
+	QCPVector2D _velocity, _accelration, _leapFrogNextStep, _force;
 	
 
 	double applyKernal(double distance, SmoothingKernals kernal);

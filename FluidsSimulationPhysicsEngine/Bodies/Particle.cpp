@@ -2,13 +2,15 @@
 
 #define SQUARE_ROOT_OF_2 1.41421356237
 
-Particle::Particle(const QPointF& position, PhysicsEngine* engine, qreal sizeRadius)
-	: MovingBody(QRectF(position.x(), position.y(), sizeRadius * SQUARE_ROOT_OF_2, sizeRadius * SQUARE_ROOT_OF_2), engine)
+Particle::Particle(const QPointF& position, PhysicsEngine* engine)
+	: MovingBody(QRectF(position.x(), position.y(), 1e-10,1e-10), engine)
 {
+	this->position = this->boundingRect.center();
 	updatePosition();
 }
 
 void Particle::setPosition(const QPointF& newPosition) {
+	this->position = newPosition;
 	this->boundingRect.moveCenter(newPosition);
 	updatePosition();
 }
@@ -18,7 +20,5 @@ void Particle::setPosition(qreal x, qreal y) {
 }
 
 void Particle::updatePosition() {
-	this->sizeRadius = this->boundingRect.width() / SQUARE_ROOT_OF_2;
-	this->position = this->boundingRect.center();
 	this->positionVector = QCPVector2D(this->position);
 }

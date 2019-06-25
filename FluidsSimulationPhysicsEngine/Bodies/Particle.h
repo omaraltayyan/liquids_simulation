@@ -9,12 +9,11 @@ class Particle :
 
 public:
 
-	qreal sizeRadius;
 	QPointF position;
 	QCPVector2D positionVector;
 	void setPosition(const QPointF& newPosition);
 	void setPosition(qreal x, qreal y);
 
-	Particle(const QPointF& position, PhysicsEngine* engine, qreal sizeRadius);
+	Particle(const QPointF& position, PhysicsEngine* engine);
 };
 
