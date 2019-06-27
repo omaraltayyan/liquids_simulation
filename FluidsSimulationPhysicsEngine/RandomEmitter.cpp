@@ -41,7 +41,9 @@ void RandomEmitter::addRandomBodies(PhysicsEngine* engine, int bodiesCount, QPoi
 		drawingPosition.setY(generationPosition.y() - (yMargin*emissionAreaSquareRadius));
 		yMargin = 1 - yMargin;
 		auto position = QPointF(drawingPosition.x(), drawingPosition.y());
-		
+		position += QPointF(static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / 0.0001)), 
+			static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / 0.0001)));
+
 		auto body = new FluidParticle(position, engine, emittedParticleViscosity,
 			emittedParticleMass, emittedParticleGasConstant, emittedParticleRestDensity,
 			emittedParticleSurfaceTension, emittedParticleThreshold, emittedParticleRestitution, emittedParticleBuoyancy,
