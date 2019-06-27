@@ -250,7 +250,7 @@ void FluidParticle::detectCollisionWithACapsule(const QRectF& boundingBox, doubl
 		return;
 	}
 
-	auto normalizedQFromPosition = (this->position - equationQValue) / QCPVector2D(this->position - equationQValue).length();
+	auto normalizedQFromPosition = (this->position - equationQValue).normalized();
 
 	auto contactPoint = equationQValue + (cylinder_width * (normalizedQFromPosition));
 
