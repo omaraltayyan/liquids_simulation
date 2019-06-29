@@ -76,12 +76,18 @@ QCPVector2D FluidParticle::computePressureForce(const QVector<BodiesVector*>& su
 	QCPVector2D resultingPressureForce(0.0, 0.0);
 	auto relativePressureTerm = this->_pressure / (this->_density * this->_density);
 	this->runFunctionOverFluidParicles(surroundingBodies, radius, [&](FluidParticle* particle, double distance) {
-		if (particle == this || MathUtilities::isEqual(distance, 0))
+		if (particle == this)
 			return;
-		auto vec = this->positionVector - particle->positionVector;
-		vec.normalize();
 		auto leftTerm = (relativePressureTerm + (particle->_pressure / (particle->_density * particle->_density))) * particle->_mass;
-		resultingPressureForce += vec * leftTerm * this->applyKernal(distance, spiky);
+		if (distance == 0.) {
+			auto randomVector = MathUtilities::randomVector(0.0001, -0.0001);
+			resultingPressureForce += leftTerm * (randomVector * this->engine->getUnsafeBodiesGrid().getKernelsInfo().spikyLeft);
+		}
+		else {
+			auto vec = this->positionVector - particle->positionVector;
+			vec.normalize();
+			resultingPressureForce += vec * leftTerm * this->applyKernal(distance, spiky);
+		}
 	});
 	return (-this->_density) *  resultingPressureForce;
 }
@@ -90,7 +96,7 @@ QCPVector2D FluidParticle::computeViscousForce(const QVector<BodiesVector*>& sur
 {
 	QCPVector2D resultingVisousForce(0, 0);
 	this->runFunctionOverFluidParicles(surroundingBodies, radius, [&](FluidParticle* particle, double distance) {
-		if (particle == this || MathUtilities::isEqual(distance, 0))
+		if (particle == this)
 			return;
 		resultingVisousForce += ((particle->_velocity - this->_velocity) / particle->_density) * particle->_mass
 			* this->applyKernal(distance, visc);
@@ -151,7 +157,7 @@ void FluidParticle::runFunctionOverFluidParicles(const QVector<BodiesVector*>& s
 			{
 				auto particle = static_cast<FluidParticle*>(body);
 				double distance = this->positionVector.distanceToPoint(particle->positionVector);
-				if (distance <= radius) {
+				if (distance < radius) {
 					func(particle, distance);
 				}
 			}
@@ -169,19 +175,99 @@ QCPVector2D FluidParticle::computeSumOfForces(const QVector<BodiesVector*>& surr
 	}
 	else {
 		externalForce = this->engine->getGravity() * this->_density;
-		externalForce += this->computeSurfaceTension(surroundingBodies, radius);
 	}
+	externalForce += this->computeSurfaceTension(surroundingBodies, radius);
 	return pressureForce + viscousForce + externalForce;
 }
 
 void FluidParticle::detectCollisionWithASquare(const QRectF& boundingBox)
 {
+	int collisionSides = 0;
+	
+	auto marginBoundingBox = boundingBox.marginsRemoved(QMarginsF(0.01, 0.01, 0.01, 0.01));
+
+	auto center = QCPVector2D(marginBoundingBox.center());
+	
+	auto extentVector = QCPVector2D(marginBoundingBox.width() / 2.0, marginBoundingBox.height() / 2.0);
+
+	auto pointInLocalCoords = this->positionVector - center;
+
+	auto absolutePoint = MathUtilities::abs(pointInLocalCoords);
+
+	auto boxFunction = MathUtilities::max(absolutePoint - extentVector);
+
+	if (boxFunction <= 0) {
+		return;
+	}
+
+	QCPVector2D normal(0, 0);
+
+	if (pointInLocalCoords.x() > extentVector.x()) {
+		pointInLocalCoords.setX(extentVector.x());
+		normal.setX(-1);
+		collisionSides += 1;
+	}
+	else if (pointInLocalCoords.x() < -extentVector.x()) {
+		pointInLocalCoords.setX(-extentVector.x());
+		normal.setX(1);
+		collisionSides += 1;
+	}
+
+	if (pointInLocalCoords.y() > extentVector.y()) {
+		pointInLocalCoords.setY(extentVector.y());
+		normal.setY(-1);
+		collisionSides += 1;
+	}
+	else if (pointInLocalCoords.y() < -extentVector.y()) {
+		pointInLocalCoords.setY(-extentVector.y());
+		normal.setY(1);
+		collisionSides += 1;
+	}
+
+	auto contactPoint = pointInLocalCoords + center;
+
+	auto penetrationDepth = (contactPoint - this->positionVector).length();
+
+	normal.normalize();
+	
+	/*
+	auto contactPointLocalCoords = QCPVector2D(max(-1 * extentVector.x(), pointInLocalCoords.x()),
+		max(-1 * extentVector.y(), pointInLocalCoords.y()));
+
+	contactPointLocalCoords = QCPVector2D(max(extentVector.x(), contactPointLocalCoords.x()),
+		max(extentVector.y(), contactPointLocalCoords.y()));
+
+	auto contactPoint = contactPointLocalCoords + center;
+
+	auto penetrationDepth = (contactPoint - this->positionVector).length();
+
+	auto normalVector = contactPointLocalCoords - pointInLocalCoords;
+
+	auto normal = QCPVector2D(signumFunction(normalVector.x()),
+		signumFunction(normalVector.y())).normalized();
+
+	int collisionSides = 0;
+
+	if (this->positionVector.x() < 0) {
+		collisionSides += 1;
+	}
+	if (this->positionVector.y() < 0) {
+		collisionSides += 1;
+	}
+	if (this->positionVector.x() > boundingBox.width()) {
+		collisionSides += 1;
+	}
+	if (this->positionVector.y() > boundingBox.height()) {
+		collisionSides += 1;
+	}*/
+
+	/*
 	auto rightSide = QCPVector2D(qMax(0.0, this->positionVector.x()), qMax(0.0, this->positionVector.y()));
 
 	auto contactPoint = QCPVector2D(qMin(boundingBox.width(), rightSide.x()), qMin(boundingBox.height(), rightSide.y()));
 
-	auto penterationDepth = this->positionVector.distanceToPoint(contactPoint);
-	if (penterationDepth <= 0)
+	auto penetrationDepth = this->positionVector.distanceToPoint(contactPoint);
+	if (penetrationDepth <= 0)
 	{
 		return;
 	}
@@ -207,20 +293,20 @@ void FluidParticle::detectCollisionWithASquare(const QRectF& boundingBox)
 	}
 	normal.normalize();
 
-	contactPoint += penterationDepth * normal;
+	contactPoint += penetrationDepth * normal;
+	*/
 
 	// two sides collided, add ad random translation toward the 
 	// center to avoid chaos in the simulation
-	if (collisionSides >= 2) {
-		float randomDistanceX = static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / 0.0001));
-		float randomDistanceY = static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / 0.0001));
-
-		QCPVector2D randomMovement = QCPVector2D();
-		randomMovement.setX(normal.x() * randomDistanceX);
-		randomMovement.setY(normal.y() * randomDistanceY);
+	if (collisionSides > 1) {
+		
+		QCPVector2D randomMovement = MathUtilities::randomVector(0.0001);
+		randomMovement.rx() *= normal.x();
+		randomMovement.ry() *= normal.y();
 		contactPoint += randomMovement;
 	}
-	this->applyCollision(contactPoint, normal, penterationDepth);
+
+	this->applyCollision(contactPoint, normal, penetrationDepth);
 }
 
 void FluidParticle::detectCollisionWithACapsule(const QRectF& boundingBox, double cylinder_width) {
@@ -246,7 +332,7 @@ void FluidParticle::detectCollisionWithACapsule(const QRectF& boundingBox, doubl
 
 	auto capsuleFunction = QCPVector2D(equationQValue - this->position).length() - cylinder_width;
 
-	if (capsuleFunction < 0) {
+	if (capsuleFunction <= 0) {
 		return;
 	}
 
@@ -257,7 +343,7 @@ void FluidParticle::detectCollisionWithACapsule(const QRectF& boundingBox, doubl
 	auto penetrationDepth = abs(capsuleFunction);
 
 	auto normal = signumFunction(capsuleFunction) * normalizedQFromPosition;
-	contactPoint = contactPoint - penetrationDepth * normal;
+	//contactPoint = contactPoint - penetrationDepth * normal;
 
 	this->applyCollision(contactPoint, normal, penetrationDepth);
 }
@@ -271,7 +357,7 @@ void FluidParticle::detectCollisionWithASphere(const QRectF& boundingBox) {
 
 	auto circleFunction = QCPVector2D(circuleCenter - this->position).length() - radius;
 
-	if (circleFunction < 0) {
+	if (circleFunction <= 0) {
 		return;
 	}
 
@@ -282,7 +368,7 @@ void FluidParticle::detectCollisionWithASphere(const QRectF& boundingBox) {
 	auto penetrationDepth = abs(circleFunction);
 
 	auto normal = signumFunction(circleFunction) * normalizedQFromPosition;
-	contactPoint = contactPoint - penetrationDepth * normal;
+	//contactPoint = contactPoint - penetrationDepth * normal;
 
 	this->applyCollision(contactPoint, normal, penetrationDepth);
 
@@ -335,25 +421,27 @@ void FluidParticle::applyInteraction()
 	auto accelration = this->_force / this->_density;
 	if (!this->_isFirstIteration)
 	{
+		auto size = this->engine->getUnsafeBodiesGrid().sizeInMeters();
+		auto boundingBox = QRectF(0.0, 0.0, size.width(), size.height());
+		if (isnan(this->_leapFrogNextStep.x()) || isnan(this->_leapFrogNextStep.y())) {
+			printf("s");
+		}
+
 		auto previousStep = QCPVector2D(this->_leapFrogNextStep);
 		this->_leapFrogNextStep += engine->getTimeDelta() * accelration;
-		this->positionVector += this->_leapFrogNextStep * engine->getTimeDelta();
-		this->setPosition(this->positionVector.toPointF());
+		this->setPosition((this->positionVector + this->_leapFrogNextStep * engine->getTimeDelta()).toPointF());
 
-		auto size = this->engine->getUnsafeBodiesGrid().sizeInMeters();
-		if (!MathUtilities::isEqual(this->_leapFrogNextStep.lengthSquared(), 0.0)) {
-			switch (engine->getCollisionObject())
-			{
-			case COLLISION_OBJECT_BOX:
-				this->detectCollisionWithASquare(QRectF(0.0, 0.0, size.width(), size.height()));
-				break;
-			case COLLISION_OBJECT_CAPSULE:
-				this->detectCollisionWithACapsule(QRectF(0.0, 0.0, size.width(), size.height()), 0.5);
-				break;
-			case COLLISION_OBJECT_SPHERE:
-				this->detectCollisionWithASphere(QRectF(0.0, 0.0, size.width(), size.height()));
-				break;
-			}
+		switch (engine->getCollisionObject())
+		{
+		case COLLISION_OBJECT_BOX:
+			this->detectCollisionWithASquare(boundingBox);
+			break;
+		case COLLISION_OBJECT_CAPSULE:
+			this->detectCollisionWithACapsule(boundingBox, 0.5);
+			break;
+		case COLLISION_OBJECT_SPHERE:
+			this->detectCollisionWithASphere(boundingBox);
+			break;
 		}
 		this->_velocity = (previousStep + this->_leapFrogNextStep) * 0.5;
 	}

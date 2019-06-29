@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Particle.h"
-#include <QVector2D>
 #include <qmath.h>
 #include "Grid.h"
 #include "Utilities\MathUtilities.h"
