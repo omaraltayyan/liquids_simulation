@@ -21,7 +21,7 @@ public:
 
 	FluidParticle(const QPointF& position, PhysicsEngine* engine,
 		double viscosity, double mass, double gasConstant, double restDesity,
-		double surfaceTension, double threshold, double restitution, double buoyancy,QColor color);
+		double surfaceTension, double threshold, double restitution, double buoyancy,QColor color, double radius);
 
 	void calculateInteractionWithBodies(const QVector<BodiesVector*>& surroundingBodies, int calculationOperation) override;
 	void applyInteraction() override;
@@ -30,9 +30,10 @@ public:
 	QColor particleColor;
 private:
 	bool _isFirstIteration;
-	double _density, _viscosity, _pressure, _mass, _gasConstant, _restDensity, _tensionCoefcioant, _surfaceThreshold, _restitution, _buoyancy;
+	double _density, _viscosity, _pressure, _mass, _gasConstant, _restDensity,
+		_tensionCoefcioant, _surfaceThreshold, _restitution, _buoyancy, _radius;
 	QCPVector2D _velocity, _accelration, _leapFrogNextStep, _force;
-	
+	KernelsInfo _kernelsInfo;
 
 	double applyKernal(double distance, SmoothingKernals kernal);
 	double computeDensity(const QVector<BodiesVector*>& surroundingBodies, double radius);

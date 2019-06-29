@@ -10,6 +10,6 @@ public:
 
 	StaticFluidParticle(const QPointF& position, PhysicsEngine* engine,
 		double viscosity, double mass, double gasConstant, double restDesity,
-		double surfaceTension, double threshold, double restitution, double buoyancy, QColor color);
+		double surfaceTension, double threshold, double restitution, double buoyancy, QColor color, double radius);
 };
 

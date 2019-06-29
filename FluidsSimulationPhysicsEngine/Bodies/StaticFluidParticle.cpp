@@ -2,9 +2,9 @@
 
 StaticFluidParticle::StaticFluidParticle(const QPointF& position, PhysicsEngine* engine,
 	double viscosity, double mass, double gasConstant, double restDesity,
-	double surfaceTension, double threshold, double restitution, double buoyancy, QColor color) : FluidParticle(position, engine,
+	double surfaceTension, double threshold, double restitution, double buoyancy, QColor color, double radius) : FluidParticle(position, engine,
 		 viscosity,  mass,  gasConstant,  restDesity,
-		 surfaceTension,  threshold,  restitution,  buoyancy, color) {
+		 surfaceTension,  threshold,  restitution,  buoyancy, color, radius) {
 	this->displayRadius = 0;
 }
 

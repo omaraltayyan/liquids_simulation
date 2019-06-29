@@ -47,7 +47,7 @@ void RandomEmitter::addRandomBodies(PhysicsEngine* engine, int bodiesCount, QPoi
 			currentMaterial.emittedParticleMass, currentMaterial.emittedParticleGasConstant, currentMaterial.emittedParticleRestDensity,
 			currentMaterial.emittedParticleSurfaceTension, currentMaterial.emittedParticleThreshold,
 			currentMaterial.emittedParticleRestitution, currentMaterial.emittedParticleBuoyancy,
-			currentMaterial.emittedParticleColor);
+			currentMaterial.emittedParticleColor, currentMaterial.emittedParticleRadius);
 
 		bodies.push_back(body);
 		if (yMargin == 0)

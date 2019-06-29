@@ -12,6 +12,7 @@ struct Material
 	double emittedParticleRestitution;
 	double emittedParticleBuoyancy;
 	QColor emittedParticleColor;
+	double emittedParticleRadius;
 
 };
 
@@ -24,7 +25,8 @@ static Material water = Material{
 	998.29,
 	0,
 	0,
-	QColor(173, 216, 230)
+	QColor(173, 216, 230),
+	0.0457
 };
 
 static Material mucus = Material{
@@ -36,7 +38,8 @@ static Material mucus = Material{
 	1000,
 	0.5,
 	0,
-	QColor(255, 255, 0)
+	QColor(255, 255, 0),
+	0.0726
 };
 
 static Material steam = Material{
@@ -48,5 +51,6 @@ static Material steam = Material{
 	0.59,
 	0,
 	5,
-	QColor(0, 150, 0)
+	QColor(0, 150, 0),
+	0.0624
 };

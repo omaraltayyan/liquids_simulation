@@ -4,7 +4,7 @@
 
 FluidParticle::FluidParticle(const QPointF& position, PhysicsEngine* engine,
 	double viscosity, double mass, double gasConstant, double restDesity,
-	double surfaceTension, double threshold, double restitution, double buoyancy, QColor color) : Particle(position, engine)
+	double surfaceTension, double threshold, double restitution, double buoyancy, QColor color, double radius) : Particle(position, engine)
 {
 	_buoyancy = buoyancy;
 	_restitution = restitution;
@@ -14,6 +14,9 @@ FluidParticle::FluidParticle(const QPointF& position, PhysicsEngine* engine,
 	_restDensity = restDesity;
 	_velocity.setX(0);
 	_velocity.setY(0);
+
+	_radius = radius;
+	_kernelsInfo = KernelsInfo(radius);
 
 	_accelration.setX(0.0);
 	_accelration.setY(0.0);
@@ -29,27 +32,25 @@ FluidParticle::FluidParticle(const QPointF& position, PhysicsEngine* engine,
 
 double FluidParticle::applyKernal(double distance, SmoothingKernals kernal)
 {
-	const KernelsInfo& kernelsInfo = this->engine->getUnsafeBodiesGrid().getKernelsInfo();
-
 	if (kernal == poly6 || kernal == gradPoly6 || kernal == lapPoly6) {
-		double holder = kernelsInfo.radius_2 - (distance * distance);
+		double holder = _kernelsInfo.radius_2 - (distance * distance);
 		switch (kernal)
 		{
 		case poly6:
-			return kernelsInfo.poly6Left * (holder*holder*holder);
+			return _kernelsInfo.poly6Left * (holder*holder*holder);
 		case gradPoly6:
-			return kernelsInfo.gradAndLapPoly6Left * (holder*holder);
+			return _kernelsInfo.gradAndLapPoly6Left * (holder*holder);
 		case lapPoly6:
-			return kernelsInfo.gradAndLapPoly6Left * holder * ((3 * kernelsInfo.radius_2) - (7 * distance*distance));
+			return _kernelsInfo.gradAndLapPoly6Left * holder * ((3 * _kernelsInfo.radius_2) - (7 * distance*distance));
 		}
 	}
 
 	switch (kernal)
 	{
 	case spiky:
-		return kernelsInfo.spikyLeft * ((kernelsInfo.radius - distance) * (kernelsInfo.radius - distance));
+		return _kernelsInfo.spikyLeft * ((_kernelsInfo.radius - distance) * (_kernelsInfo.radius - distance));
 	case visc:
-		return kernelsInfo.viscLeft * (kernelsInfo.radius - distance);
+		return _kernelsInfo.viscLeft * (_kernelsInfo.radius - distance);
 	}
 
 	return 0.0;
@@ -406,16 +407,14 @@ void FluidParticle::calculateInteractionWithBodies(const QVector<BodiesVector*>&
 	// note that density and pressure needs to be computed here
 	// because their values are important in the other methods
 	auto engine = PhysicsEngine::shared();
-	double radius = engine->getUnsafeBodiesGrid().squareSideInMeters();
-
 	if (calculationOperation == 0) {
-		this->_density = this->computeDensity(surroundingBodies, radius);
+		this->_density = this->computeDensity(surroundingBodies, _radius);
 		//here gas constant and rest density should variables taken from user input
 		this->_pressure = this->computePressure();
 	}
 	else if (calculationOperation == 1) {
 		//here gravity should also be taken from user input
-		this->_force = this->computeSumOfForces(surroundingBodies, radius);
+		this->_force = this->computeSumOfForces(surroundingBodies, _radius);
 	}
 }
 
