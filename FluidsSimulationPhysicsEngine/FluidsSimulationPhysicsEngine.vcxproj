@@ -142,6 +142,7 @@
     <ClCompile Include="Bodies\Particle.cpp" />
     <ClCompile Include="QCPVector2D.cpp" />
     <ClCompile Include="RandomEmitter.cpp" />
+    <ClCompile Include="Bodies\StaticFluidParticle.cpp" />
     <ClCompile Include="Utilities\MathUtilities.cpp" />
     <ClCompile Include="UnitTests\UnitTestGrid.cpp" />
     <ClCompile Include="Utilities\Memory.cpp" />
@@ -155,6 +156,7 @@
     <ClInclude Include="Bodies\Particle.h" />
     <ClInclude Include="QCPVector2D.h" />
     <ClInclude Include="RandomEmitter.h" />
+    <ClInclude Include="Bodies\StaticFluidParticle.h" />
     <ClInclude Include="ThreadsBarrier.h" />
     <ClInclude Include="Utilities\MathUtilities.h" />
     <ClInclude Include="UnitTests\UnitTestGrid.h" />
