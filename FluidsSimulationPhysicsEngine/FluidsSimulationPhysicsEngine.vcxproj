@@ -154,6 +154,7 @@
     <ClInclude Include="Grid.h" />
     <ClInclude Include="Bodies\MovingBody.h" />
     <ClInclude Include="Bodies\Particle.h" />
+    <ClInclude Include="Material.h" />
     <ClInclude Include="QCPVector2D.h" />
     <ClInclude Include="RandomEmitter.h" />
     <ClInclude Include="Bodies\StaticFluidParticle.h" />

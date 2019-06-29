@@ -43,10 +43,11 @@ void RandomEmitter::addRandomBodies(PhysicsEngine* engine, int bodiesCount, QPoi
 		auto position = QPointF(drawingPosition.x(), drawingPosition.y());
 		position += MathUtilities::randomVector(0.001, -0.001).toPointF();
 
-		auto body = new FluidParticle(position, engine, emittedParticleViscosity,
-			emittedParticleMass, emittedParticleGasConstant, emittedParticleRestDensity,
-			emittedParticleSurfaceTension, emittedParticleThreshold, emittedParticleRestitution, emittedParticleBuoyancy,
-			emittedParticleColor);
+		auto body = new FluidParticle(position, engine, currentMaterial.emittedParticleViscosity,
+			currentMaterial.emittedParticleMass, currentMaterial.emittedParticleGasConstant, currentMaterial.emittedParticleRestDensity,
+			currentMaterial.emittedParticleSurfaceTension, currentMaterial.emittedParticleThreshold,
+			currentMaterial.emittedParticleRestitution, currentMaterial.emittedParticleBuoyancy,
+			currentMaterial.emittedParticleColor);
 
 		bodies.push_back(body);
 		if (yMargin == 0)

@@ -17,7 +17,7 @@ private:
 	PhysicsEngine engine;
 	RandomEmitter emitter;
 
-	void inputChanged();
+	void updateUI();
 	void linkLineEditWithValue(QLineEdit* lineEdit, double * doubleValue);
 	void updateDoubleValueWithText(QString text, double * doubleValue);
 	void pauseClicked();

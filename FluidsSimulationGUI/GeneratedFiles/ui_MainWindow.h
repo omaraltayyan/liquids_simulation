@@ -66,6 +66,8 @@ public:
     QCheckBox *pauseOnSpawnCheckbox;
     QComboBox *CollisionObjectsComboBox;
     QLabel *label_14;
+    QComboBox *MaterialPresetsComboBox;
+    QLabel *label_15;
     QStatusBar *statusBar;
     QMenuBar *menuBar;
     QToolBar *mainToolBar;
@@ -257,6 +259,12 @@ public:
         label_14 = new QLabel(widget);
         label_14->setObjectName(QString::fromUtf8("label_14"));
         label_14->setGeometry(QRect(10, 190, 71, 20));
+        MaterialPresetsComboBox = new QComboBox(widget);
+        MaterialPresetsComboBox->setObjectName(QString::fromUtf8("MaterialPresetsComboBox"));
+        MaterialPresetsComboBox->setGeometry(QRect(90, 150, 101, 22));
+        label_15 = new QLabel(widget);
+        label_15->setObjectName(QString::fromUtf8("label_15"));
+        label_15->setGeometry(QRect(10, 150, 71, 20));
 
         gridLayout->addWidget(widget, 0, 2, 3, 1);
 
@@ -316,6 +324,7 @@ public:
         label_13->setText(QApplication::translate("MainWindowClass", "Choose Color:", nullptr));
         pauseOnSpawnCheckbox->setText(QApplication::translate("MainWindowClass", "Pause on spawn", nullptr));
         label_14->setText(QApplication::translate("MainWindowClass", "Collision", nullptr));
+        label_15->setText(QApplication::translate("MainWindowClass", "Presets", nullptr));
     } // retranslateUi
 
 };

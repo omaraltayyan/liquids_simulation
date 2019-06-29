@@ -2,7 +2,7 @@
 
 #include <random>
 #include "PhysicsEngine.h"
-#include <qcolor.h>
+#include <Material.h>
 
 
 class RandomEmitter
@@ -16,16 +16,18 @@ public:
 	double particlesPerEmission = 4;
 	double emissionAreaSquareRadius = 0.03;
 
+	Material currentMaterial = water;
+
 	// water
-	double emittedParticleViscosity = 3.5;
-	double emittedParticleMass = 0.02;
-	double emittedParticleSurfaceTension = 0.0728;
-	double emittedParticleThreshold = 7.065;
-	double emittedParticleGasConstant = 3;
-	double emittedParticleRestDensity = 998.29;
-	double emittedParticleRestitution = 0;
-	double emittedParticleBuoyancy = 0;
-	QColor emittedParticleColor = QColor(173, 216, 230);
+	//double emittedParticleViscosity = 3.5;
+	//double emittedParticleMass = 0.02;
+	//double emittedParticleSurfaceTension = 0.0728;
+	//double emittedParticleThreshold = 7.065;
+	//double emittedParticleGasConstant = 3;
+	//double emittedParticleRestDensity = 998.29;
+	//double emittedParticleRestitution = 0;
+	//double emittedParticleBuoyancy = 0;
+	//QColor emittedParticleColor = QColor(173, 216, 230);
 
 
 	// mucus

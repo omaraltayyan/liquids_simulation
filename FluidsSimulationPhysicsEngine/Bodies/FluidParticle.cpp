@@ -4,7 +4,7 @@
 
 FluidParticle::FluidParticle(const QPointF& position, PhysicsEngine* engine,
 	double viscosity, double mass, double gasConstant, double restDesity,
-	double surfaceTension, double threshold, double restitution, double buoyancy,QColor color) : Particle(position, engine)
+	double surfaceTension, double threshold, double restitution, double buoyancy, QColor color) : Particle(position, engine)
 {
 	_buoyancy = buoyancy;
 	_restitution = restitution;
@@ -134,12 +134,15 @@ double FluidParticle::computeLaplacianSurfaceNormal(const QVector<BodiesVector*>
 QCPVector2D FluidParticle::computeSurfaceTension(const QVector<BodiesVector*>& surroundingBodies, double radius)
 {
 	QCPVector2D resultingSurfaceTension(0.0, 0.0);
-	auto surfaceNormal = this->computeSurfaceNormal(surroundingBodies, radius);
-	double magnitude = surfaceNormal.length();
-	if (magnitude >= this->_surfaceThreshold)
-	{
-		surfaceNormal.normalize();
-		resultingSurfaceTension = this->computeLaplacianSurfaceNormal(surroundingBodies, radius) * surfaceNormal;
+	if (this->_tensionCoefcioant > 0) {
+
+		auto surfaceNormal = this->computeSurfaceNormal(surroundingBodies, radius);
+		double magnitude = surfaceNormal.length();
+		if (magnitude >= this->_surfaceThreshold)
+		{
+			surfaceNormal.normalize();
+			resultingSurfaceTension = this->computeLaplacianSurfaceNormal(surroundingBodies, radius) * surfaceNormal;
+		}
 	}
 
 	return -1 * this->_tensionCoefcioant * resultingSurfaceTension;
@@ -183,11 +186,11 @@ QCPVector2D FluidParticle::computeSumOfForces(const QVector<BodiesVector*>& surr
 void FluidParticle::detectCollisionWithASquare(const QRectF& boundingBox)
 {
 	int collisionSides = 0;
-	
+
 	auto marginBoundingBox = boundingBox.marginsRemoved(QMarginsF(0.01, 0.01, 0.01, 0.01));
 
 	auto center = QCPVector2D(marginBoundingBox.center());
-	
+
 	auto extentVector = QCPVector2D(marginBoundingBox.width() / 2.0, marginBoundingBox.height() / 2.0);
 
 	auto pointInLocalCoords = this->positionVector - center;
@@ -229,13 +232,13 @@ void FluidParticle::detectCollisionWithASquare(const QRectF& boundingBox)
 	auto penetrationDepth = (contactPoint - this->positionVector).length();
 
 	normal.normalize();
-	
+
 	/*
 	auto contactPointLocalCoords = QCPVector2D(max(-1 * extentVector.x(), pointInLocalCoords.x()),
-		max(-1 * extentVector.y(), pointInLocalCoords.y()));
+	max(-1 * extentVector.y(), pointInLocalCoords.y()));
 
 	contactPointLocalCoords = QCPVector2D(max(extentVector.x(), contactPointLocalCoords.x()),
-		max(extentVector.y(), contactPointLocalCoords.y()));
+	max(extentVector.y(), contactPointLocalCoords.y()));
 
 	auto contactPoint = contactPointLocalCoords + center;
 
@@ -244,21 +247,21 @@ void FluidParticle::detectCollisionWithASquare(const QRectF& boundingBox)
 	auto normalVector = contactPointLocalCoords - pointInLocalCoords;
 
 	auto normal = QCPVector2D(signumFunction(normalVector.x()),
-		signumFunction(normalVector.y())).normalized();
+	signumFunction(normalVector.y())).normalized();
 
 	int collisionSides = 0;
 
 	if (this->positionVector.x() < 0) {
-		collisionSides += 1;
+	collisionSides += 1;
 	}
 	if (this->positionVector.y() < 0) {
-		collisionSides += 1;
+	collisionSides += 1;
 	}
 	if (this->positionVector.x() > boundingBox.width()) {
-		collisionSides += 1;
+	collisionSides += 1;
 	}
 	if (this->positionVector.y() > boundingBox.height()) {
-		collisionSides += 1;
+	collisionSides += 1;
 	}*/
 
 	/*
@@ -269,27 +272,27 @@ void FluidParticle::detectCollisionWithASquare(const QRectF& boundingBox)
 	auto penetrationDepth = this->positionVector.distanceToPoint(contactPoint);
 	if (penetrationDepth <= 0)
 	{
-		return;
+	return;
 	}
 	QCPVector2D normal;
 
 	int collisionSides = 0;
 
 	if (this->positionVector.x() < 0) {
-		collisionSides += 1;
-		normal.rx() += 1;
+	collisionSides += 1;
+	normal.rx() += 1;
 	}
 	if (this->positionVector.y() < 0) {
-		collisionSides += 1;
-		normal.ry() += 1;
+	collisionSides += 1;
+	normal.ry() += 1;
 	}
 	if (this->positionVector.x() > boundingBox.width()) {
-		collisionSides += 1;
-		normal.rx() -= 1;
+	collisionSides += 1;
+	normal.rx() -= 1;
 	}
 	if (this->positionVector.y() > boundingBox.height()) {
-		collisionSides += 1;
-		normal.ry() -= 1;
+	collisionSides += 1;
+	normal.ry() -= 1;
 	}
 	normal.normalize();
 
@@ -299,7 +302,7 @@ void FluidParticle::detectCollisionWithASquare(const QRectF& boundingBox)
 	// two sides collided, add ad random translation toward the 
 	// center to avoid chaos in the simulation
 	if (collisionSides > 1) {
-		
+
 		QCPVector2D randomMovement = MathUtilities::randomVector(0.0001);
 		randomMovement.rx() *= normal.x();
 		randomMovement.ry() *= normal.y();
@@ -315,7 +318,7 @@ void FluidParticle::detectCollisionWithACapsule(const QRectF& boundingBox, doubl
 	// width nor the height of the bounding box
 	cylinder_width = min(cylinder_width, boundingBox.width() / 2.0);
 	cylinder_width = min(cylinder_width, boundingBox.height() / 2.0);
-	
+
 	auto capsule_p0 = QCPVector2D(boundingBox.width() / 2.0, cylinder_width + 0.001);
 	auto capsule_p1 = QCPVector2D(boundingBox.width() / 2.0, boundingBox.height() - cylinder_width - 0.001);
 
