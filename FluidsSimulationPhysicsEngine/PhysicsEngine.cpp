@@ -37,7 +37,7 @@ Grid & PhysicsEngine::getUnsafeBodiesGrid()
 	return this->bodiesGrid;
 }
 
-PhysicsEngine::PhysicsEngine() : bodiesGrid(QSizeF(2.9248, 2.9248), 0.0457 /*0.0726*/)
+PhysicsEngine::PhysicsEngine() : bodiesGrid(QSizeF(2.9248, 2.9248), 0.0726 /*0.0726*/)
 {
 	srand(static_cast <unsigned> (time(0)));
 
