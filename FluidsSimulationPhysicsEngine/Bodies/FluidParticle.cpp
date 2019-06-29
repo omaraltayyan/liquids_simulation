@@ -82,7 +82,7 @@ QCPVector2D FluidParticle::computePressureForce(const QVector<BodiesVector*>& su
 		auto leftTerm = (relativePressureTerm + (particle->_pressure / (particle->_density * particle->_density))) * particle->_mass;
 		if (distance == 0.) {
 			auto randomVector = MathUtilities::randomVector(0.0001, -0.0001);
-			resultingPressureForce += leftTerm * (randomVector * this->engine->getUnsafeBodiesGrid().getKernelsInfo().spikyLeft);
+			resultingPressureForce += leftTerm * (randomVector * this->_kernelsInfo.spikyLeft);
 		}
 		else {
 			auto vec = this->positionVector - particle->positionVector;
@@ -193,7 +193,7 @@ QCPVector2D FluidParticle::computeSumOfForces(const QVector<BodiesVector*>& surr
 			auto leftTerm = (relativePressureTerm + (particle->_pressure / (particle->_density * particle->_density))) * particle->_mass;
 			if (distance == 0.) {
 				auto randomVector = MathUtilities::randomVector(0.0001, -0.0001);
-				resultingPressureForce += leftTerm * (randomVector * this->engine->getUnsafeBodiesGrid().getKernelsInfo().spikyLeft);
+				resultingPressureForce += leftTerm * (randomVector * this->_kernelsInfo.spikyLeft);
 			}
 			else {
 				auto vecNormalized = vec.normalized();
