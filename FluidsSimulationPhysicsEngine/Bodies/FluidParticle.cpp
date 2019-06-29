@@ -26,7 +26,7 @@ FluidParticle::FluidParticle(const QPointF& position, PhysicsEngine* engine,
 	_isFirstIteration = true;
 	this->bodyType = fluid;
 	this->particleColor = color;
-	this->displayRadius = 1.5*cbrt(3.0 * this->_mass / (4.0 * M_PI * this->_restDensity));
+	this->displayRadius = max(0.01, min(0.03, 1.5*cbrt(3.0 * this->_mass / (4.0 * M_PI * this->_restDensity))));
 }
 
 
