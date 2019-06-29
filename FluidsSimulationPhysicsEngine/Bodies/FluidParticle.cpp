@@ -26,7 +26,7 @@ FluidParticle::FluidParticle(const QPointF& position, PhysicsEngine* engine,
 	_isFirstIteration = true;
 	this->bodyType = fluid;
 	this->particleColor = color;
-	this->displayRadius = max(0.01, min(0.03, 1.5*cbrt(3.0 * this->_mass / (4.0 * M_PI * this->_restDensity))));
+	this->displayRadius = max(0.02, min(0.04, 1.35*cbrt(3.0 * this->_mass / (4.0 * M_PI * this->_restDensity))));
 }
 
 
@@ -141,7 +141,8 @@ QCPVector2D FluidParticle::computeSurfaceTension(const QVector<BodiesVector*>& s
 		double magnitude = surfaceNormal.length();
 		if (magnitude >= this->_surfaceThreshold)
 		{
-			surfaceNormal.normalize();
+			// normalize
+			surfaceNormal /= magnitude;
 			resultingSurfaceTension = this->computeLaplacianSurfaceNormal(surroundingBodies, radius) * surfaceNormal;
 		}
 	}
@@ -171,24 +172,77 @@ void FluidParticle::runFunctionOverFluidParicles(const QVector<BodiesVector*>& s
 
 QCPVector2D FluidParticle::computeSumOfForces(const QVector<BodiesVector*>& surroundingBodies, double radius)
 {
-	QCPVector2D pressureForce = this->computePressureForce(surroundingBodies, radius);
-	QCPVector2D viscousForce = this->computeViscousForce(surroundingBodies, radius);
-	QCPVector2D externalForce;
+	QCPVector2D externalForce(0.0, 0.0);
+	QCPVector2D internalForce(0.0, 0.0);
+
+	QCPVector2D resultingPressureForce(0.0, 0.0);
+	auto relativePressureTerm = this->_pressure / (this->_density * this->_density);
+
+	QCPVector2D resultingVisousForce(0, 0);
+
+	QCPVector2D resultingSurfaceNormal(0.0, 0.0);
+	QCPVector2D resultingSurfaceTension(0.0, 0.0);
+
+	this->runFunctionOverFluidParicles(surroundingBodies, radius, [&](FluidParticle* particle, double distance) {
+
+		// surface normal
+		auto vec = this->positionVector - particle->positionVector;
+		if (particle != this) {
+
+			// pressure force
+			auto leftTerm = (relativePressureTerm + (particle->_pressure / (particle->_density * particle->_density))) * particle->_mass;
+			if (distance == 0.) {
+				auto randomVector = MathUtilities::randomVector(0.0001, -0.0001);
+				resultingPressureForce += leftTerm * (randomVector * this->engine->getUnsafeBodiesGrid().getKernelsInfo().spikyLeft);
+			}
+			else {
+				auto vecNormalized = vec.normalized();
+				resultingPressureForce += vecNormalized * leftTerm * this->applyKernal(distance, spiky);
+			}
+
+			// viscosity
+			resultingVisousForce += ((particle->_velocity - this->_velocity) / particle->_density) * particle->_mass
+				* this->applyKernal(distance, visc);
+		}
+
+		// surface normal
+		if (this->_tensionCoefcioant > 0) {
+			double kernel = this->applyKernal(distance, gradPoly6);
+			resultingSurfaceNormal += vec * (particle->_mass / particle->_density)*kernel;
+		}
+	});
+
+	double magnitude = resultingSurfaceNormal.length();
+	if (magnitude >= this->_surfaceThreshold)
+	{
+		// normalize
+		resultingSurfaceNormal /= magnitude;
+		resultingSurfaceTension = this->computeLaplacianSurfaceNormal(surroundingBodies, radius) * resultingSurfaceNormal;
+	}
+
+
+	internalForce += (-this->_density) *  resultingPressureForce;
+
+	internalForce += this->_viscosity * resultingVisousForce;
+
+	externalForce += -1 * this->_tensionCoefcioant * resultingSurfaceTension;
+
 	if (this->_buoyancy > 0) {
-		externalForce = this->engine->getGravity() * this->_buoyancy * (this->_density - this->_restDensity);
+		externalForce += this->engine->getGravity() * this->_buoyancy * (this->_density - this->_restDensity);
 	}
 	else {
-		externalForce = this->engine->getGravity() * this->_density;
+		externalForce += this->engine->getGravity() * this->_density;
 	}
-	externalForce += this->computeSurfaceTension(surroundingBodies, radius);
-	return pressureForce + viscousForce + externalForce;
+
+	return internalForce + externalForce;
 }
 
 void FluidParticle::detectCollisionWithASquare(const QRectF& boundingBox)
 {
 	int collisionSides = 0;
 
-	auto marginBoundingBox = boundingBox.marginsRemoved(QMarginsF(0.01, 0.01, 0.01, 0.01));
+	auto marginBoundingBox = boundingBox.marginsRemoved(QMarginsF(0.001, 0.001, 0.001, 0.001));
+	//auto &marginBoundingBox = boundingBox;
 
 	auto center = QCPVector2D(marginBoundingBox.center());
 
@@ -448,7 +502,8 @@ void FluidParticle::applyInteraction()
 		this->_leapFrogNextStep = this->_velocity - (0.5 * engine->getTimeDelta() * accelration);
 		this->_isFirstIteration = false;
 	}
-	this->displayRadius = 1.5*cbrt(3.0 * this->_mass / (4.0 * M_PI * this->_density));
+	this->displayRadius = max(0.02, min(0.04, 1.35*cbrt(3.0 * this->_mass / (4.0 * M_PI * this->_density))));
+
 }
 
 
