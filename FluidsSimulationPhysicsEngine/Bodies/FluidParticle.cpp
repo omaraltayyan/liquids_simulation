@@ -12,8 +12,8 @@ FluidParticle::FluidParticle(const QPointF& position, PhysicsEngine* engine,
 	_mass = mass;
 	_gasConstant = gasConstant;
 	_restDensity = restDesity;
-	_velocity.setX(0.0);
-	_velocity.setY(0.0);
+	_velocity.setX(0);
+	_velocity.setY(0);
 
 	_accelration.setX(0.0);
 	_accelration.setY(0.0);
@@ -423,10 +423,6 @@ void FluidParticle::applyInteraction()
 	{
 		auto size = this->engine->getUnsafeBodiesGrid().sizeInMeters();
 		auto boundingBox = QRectF(0.0, 0.0, size.width(), size.height());
-		if (isnan(this->_leapFrogNextStep.x()) || isnan(this->_leapFrogNextStep.y())) {
-			printf("s");
-		}
-
 		auto previousStep = QCPVector2D(this->_leapFrogNextStep);
 		this->_leapFrogNextStep += engine->getTimeDelta() * accelration;
 		this->setPosition((this->positionVector + this->_leapFrogNextStep * engine->getTimeDelta()).toPointF());

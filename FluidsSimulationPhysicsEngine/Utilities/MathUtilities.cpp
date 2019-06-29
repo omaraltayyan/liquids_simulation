@@ -24,8 +24,8 @@ double MathUtilities::min(const QCPVector2D& vector) {
 }
 
 QCPVector2D MathUtilities::randomVector(double until, double from) {
-	float randomDistanceX = from + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (from + until)));
-	float randomDistanceY = from + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (from + until)));
+	float randomDistanceX = from + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (until - from)));
+	float randomDistanceY = from + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (until - from)));
 
 	return QCPVector2D(randomDistanceX, randomDistanceY);
 }

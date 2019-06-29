@@ -347,7 +347,12 @@ void Grid::resetSquareCoordinates() {
 }
 
 inline QRect Grid::getBodySquareDimensions(Body const & body) {
-	return this->transformFromMetersToSquares(body.boundingRect).toAlignedRect();
+	auto result = this->transformFromMetersToSquares(body.boundingRect).toAlignedRect();
+	if (body.bodyType == fluid) {
+		result.setWidth(1);
+		result.setHeight(1);
+	}
+	return result;
 }
 
 QRect Grid::getBodySquareDimentionsWithSurroundingSquares(Body const & body) {
@@ -363,7 +368,11 @@ QVector<int> Grid::getBodySquareIndexsWithSurroundingSquares(Body const & body) 
 }
 
 inline QVector<int> Grid::getBodySquareIndexs(Body const & body) {
-	return this->metersDimensionsSquareIndexs(body.boundingRect);
+	auto dimentions = this->metersDimensionsSquareIndexs(body.boundingRect);
+	if (body.bodyType == fluid && dimentions.length() > 1) {
+		dimentions.remove(1, dimentions.length() - 1);
+	}
+	return dimentions;
 }
 
 inline QVector<int> Grid::metersDimensionsSquareIndexs(QRectF const & metersDimensions) {
