@@ -17,11 +17,9 @@
 #include <QtWidgets/QLabel>
 #include <QtWidgets/QLineEdit>
 #include <QtWidgets/QMainWindow>
-#include <QtWidgets/QMenuBar>
 #include <QtWidgets/QPushButton>
 #include <QtWidgets/QSlider>
 #include <QtWidgets/QStatusBar>
-#include <QtWidgets/QToolBar>
 #include <QtWidgets/QWidget>
 #include "SimulationCanvasGLWidget.h"
 
@@ -69,20 +67,19 @@ public:
     QComboBox *MaterialPresetsComboBox;
     QLabel *label_15;
     QStatusBar *statusBar;
-    QMenuBar *menuBar;
-    QToolBar *mainToolBar;
 
     void setupUi(QMainWindow *MainWindowClass)
     {
         if (MainWindowClass->objectName().isEmpty())
             MainWindowClass->setObjectName(QString::fromUtf8("MainWindowClass"));
-        MainWindowClass->resize(788, 691);
+        MainWindowClass->resize(811, 701);
         centralWidget = new QWidget(MainWindowClass);
         centralWidget->setObjectName(QString::fromUtf8("centralWidget"));
         gridLayout = new QGridLayout(centralWidget);
         gridLayout->setSpacing(20);
         gridLayout->setContentsMargins(11, 11, 11, 11);
         gridLayout->setObjectName(QString::fromUtf8("gridLayout"));
+        gridLayout->setContentsMargins(20, 20, 20, 20);
         widget_2 = new QWidget(centralWidget);
         widget_2->setObjectName(QString::fromUtf8("widget_2"));
         widget_2->setMinimumSize(QSize(0, 130));
@@ -272,13 +269,6 @@ public:
         statusBar = new QStatusBar(MainWindowClass);
         statusBar->setObjectName(QString::fromUtf8("statusBar"));
         MainWindowClass->setStatusBar(statusBar);
-        menuBar = new QMenuBar(MainWindowClass);
-        menuBar->setObjectName(QString::fromUtf8("menuBar"));
-        menuBar->setGeometry(QRect(0, 0, 788, 21));
-        MainWindowClass->setMenuBar(menuBar);
-        mainToolBar = new QToolBar(MainWindowClass);
-        mainToolBar->setObjectName(QString::fromUtf8("mainToolBar"));
-        MainWindowClass->addToolBar(Qt::TopToolBarArea, mainToolBar);
 
         retranslateUi(MainWindowClass);
 
@@ -290,7 +280,7 @@ public:
 
     void retranslateUi(QMainWindow *MainWindowClass)
     {
-        MainWindowClass->setWindowTitle(QApplication::translate("MainWindowClass", "MainWindow", nullptr));
+        MainWindowClass->setWindowTitle(QApplication::translate("MainWindowClass", "Fluid Mixer", nullptr));
         BuoyancyText->setPlaceholderText(QApplication::translate("MainWindowClass", "Buoyancy", nullptr));
         label_2->setText(QApplication::translate("MainWindowClass", "Viscosity", nullptr));
         surfaceTensionText->setText(QString());
