@@ -3,16 +3,16 @@
 
 struct Material
 {
-	double emittedParticleViscosity;
-	double emittedParticleMass;
-	double emittedParticleSurfaceTension;
-	double emittedParticleThreshold;
-	double emittedParticleGasConstant;
-	double emittedParticleRestDensity;
-	double emittedParticleRestitution;
-	double emittedParticleBuoyancy;
-	QColor emittedParticleColor;
-	double emittedParticleRadius;
+	double viscosity;
+	double mass;
+	double surfaceTension;
+	double threshold;
+	double gasConstant;
+	double restDensity;
+	double restitution;
+	double buoyancy;
+	QColor color;
+	double radius;
 
 };
 

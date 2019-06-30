@@ -56,11 +56,11 @@ MainWindow::MainWindow(QWidget *parent)
 	});
 
 	connect(ui.colorSelectButton, &QPushButton::clicked, [=] {
-		QColor color = QColorDialog::getColor(emitter.currentMaterial.emittedParticleColor, this,"Choose Particle Color");
+		QColor color = QColorDialog::getColor(emitter.currentMaterial.color, this,"Choose Particle Color");
 		
 		if (color.isValid())
 		{			
-			emitter.currentMaterial.emittedParticleColor = color;
+			emitter.currentMaterial.color = color;
 			this->updateUI();
 		}
 	});
@@ -102,35 +102,35 @@ MainWindow::MainWindow(QWidget *parent)
 	});
 
 	connect(ui.surfaceTensionText, &QLineEdit::textChanged, [=] {
-		this->updateDoubleValueWithText(ui.surfaceTensionText->text(), &emitter.currentMaterial.emittedParticleSurfaceTension);
+		this->updateDoubleValueWithText(ui.surfaceTensionText->text(), &emitter.currentMaterial.surfaceTension);
 	});
 
 	connect(ui.thresholdText, &QLineEdit::textChanged, [=] {
-		this->updateDoubleValueWithText(ui.thresholdText->text(), &emitter.currentMaterial.emittedParticleThreshold);
+		this->updateDoubleValueWithText(ui.thresholdText->text(), &emitter.currentMaterial.threshold);
 	});
 
 	connect(ui.ParticleMassText, &QLineEdit::textChanged, [=] {
-		this->updateDoubleValueWithText(ui.ParticleMassText->text(), &emitter.currentMaterial.emittedParticleMass);
+		this->updateDoubleValueWithText(ui.ParticleMassText->text(), &emitter.currentMaterial.mass);
 	});
 
 	connect(ui.ViscosityText, &QLineEdit::textChanged, [=] {
-		this->updateDoubleValueWithText(ui.ViscosityText->text(), &emitter.currentMaterial.emittedParticleViscosity);
+		this->updateDoubleValueWithText(ui.ViscosityText->text(), &emitter.currentMaterial.viscosity);
 	});
 
 	connect(ui.RestDensityText, &QLineEdit::textChanged, [=] {
-		this->updateDoubleValueWithText(ui.RestDensityText->text(), &emitter.currentMaterial.emittedParticleRestDensity);
+		this->updateDoubleValueWithText(ui.RestDensityText->text(), &emitter.currentMaterial.restDensity);
 	});
 
 	connect(ui.GasConstantText, &QLineEdit::textChanged, [=] {
-		this->updateDoubleValueWithText(ui.GasConstantText->text(), &emitter.currentMaterial.emittedParticleGasConstant);
+		this->updateDoubleValueWithText(ui.GasConstantText->text(), &emitter.currentMaterial.gasConstant);
 	});
 
 	connect(ui.restitutionText, &QLineEdit::textChanged, [=] {
-		this->updateDoubleValueWithText(ui.restitutionText->text(), &emitter.currentMaterial.emittedParticleRestitution);
+		this->updateDoubleValueWithText(ui.restitutionText->text(), &emitter.currentMaterial.restitution);
 	});
 
 	connect(ui.BuoyancyText, &QLineEdit::textChanged, [=] {
-		this->updateDoubleValueWithText(ui.BuoyancyText->text(), &emitter.currentMaterial.emittedParticleBuoyancy);
+		this->updateDoubleValueWithText(ui.BuoyancyText->text(), &emitter.currentMaterial.buoyancy);
 	});
 
 	ui.CollisionObjectsComboBox->addItem("Box", COLLISION_OBJECT_BOX);
@@ -148,17 +148,17 @@ MainWindow::MainWindow(QWidget *parent)
 }
 
 void MainWindow::updateUI() {
-	ui.surfaceTensionText->setText(QString::number(emitter.currentMaterial.emittedParticleSurfaceTension));
-	ui.thresholdText->setText(QString::number(emitter.currentMaterial.emittedParticleThreshold));
-	ui.ParticleMassText->setText(QString::number(emitter.currentMaterial.emittedParticleMass));
-	ui.ViscosityText->setText(QString::number(emitter.currentMaterial.emittedParticleViscosity));
-	ui.RestDensityText->setText(QString::number(emitter.currentMaterial.emittedParticleRestDensity));
-	ui.GasConstantText->setText(QString::number(emitter.currentMaterial.emittedParticleGasConstant));
-	ui.restitutionText->setText(QString::number(emitter.currentMaterial.emittedParticleRestitution));
-	ui.BuoyancyText->setText(QString::number(emitter.currentMaterial.emittedParticleBuoyancy));
+	ui.surfaceTensionText->setText(QString::number(emitter.currentMaterial.surfaceTension));
+	ui.thresholdText->setText(QString::number(emitter.currentMaterial.threshold));
+	ui.ParticleMassText->setText(QString::number(emitter.currentMaterial.mass));
+	ui.ViscosityText->setText(QString::number(emitter.currentMaterial.viscosity));
+	ui.RestDensityText->setText(QString::number(emitter.currentMaterial.restDensity));
+	ui.GasConstantText->setText(QString::number(emitter.currentMaterial.gasConstant));
+	ui.restitutionText->setText(QString::number(emitter.currentMaterial.restitution));
+	ui.BuoyancyText->setText(QString::number(emitter.currentMaterial.buoyancy));
 
 	QPalette pallete = ui.colorSelectButton->palette();
-	pallete.setColor(QPalette::Button, emitter.currentMaterial.emittedParticleColor);
+	pallete.setColor(QPalette::Button, emitter.currentMaterial.color);
 	ui.colorSelectButton->setAutoFillBackground(true);
 	ui.colorSelectButton->setPalette(pallete);
 	ui.colorSelectButton->update();
