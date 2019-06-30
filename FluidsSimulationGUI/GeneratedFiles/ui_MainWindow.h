@@ -206,7 +206,7 @@ public:
         emissionSlider->setGeometry(QRect(80, 460, 160, 22));
         emissionSlider->setMinimum(1);
         emissionSlider->setMaximum(20);
-        emissionSlider->setValue(10);
+        emissionSlider->setValue(20);
         emissionSlider->setOrientation(Qt::Horizontal);
         emissionSlider->setTickPosition(QSlider::TicksAbove);
         emissionSlider->setTickInterval(5);
