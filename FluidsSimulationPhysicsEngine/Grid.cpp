@@ -46,17 +46,14 @@ void Grid::addBodiesToGrid(const BodiesVector& bodies) {
 
 	auto squaresBodiesCounts = new int[this->numSquares()]();
 
-	QVector<QVector<int>> bodiesSquareIndexs;
-
-	bodiesSquareIndexs.reserve(bodies.length());
-	
 	for (int i = allBodies.length() - bodies.length(); i < allBodies.length(); i++)
 	{
 		auto body = allBodies[i];
-		bodiesSquareIndexs.push_back(this->getBodySquareIndexs(*body));
-		bool rejectBody = false;
 
-		if (bodiesSquareIndexs.last().length() == 0) {
+		bool rejectBody = false;
+		auto bodySquareIndexes = this->getBodySquareIndexs(*body);
+
+		if (bodySquareIndexes.length() == 0 || !this->boundingRectMeters().contains(body->boundingRect)) {
 			rejectBody = true;
 		}
 		else {
@@ -73,8 +70,8 @@ void Grid::addBodiesToGrid(const BodiesVector& bodies) {
 						if (otherBody->bodyType == fluid)
 						{
 							auto otherParticle = static_cast<FluidParticle*>(otherBody);
-							double minAllowedDistance = 0.01;
-							if (particle->positionVector.distanceToPoint(otherParticle->positionVector) < minAllowedDistance) {
+							double rejectDistanceThreshold = 0.02;
+							if (particle->positionVector.distanceToPoint(otherParticle->positionVector) < rejectDistanceThreshold) {
 								rejectBody = true;
 								goto loopEnd;
 							}
@@ -86,14 +83,13 @@ void Grid::addBodiesToGrid(const BodiesVector& bodies) {
 		loopEnd:;
 		if (rejectBody)
 		{
-			bodiesSquareIndexs.removeLast();
 			delete allBodies.at(i);
 			allBodies.removeAt(i);
 			i--;
 			continue;
 		}
 
-		for each(int squareIndex in bodiesSquareIndexs.last()) {
+		for each(int squareIndex in bodySquareIndexes) {
 			squaresBodies[squareIndex]->push_back(body);
 		}
 	}
@@ -208,7 +204,6 @@ void Grid::updateBodiesInGrid() {
 		}
 	}
 
-
 #ifdef _DEBUG
 	int c = 0;
 	for (int i = 0; i < this->numSquares(); i++)
@@ -287,6 +282,12 @@ const QRect& Grid::rectInSquares() {
 	return _rectInSquares;
 }
 
+const QRectF & Grid::boundingRectMeters()
+{
+	return _boundingRectMeters;
+	// TODO: insert return statement here
+}
+
 const QSize& Grid::sizeInSquares() {
 	if (!_sizeInSquares.isValid()) {
 		// both grid dimensions must be a multiple
@@ -317,6 +318,9 @@ const QSizeF& Grid::sizeInMeters() const {
 
 void Grid::sizeInMeters(const QSizeF& sizeInMeters) {
 	_sizeInMeters = sizeInMeters;
+	double offset = 0.01;
+	this->_boundingRectMeters = QRectF(0, 0, sizeInMeters.width(), sizeInMeters.height())
+		.marginsRemoved(QMarginsF(offset, offset, offset, offset));
 	resetSquareCoordinates();
 }
 

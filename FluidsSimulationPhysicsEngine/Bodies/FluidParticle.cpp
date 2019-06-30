@@ -241,12 +241,9 @@ void FluidParticle::detectCollisionWithASquare(const QRectF& boundingBox)
 {
 	int collisionSides = 0;
 
-	auto marginBoundingBox = boundingBox.marginsRemoved(QMarginsF(0.001, 0.001, 0.001, 0.001));
-	//auto &marginBoundingBox = boundingBox;
+	auto center = QCPVector2D(boundingBox.center());
 
-	auto center = QCPVector2D(marginBoundingBox.center());
-
-	auto extentVector = QCPVector2D(marginBoundingBox.width() / 2.0, marginBoundingBox.height() / 2.0);
+	auto extentVector = QCPVector2D(boundingBox.width() / 2.0, boundingBox.height() / 2.0);
 
 	auto pointInLocalCoords = this->positionVector - center;
 
@@ -477,8 +474,7 @@ void FluidParticle::applyInteraction()
 	auto accelration = this->_force / this->_density;
 	if (!this->_isFirstIteration)
 	{
-		auto size = this->engine->getUnsafeBodiesGrid().sizeInMeters();
-		auto boundingBox = QRectF(0.0, 0.0, size.width(), size.height());
+		auto boundingBox = this->engine->getUnsafeBodiesGrid().boundingRectMeters();
 		auto previousStep = QCPVector2D(this->_leapFrogNextStep);
 		this->_leapFrogNextStep += engine->getTimeDelta() * accelration;
 		this->setPosition((this->positionVector + this->_leapFrogNextStep * engine->getTimeDelta()).toPointF());

@@ -49,6 +49,8 @@ public:
 	// a rectangle representing the grid in squares
 	const QRect& rectInSquares();
 
+	const QRectF& boundingRectMeters();
+
 	/*
 	* transforms a given coordinate set from meters to be in
 	* squares
@@ -110,6 +112,7 @@ private:
 	QSizeF _sizeInMeters = QSizeF();
 	QSize _sizeInSquares = QSize();
 	QRect _rectInSquares = QRect();
+	QRectF _boundingRectMeters;
 	qreal _squareSideInMeters = 0;
 	int _numSquares = 0;
 

@@ -208,7 +208,7 @@ public:
         emissionSlider->setObjectName(QString::fromUtf8("emissionSlider"));
         emissionSlider->setGeometry(QRect(80, 460, 160, 22));
         emissionSlider->setMinimum(1);
-        emissionSlider->setMaximum(10);
+        emissionSlider->setMaximum(20);
         emissionSlider->setValue(10);
         emissionSlider->setOrientation(Qt::Horizontal);
         emissionSlider->setTickPosition(QSlider::TicksAbove);
