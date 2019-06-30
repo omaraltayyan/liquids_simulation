@@ -14,7 +14,7 @@ public:
 	void addRandomBodies(PhysicsEngine* engine, int bodiesCount = -1, QPointF generationPosition = QPointF());
 	double radius = 1e-10;
 	double particlesPerEmission = 10;
-	double emissionAreaSquareRadius = 0.03;
+	double emissionAreaSquareRadius = 0.01;
 
 	Material currentMaterial = water;
 
